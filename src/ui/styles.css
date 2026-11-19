@@ -213,3 +213,28 @@ a.game-row:hover { background: var(--surface-2); }
   .game-row { grid-template-columns: 54px 1fr; }
   .game-row .aside { grid-column: 2; }
 }
+
+/* Analysis progress */
+.progress { display: grid; gap: 8px; }
+.progress-track { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.progress-fill { height: 100%; background: var(--brand); border-radius: 4px; transition: width 0.25s ease; }
+@media (prefers-reduced-motion: reduce) { .progress-fill { transition: none; } }
+
+/* Themes */
+.theme-card { display: grid; gap: 10px; align-content: start; }
+.theme-card .count { font-family: var(--serif); font-size: 2.1rem; line-height: 1; }
+.theme-card .count small { font-family: var(--sans); font-size: 0.86rem; color: var(--ink-2); margin-left: 6px; }
+.theme-card.weakness { border-top: 3px solid var(--loss); }
+.theme-card.strength { border-top: 3px solid var(--win); }
+.theme-card.record { border-top: 3px solid var(--draw); }
+.coach-line { font-family: var(--serif); font-size: 1.02rem; line-height: 1.5; }
+.evidence { display: flex; flex-wrap: wrap; gap: 6px; }
+.evidence a, .move-pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 8px; font-size: 0.84rem;
+  background: var(--surface-2); color: var(--ink); text-decoration: none; border: 1px solid transparent; font-variant-numeric: tabular-nums;
+}
+.evidence a:hover { border-color: var(--line); background: var(--bg); }
+.san { font-family: var(--mono); font-size: 0.92em; font-weight: 600; white-space: nowrap; }
+details.why { font-size: 0.86rem; color: var(--ink-2); }
+details.why summary { cursor: pointer; padding: 4px 0; }
+.empty-themes { text-align: center; padding: 28px 16px; display: grid; gap: 8px; justify-items: center; }

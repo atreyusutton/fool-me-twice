@@ -1,8 +1,12 @@
 import { useSyncExternalStore } from "react";
-import type { PlayerSession, SessionState } from "../app/session.ts";
+import { gamePath } from "../app/router.ts";
+import { ENGINE_GAME_STEPS, type PlayerSession, type SessionState } from "../app/session.ts";
+import { isKeyMoment } from "../core/facts.ts";
+import { evidenceRows, type Profile as PlayerProfile, type Theme } from "../core/profile.ts";
 import type { Tier1Stats } from "../core/tier1.ts";
-import type { Ending, GameSummary } from "../core/types.ts";
+import type { Ending, FactTable } from "../core/types.ts";
 import { ENDING_WORD, OUTCOME_WORD, formatClock, formatDate, formatPercent, formatShortDate, plural } from "./format.ts";
+import { Link } from "./Link.tsx";
 import { ErrorScreen, Loading } from "./Status.tsx";
 import { TallyBar, TallyLegend } from "./Tally.tsx";
 
@@ -55,8 +59,10 @@ export function Profile({ session }: { session: PlayerSession }) {
         </p>
       )}
 
+      <AnalysisProgress session={session} state={state} />
+      <Themes session={session} state={state} />
       <Record tier1={state.tier1} gameCount={state.games.length} />
-      <GamesList games={state.games} />
+      <GamesList state={state} />
     </div>
   );
 }
@@ -144,32 +150,243 @@ function Record({ tier1, gameCount }: { tier1: Tier1Stats; gameCount: number }) 
   );
 }
 
-function GamesList({ games }: { games: GameSummary[] }) {
+function AnalysisProgress({ session, state }: { session: PlayerSession; state: SessionState }) {
+  const engine = state.engine;
+  const total = Math.min(engine.target, state.games.length);
+  if (engine.status === "failed" && engine.error) {
+    return (
+      <div className="notice" role="alert">
+        <strong>The chess engine stopped.</strong> {engine.error.message} The record below needs no engine and is still
+        correct. {plural(engine.gamesDone, "game")} finished before it stopped.{" "}
+        <button className="btn small secondary" onClick={() => void session.analyse(engine.target)}>
+          Start the engine again
+        </button>
+      </div>
+    );
+  }
+  if (engine.status === "done") {
+    const next = ENGINE_GAME_STEPS.find((step) => step > engine.target && state.games.length > engine.target);
+    const seconds = engine.startedAt && engine.finishedAt ? Math.round((engine.finishedAt - engine.startedAt) / 1000) : null;
+    return (
+      <div className="row muted small" role="status">
+        <span>
+          {plural(total, "game")} analysed by the engine
+          {engine.gamesFromCache === total
+            ? ", all from this device's saved results"
+            : seconds !== null
+              ? ` in ${seconds}s (${engine.searched} positions searched, ${engine.fromCache} reused)`
+              : ""}
+          .
+        </span>
+        {next && (
+          <button className="btn small secondary" onClick={() => void session.analyse(next)}>
+            Analyse the latest {Math.min(next, state.games.length)}
+          </button>
+        )}
+      </div>
+    );
+  }
+  if (engine.status !== "running") return null;
+  const withinGame = engine.positionsTotal > 0 ? engine.positionsDone / engine.positionsTotal : 0;
+  const fraction = total > 0 ? Math.min(1, (engine.gamesDone + (engine.currentGameId ? withinGame : 0)) / total) : 0;
+  return (
+    <div className="card progress" role="status" aria-live="polite">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <strong>
+          {engine.gamesDone} of {total} games analysed
+        </strong>
+        <span className="muted small">The engine is checking every position. Finished games can be opened now.</span>
+      </div>
+      <div className="progress-track" aria-hidden="true">
+        <div className="progress-fill" style={{ width: `${fraction * 100}%` }} />
+      </div>
+      <span className="muted small">
+        This is slowest on the first visit. Results are saved on this device, so the next visit is instant.
+      </span>
+    </div>
+  );
+}
+
+function themeNumbers(theme: Theme): string {
+  if (theme.comparison) {
+    const c = theme.comparison;
+    return `${c.a}: ${c.aScore}% score in ${plural(c.aGames, "game")}. ${c.b}: ${c.bScore}% in ${plural(c.bGames, "game")}.`;
+  }
+  const where = theme.phase ? `, mostly in the ${theme.phase}` : "";
+  if (theme.kind === "strength" && theme.chances !== null) {
+    return `${theme.count} of the ${plural(theme.chances, "chance")} taken, across ${plural(theme.games, "game")}${where}.`;
+  }
+  return `In ${theme.games} of ${plural(theme.gamesAnalysed, "game")}${where}.`;
+}
+
+function ThemeCard({ theme, state }: { theme: Theme; state: SessionState }) {
+  const tables = Object.values(state.facts) as FactTable[];
+  const evidence = evidenceRows(theme, tables, 6);
+  const gameOf = (gameId: string) => state.games.find((game) => game.uuid === gameId);
+  return (
+    <article className={`card theme-card ${theme.kind}`}>
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <h3>{theme.label}</h3>
+        <span className={`chip ${theme.kind === "weakness" ? "signal" : theme.kind === "strength" ? "good" : ""}`}>
+          {theme.kind === "weakness" ? "Keeps coming back" : theme.kind === "strength" ? "Going well" : "From the record"}
+        </span>
+      </div>
+      {!theme.comparison && (
+        <div className="count num">
+          {theme.count}
+          <small>{theme.count === 1 ? "time" : "times"}</small>
+        </div>
+      )}
+      <p className="muted small">{themeNumbers(theme)}</p>
+      {evidence.length > 0 && (
+        <div>
+          <p className="eyebrow" style={{ marginBottom: 6 }}>
+            {theme.kind === "weakness" ? "The costliest moments" : "Examples"}
+          </p>
+          <div className="evidence">
+            {evidence.map((row) => {
+              const game = gameOf(row.gameId);
+              return (
+                <Link key={row.id} href={`${gamePath(state.username, state.demo, row.gameId)}?ply=${row.ply}`}>
+                  <span className="san">
+                    {row.moveNumber}
+                    {row.color === "white" ? "." : "…"} {row.played}
+                  </span>
+                  {game && <span className="muted">vs {game.opponentName}</span>}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      <details className="why">
+        <summary>What exactly was counted</summary>
+        {theme.definition}
+      </details>
+    </article>
+  );
+}
+
+function Themes({ session, state }: { session: PlayerSession; state: SessionState }) {
+  const profile: PlayerProfile | null = state.profile;
+  const running = state.engine.status === "running";
+  const weaknesses = profile?.themes.filter((theme) => theme.kind === "weakness") ?? [];
+  const featured = weaknesses.filter((theme) => theme.featured);
+  const others = profile?.themes.filter((theme) => !theme.featured) ?? [];
+  const next = ENGINE_GAME_STEPS.find((step) => step > state.engine.target && state.games.length > state.engine.target);
+
+  return (
+    <section aria-labelledby="themes-title">
+      <div className="section-head">
+        <h2 id="themes-title">Themes</h2>
+        <span className="muted small">
+          {profile && profile.gamesAnalysed > 0
+            ? `From ${plural(profile.gamesAnalysed, "game")}: ${plural(profile.clearMistakes, "clear mistake")} in ${plural(profile.movesAnalysed, "move")}`
+            : "Patterns the engine and code can prove"}
+        </span>
+      </div>
+      {featured.length > 0 ? (
+        <div className="grid-3">
+          {featured.map((theme) => (
+            <ThemeCard key={theme.key} theme={theme} state={state} />
+          ))}
+        </div>
+      ) : (
+        <div className="card empty-themes">
+          {running ? (
+            <>
+              <h3>Looking for patterns</h3>
+              <p className="muted">
+                A theme appears once it has happened at least three times in three different games. Nothing yet.
+              </p>
+            </>
+          ) : state.engine.status === "failed" ? (
+            <>
+              <h3>No themes without the engine</h3>
+              <p className="muted">Themes need engine analysis. Start the engine again above.</p>
+            </>
+          ) : (
+            <>
+              <h3>Not enough evidence yet</h3>
+              <p className="muted">
+                No pattern happened at least three times in three different games across the{" "}
+                {plural(profile?.gamesAnalysed ?? 0, "game")} analysed. Motif would rather say that than guess.
+              </p>
+              {next && (
+                <button className="btn" onClick={() => void session.analyse(next)}>
+                  Analyse the latest {Math.min(next, state.games.length)} games
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      )}
+      {others.length > 0 && (
+        <div className="grid-3" style={{ marginTop: 16 }}>
+          {others.map((theme) => (
+            <ThemeCard key={theme.key} theme={theme} state={state} />
+          ))}
+        </div>
+      )}
+      {profile && profile.belowMinimum.length > 0 && (
+        <p className="muted small" style={{ marginTop: 12 }}>
+          Seen, but too rarely to call a theme:{" "}
+          {profile.belowMinimum.map((item) => `${item.label.toLowerCase()} (${item.count} in ${plural(item.games, "game")})`).join("; ")}.
+        </p>
+      )}
+    </section>
+  );
+}
+
+function GamesList({ state }: { state: SessionState }) {
+  const shown = state.games.slice(0, Math.max(state.engine.target, 25));
   return (
     <section aria-labelledby="games-title">
       <div className="section-head">
         <h2 id="games-title">Games</h2>
-        <span className="muted small">Newest first</span>
+        <span className="muted small">Newest first. A game opens once the engine has finished it.</span>
       </div>
       <div className="card games">
-        {games.slice(0, 25).map((game) => (
-          <div className="game-row" key={game.uuid}>
-            <span className={`outcome ${game.outcome}`}>
-              <i aria-hidden="true" />
-              {OUTCOME_WORD[game.outcome]}
-            </span>
-            <span className="game-main">
-              <span className="title">
-                vs {game.opponentName} <span className="muted num">({game.opponentRating})</span>
+        {shown.map((game) => {
+          const table = state.facts[game.uuid];
+          const moments = table ? table.rows.filter(isKeyMoment).length : null;
+          const body = (
+            <>
+              <span className={`outcome ${game.outcome}`}>
+                <i aria-hidden="true" />
+                {OUTCOME_WORD[game.outcome]}
               </span>
-              <span className="muted small">
-                {game.playerColor === "white" ? "White" : "Black"} · {game.opening ?? "Opening not named"}
-                {game.outcome !== "draw" && ` · by ${ENDING_WORD[game.ending]}`}
+              <span className="game-main">
+                <span className="title">
+                  vs {game.opponentName} <span className="muted num">({game.opponentRating})</span>
+                </span>
+                <span className="muted small">
+                  {game.playerColor === "white" ? "White" : "Black"} · {game.opening ?? "Opening not named"}
+                  {game.outcome !== "draw" && ` · by ${ENDING_WORD[game.ending]}`}
+                </span>
               </span>
-            </span>
-            <span className="aside muted small num">{formatShortDate(game.endTime)}</span>
-          </div>
-        ))}
+              <span className="aside row small">
+                {moments === null ? (
+                  <span className="chip">{state.engine.currentGameId === game.uuid ? "Analysing…" : "Waiting"}</span>
+                ) : moments === 0 ? (
+                  <span className="chip good">No clear mistakes</span>
+                ) : (
+                  <span className="chip signal">{plural(moments, "key moment")}</span>
+                )}
+                <span className="muted num">{formatShortDate(game.endTime)}</span>
+              </span>
+            </>
+          );
+          return table ? (
+            <Link className="game-row" key={game.uuid} href={gamePath(state.username, state.demo, game.uuid)}>
+              {body}
+            </Link>
+          ) : (
+            <div className="game-row" key={game.uuid} aria-disabled="true">
+              {body}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
