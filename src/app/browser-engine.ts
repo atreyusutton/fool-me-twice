@@ -28,28 +28,39 @@ function createWorkerTransport(): EngineTransport {
   };
 }
 
-let shared: Promise<Engine> | null = null;
+const engines = new Map<number, Promise<Engine>>();
 
-/** One engine for the whole visit. If it fails to start, the next call tries again from scratch. */
-export function getBrowserEngine(setting: EngineSetting): Promise<Engine> {
-  shared ??= (async () => {
-    const engine = new Engine(createWorkerTransport(), setting);
-    try {
-      await engine.init();
-    } catch (error) {
-      engine.terminate();
-      shared = null;
-      throw error;
-    }
-    return engine;
-  })();
-  return shared;
+/** How many engines to run side by side: leave one processor core for the page, and never more than three. */
+export function engineCount(): number {
+  const cores = typeof navigator !== "undefined" && navigator.hardwareConcurrency ? navigator.hardwareConcurrency : 2;
+  return Math.max(1, Math.min(3, cores - 1));
 }
 
-export function resetBrowserEngine(): void {
-  const current = shared;
-  shared = null;
-  current?.then((engine) => engine.terminate()).catch(() => {
-    // The engine never started, so there is nothing to stop.
-  });
+/** One engine per slot for the whole visit. If one fails to start, the next call tries again from scratch. */
+export function getBrowserEngine(setting: EngineSetting, slot = 0): Promise<Engine> {
+  let engine = engines.get(slot);
+  if (!engine) {
+    engine = (async () => {
+      const created = new Engine(createWorkerTransport(), setting);
+      try {
+        await created.init();
+      } catch (error) {
+        created.terminate();
+        engines.delete(slot);
+        throw error;
+      }
+      return created;
+    })();
+    engines.set(slot, engine);
+  }
+  return engine;
+}
+
+export function resetBrowserEngines(): void {
+  for (const engine of engines.values()) {
+    engine.then((started) => started.terminate()).catch(() => {
+      // That engine never started, so there is nothing to stop.
+    });
+  }
+  engines.clear();
 }

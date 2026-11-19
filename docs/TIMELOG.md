@@ -9,3 +9,4 @@ One line per block of work: date, minutes, what it went to. The README's time br
 | 2026-11-19 | 10 | Step 1: scaffold (Vite, React, Worker, tests, lint), checked in a browser |
 | 2026-11-19 | 15 | Step 2: Chess.com fetch layer, archive cache, no-engine profile, tests |
 | 2026-11-19 | 25 | Steps 3 and 4: engine wrapper, fact table, detectors, profile, tests; measuring depth 12, 14 and 16 on the demo player and tuning |
+| 2026-11-19 | 25 | Step 5: game review screen (board, move list, winning-chance chart, key moments with code-built text), browser checks on desktop and phone widths, parallel engines |

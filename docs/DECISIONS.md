@@ -50,3 +50,9 @@ Measured on the demo player's latest 25 rapid games (1,741 positions), same engi
   - `time_trouble` and `rushed` use the clock before the move, allowing for the increment.
 - **Two strengths added on the same terms as the weaknesses:** `found_mate` and `took_free_piece`, each the mirror of a weakness, so the profile can say what is going well with the same proof.
 - **Result on the demo player (25 games):** 38 clear mistakes; rushed 7 times in 6 games, pieces left hanging 6 in 5, checkmates missed 5 in 4, free material not taken 3 in 3, checkmates allowed 2 in 2 (below the minimum, so not a theme). `time_trouble` never fired: this player finishes ten-minute games with over five minutes left on average.
+
+## 2026-11-19: build, step 5 (session 02)
+
+- **Up to three engines side by side, not one.** The spec asked for one instance. Measured in a headless Chrome on this machine at depth 14: 25 games took 140 s with one engine and 47 s with three. Each engine takes the next game from the queue, newest first, and all share the position cache. The count is the processor's cores minus one, capped at three. Gave up: more memory and battery use during the first analysis.
+- **Code-built review text uses the same tokens and the same check as the model's text.** Why: one renderer, one validator, and the fallback is tested to always pass. The app is useful with no model at all from this step on.
+- **A key moment is shown as the position before the move with two arrows** (dashed orange for the move played, solid blue for the engine's move), with the same information in words under the board, so it never depends on colour alone.

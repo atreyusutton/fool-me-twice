@@ -187,15 +187,17 @@ function AnalysisProgress({ session, state }: { session: PlayerSession; state: S
     );
   }
   if (engine.status !== "running") return null;
-  const withinGame = engine.positionsTotal > 0 ? engine.positionsDone / engine.positionsTotal : 0;
-  const fraction = total > 0 ? Math.min(1, (engine.gamesDone + (engine.currentGameId ? withinGame : 0)) / total) : 0;
+  const fraction = engine.positionsTotal > 0 ? Math.min(1, engine.positionsDone / engine.positionsTotal) : 0;
   return (
     <div className="card progress" role="status" aria-live="polite">
       <div className="row" style={{ justifyContent: "space-between" }}>
         <strong>
           {engine.gamesDone} of {total} games analysed
         </strong>
-        <span className="muted small">The engine is checking every position. Finished games can be opened now.</span>
+        <span className="muted small">
+          {engine.engines > 1 ? `${engine.engines} engines are` : "The engine is"} checking every position. Finished games can be
+          opened now.
+        </span>
       </div>
       <div className="progress-track" aria-hidden="true">
         <div className="progress-fill" style={{ width: `${fraction * 100}%` }} />
@@ -367,7 +369,7 @@ function GamesList({ state }: { state: SessionState }) {
               </span>
               <span className="aside row small">
                 {moments === null ? (
-                  <span className="chip">{state.engine.currentGameId === game.uuid ? "Analysing…" : "Waiting"}</span>
+                  <span className="chip">{state.engine.activeGameIds.includes(game.uuid) ? "Analysing…" : "Waiting"}</span>
                 ) : moments === 0 ? (
                   <span className="chip good">No clear mistakes</span>
                 ) : (

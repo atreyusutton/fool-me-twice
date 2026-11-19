@@ -7,7 +7,7 @@ import { parseGame, summarizeGame } from "../core/pgn.ts";
 import { buildProfile, type Profile } from "../core/profile.ts";
 import { computeTier1, type Tier1Stats } from "../core/tier1.ts";
 import type { FactTable, GameSummary, ParsedGame, RawGame } from "../core/types.ts";
-import { getBrowserEngine, resetBrowserEngine } from "./browser-engine.ts";
+import { engineCount, getBrowserEngine, resetBrowserEngines } from "./browser-engine.ts";
 import { openCache } from "./kv-idb.ts";
 
 /** Tier-1 statistics use up to this many games. */
@@ -22,15 +22,18 @@ export interface EngineProgress {
   /** How many of the latest games are to be analysed. */
   target: number;
   gamesDone: number;
-  /** Positions in the game being analysed now. */
+  /** Positions across all the games of this run: done so far, and in total. */
   positionsDone: number;
   positionsTotal: number;
-  /** Across this run: positions answered by the engine, and positions answered from the cache. */
+  /** Positions answered by the engine, and positions answered from the cache. */
   searched: number;
   fromCache: number;
   /** Games whose whole fact table came from the cache. */
   gamesFromCache: number;
-  currentGameId: string | null;
+  /** Games being analysed right now (one per engine). */
+  activeGameIds: string[];
+  /** Engines running side by side. */
+  engines: number;
   startedAt: number | null;
   finishedAt: number | null;
 }
@@ -45,7 +48,8 @@ const IDLE_ENGINE: EngineProgress = {
   searched: 0,
   fromCache: 0,
   gamesFromCache: 0,
-  currentGameId: null,
+  activeGameIds: [],
+  engines: 1,
   startedAt: null,
   finishedAt: null,
 };
@@ -219,81 +223,92 @@ export class PlayerSession {
     const stale = () => token !== this.analysisToken;
     const games = this.getState().games.slice(0, target);
     const settingKey = engineSettingKey(this.engineSetting);
+    const queue = games.filter((game) => !this.getState().facts[game.uuid]);
+    const workers = Math.min(engineCount(), Math.max(1, queue.length));
+
+    // Counters live here and are copied into the state a few times a second:
+    // repainting on every position would slow the analysis itself.
+    const counters = { positionsDone: 0, searched: 0, fromCache: 0, gamesDone: games.length - queue.length, gamesFromCache: 0 };
+    const active = new Set<string>();
+    let lastPaint = 0;
+    const paint = (force = false) => {
+      const now = performance.now();
+      if (!force && now - lastPaint < 200) return;
+      lastPaint = now;
+      this.patchEngine({ ...counters, activeGameIds: [...active] });
+    };
+
     this.patchEngine({
       ...IDLE_ENGINE,
       status: "running",
       target,
-      gamesDone: games.filter((game) => this.getState().facts[game.uuid]).length,
+      engines: workers,
+      gamesDone: counters.gamesDone,
+      positionsTotal: queue.reduce((sum, game) => sum + game.plies + 1, 0),
       startedAt: Date.now(),
     });
 
-    let lastPaint = 0;
-    try {
-      for (const summary of games) {
-        if (stale()) return;
-        if (this.getState().facts[summary.uuid]) continue;
-        const factsKey = `${summary.uuid}|${settingKey}|f${FACTS_VERSION}`;
-        let table = await kv.get<FactTable>("facts", factsKey);
-        let wholeGameCached = true;
-        if (!table) {
-          wholeGameCached = false;
-          const game = this.getGame(summary.uuid);
-          if (!game) continue;
-          const positions = positionsOf(game);
-          this.patchEngine({ currentGameId: summary.uuid, positionsDone: 0, positionsTotal: positions.length });
-          let countedSearched = 0;
-          let countedCached = 0;
-          const evals = await analysePositions(
-            positions,
-            () => getBrowserEngine(this.engineSetting),
-            kv,
-            settingKey,
-            (progress) => {
-              const cachedNow = progress.positionsFromCache;
-              const searchedNow = progress.positionsDone - cachedNow;
-              const engine = this.getState().engine;
-              const next = {
-                positionsDone: progress.positionsDone,
-                searched: engine.searched + (searchedNow - countedSearched),
-                fromCache: engine.fromCache + (cachedNow - countedCached),
-              };
-              countedSearched = searchedNow;
-              countedCached = cachedNow;
-              // Repainting on every position would slow the analysis itself; a few times a second is enough.
-              const now = performance.now();
-              if (now - lastPaint > 150 || progress.positionsDone === progress.positionsTotal) {
-                lastPaint = now;
-                this.patchEngine(next);
-              } else {
-                Object.assign(this.getState().engine, next);
-              }
-            },
-            stale,
-          );
-          if (!evals || stale()) return;
-          table = buildFactTable(game, evals, settingKey);
-          await kv.set("facts", factsKey, table);
-        }
-        if (stale()) return;
-        const engine = this.getState().engine;
-        this.update({
-          facts: { ...this.getState().facts, [summary.uuid]: table },
-          engine: {
-            ...engine,
-            gamesDone: engine.gamesDone + 1,
-            gamesFromCache: engine.gamesFromCache + (wholeGameCached ? 1 : 0),
-            currentGameId: null,
+    const analyseOne = async (summary: GameSummary, slot: number): Promise<void> => {
+      const factsKey = `${summary.uuid}|${settingKey}|f${FACTS_VERSION}`;
+      let table = await kv.get<FactTable>("facts", factsKey);
+      if (table) {
+        counters.gamesFromCache++;
+        counters.positionsDone += summary.plies + 1;
+        counters.fromCache += summary.plies + 1;
+      } else {
+        const game = this.getGame(summary.uuid);
+        if (!game) return;
+        active.add(summary.uuid);
+        let seenDone = 0;
+        let seenCached = 0;
+        const evals = await analysePositions(
+          positionsOf(game),
+          () => getBrowserEngine(this.engineSetting, slot),
+          kv,
+          settingKey,
+          (progress) => {
+            counters.positionsDone += progress.positionsDone - seenDone;
+            counters.fromCache += progress.positionsFromCache - seenCached;
+            counters.searched += progress.positionsDone - seenDone - (progress.positionsFromCache - seenCached);
+            seenDone = progress.positionsDone;
+            seenCached = progress.positionsFromCache;
+            if (!stale()) paint();
           },
-        });
-        this.afterGameAnalysed();
+          stale,
+        );
+        active.delete(summary.uuid);
+        if (!evals || stale()) return;
+        table = buildFactTable(game, evals, settingKey);
+        await kv.set("facts", factsKey, table);
       }
       if (stale()) return;
-      this.patchEngine({ status: "done", currentGameId: null, finishedAt: Date.now() });
+      counters.gamesDone++;
+      this.update({ facts: { ...this.getState().facts, [summary.uuid]: table } });
+      paint(true);
+      this.afterGameAnalysed();
+    };
+
+    try {
+      // Each engine takes the next game from the front of the queue, so the newest games finish first.
+      let next = 0;
+      await Promise.all(
+        Array.from({ length: workers }, async (_, slot) => {
+          while (!stale()) {
+            const summary = queue[next++];
+            if (!summary) return;
+            await analyseOne(summary, slot);
+          }
+        }),
+      );
+      if (stale()) return;
+      this.patchEngine({ ...counters, status: "done", activeGameIds: [], finishedAt: Date.now() });
       this.afterGameAnalysed();
     } catch (error) {
       if (stale()) return;
-      resetBrowserEngine();
-      this.patchEngine({ status: "failed", error: toMotifError(error, "engine"), currentGameId: null });
+      // Stop the other engines too: this run is over, and a retry starts clean.
+      this.analysisToken++;
+      resetBrowserEngines();
+      this.patchEngine({ ...counters, status: "failed", error: toMotifError(error, "engine"), activeGameIds: [] });
     }
   }
 
