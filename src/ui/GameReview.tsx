@@ -12,7 +12,7 @@ import { CoachSource } from "./CoachSource.tsx";
 import { CoachText } from "./CoachText.tsx";
 import { ENDING_WORD, OUTCOME_WORD, formatClock, formatDate, plural } from "./format.ts";
 import { Link } from "./Link.tsx";
-import { useSession } from "./Profile.tsx";
+import { DemoBanner, useSession } from "./Profile.tsx";
 import { ErrorScreen, Loading } from "./Status.tsx";
 import { WinChart } from "./WinChart.tsx";
 
@@ -171,6 +171,7 @@ function ReviewBody({ session, gameId }: { session: PlayerSession; gameId: strin
         </p>
       </header>
 
+      <DemoBanner state={state} />
       <div className="review">
         <div className="review-left">
           <Board
@@ -238,7 +239,7 @@ function ReviewBody({ session, gameId }: { session: PlayerSession; gameId: strin
             <p className="coach-line">
               <CoachText text={review.takeaway.text} request={request} />
             </p>
-            <CoachSource entry={entry} extra={`${plural(keyRows.length, "key moment")} out of ${plural(table.rows.length, "move")} you played.`} />
+            <CoachSource entry={entry} recorded={state.recording !== null} extra={`${plural(keyRows.length, "key moment")} out of ${plural(table.rows.length, "move")} you played.`} />
           </section>
 
           {review.moments.map((moment) => {

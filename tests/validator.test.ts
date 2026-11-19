@@ -86,6 +86,12 @@ describe("validator: rule 3, tokens", () => {
     expect(ruleOf(game, withItem(1, { text: "You played [[played:F2] here." }))).toBe(3);
     expect(ruleOf(game, withItem(1, { text: "It happened [[played:T1]] times." }))).toBe(3);
   });
+  it("rejects a time token where the game record has no clock, and a game token in a profile summary", () => {
+    const noClock = { ...game, facts: [game.facts[0]!, { ...game.facts[1]!, timeSpent: null }] };
+    expect(ruleOf(noClock, withItem(1, { text: "You took [[time:F2]] here." }))).toBe(3);
+    expect(ruleOf(game, withItem(1, { text: "You took [[time:F2]] here, with [[mistakes:G1]] overall." }))).toBe("ok");
+    expect(ruleOf(game, withItem(1, { text: "There were [[mistakes:G2]]." }))).toBe(2);
+  });
   it("rejects count tokens on a record finding, which has none", () => {
     expect(ruleOf(game, withItem(1, { text: "As White this came up [[count:T4]] times." }))).toBe(3);
   });
@@ -184,6 +190,7 @@ describe("code-built text", () => {
     const text = renderParts(good.items[0]!.text, game).map((part) => part.text).join("");
     expect(text).toBe("On move 12 you played Qa4, which left your knight undefended. The engine preferred Nh4. That is 6 times in 5 of your last 25 games.");
     expect(renderParts("It cost [[loss:F2]].", game).map((part) => part.text).join("")).toBe("It cost 49 points.");
+    expect(renderParts("Played in [[time:F1]]; [[mistakes:G1]] in all.", game).map((part) => part.text).join("")).toBe("Played in 6.5 seconds; 2 clear mistakes in all.");
   });
 });
 

@@ -14,7 +14,7 @@ const total = (usages: CoachUsage[], field: keyof CoachUsage) => usages.reduce((
  * Says where the words on screen came from and what they cost. Every number here is a token count
  * reported by the API for this reply; nothing is estimated.
  */
-export function CoachSource({ entry, extra }: { entry: CoachEntry | undefined; extra?: string }) {
+export function CoachSource({ entry, extra, recorded = false }: { entry: CoachEntry | undefined; extra?: string; recorded?: boolean }) {
   if (!entry) {
     return <p className="source-note">Text built by code from the engine facts. {extra}</p>;
   }
@@ -48,8 +48,10 @@ export function CoachSource({ entry, extra }: { entry: CoachEntry | undefined; e
             <dd className="num">{total(usages, "outputTokens").toLocaleString()} tokens</dd>
           </dl>
           <p>
-            {entry.fromCache
-              ? "This reply was saved earlier and reused, so showing it now cost nothing. The counts are from when it was written."
+            {recorded
+              ? "This reply is part of the recorded demo, so showing it now cost nothing. The counts are from when it was recorded."
+              : entry.fromCache
+                ? "This reply was saved earlier and reused, so showing it now cost nothing. The counts are from when it was written."
               : "This reply was written just now and is saved on this device, so opening it again costs nothing."}
           </p>
           {failures.map((attempt, index) => (

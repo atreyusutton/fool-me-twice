@@ -69,3 +69,11 @@ Measured on the demo player's latest 25 rapid games (1,741 positions), same engi
 - **The coach is asked only after the engine finishes.** Why: the profile is part of every request and its cached prefix; asking while it changes would waste calls and cache writes. Given up: coach text during analysis (code-built text shows meanwhile).
 - **The browser re-checks every reply**, including cached ones, against the request it was written for, and renders tokens against that same request.
 - **Measured caching** (first live calls): instructions plus profile are 3,680 to 3,896 tokens, written to the cache once; each later game review read them from the cache and paid for 294 to 544 new input tokens.
+
+## Step 7: recorded demo and eval (session 02)
+
+- **The demo is one file**, `public/demo/recording.json` (about 870 KB): 25 analysed games as Chess.com returned them, summaries of 75 older games for the record, 1,636 engine results, 25 fact tables and 20 coach replies with every raw attempt and token count. The app plays it back through the same code paths as a live visit, with the recording layered over an in-memory cache. Checked in a browser: no request to the Worker, Chess.com or the engine.
+- **The demo is fixed at 25 games** and never starts an engine. "Analyse more" is hidden there. Given up: extending the demo.
+- **Games with no key moments do not call the model.** Code writes the one-line note. Why: nothing to explain, so nothing to pay for or get wrong. Applies live too.
+- **`npm run eval` needs no key.** It re-checks every recorded reply and raw attempt with today's validator, reports first-pass, retry and fallback rates, then breaks each passing reply in 15 known ways and requires every broken version to be rejected. `npm test` also fails if the recording falls behind the prompt or facts version.
+- **Three prompt versions were measured on the same 20 requests.** First-pass rate 55% (version .4), 60% (.5: added `[[time:F1]]` and `[[mistakes:G1]]` tokens and a checklist), 80% (.6: the two most-broken rules repeated at the end of each request). Rejections were almost all number words in headlines and piece names in headlines or closings. The piece rule was kept strict rather than loosened to raise the rate: a headline has no single fact row to check a piece against. Small sample, one player; the numbers will move between runs.

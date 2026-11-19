@@ -6,10 +6,11 @@ import { codeBuiltResult } from "../core/coach/run.ts";
 import { gameReviewToWire, profileSummaryToWire } from "../core/coach/schema.ts";
 import type { CoachRequest, CoachResult, GameReview, ProfileSummary } from "../core/coach/types.ts";
 import { validateReply } from "../core/coach/validator.ts";
+import { DEMO_GAME_COUNT, DEMO_RECORDING_PATH, needsModel, type DemoRecording } from "../core/demo.ts";
 import { analysePositions, DEFAULT_ENGINE_SETTING, engineSettingKey } from "../core/engine.ts";
 import { MotifError, toMotifError } from "../core/errors.ts";
 import { buildFactTable, FACTS_VERSION, positionsOf } from "../core/facts.ts";
-import type { KV } from "../core/kv.ts";
+import { LayeredKV, MemoryKV, type KV } from "../core/kv.ts";
 import { parseGame, summarizeGame } from "../core/pgn.ts";
 import { buildProfile, type Profile } from "../core/profile.ts";
 import { computeTier1, type Tier1Stats } from "../core/tier1.ts";
@@ -105,6 +106,8 @@ export interface SessionState {
   profile: Profile | null;
   coachStatus: CoachStatus;
   coach: Record<string, CoachEntry>;
+  /** Set in the recorded demo: when it was recorded and with which model. */
+  recording: { recordedAt: string; model: string } | null;
 }
 
 type Listener = () => void;
@@ -139,6 +142,7 @@ export class PlayerSession {
       profile: null,
       coachStatus: { available: null, model: null },
       coach: {},
+      recording: null,
     };
   }
 
@@ -164,6 +168,18 @@ export class PlayerSession {
     this.analysisToken++;
     this.update({ phase: "loading", error: null, loadingStep: "Opening the cache", notices: [], engine: IDLE_ENGINE, facts: {}, profile: null, coach: {} });
     this.coachWanted.clear();
+    this.coachInFlight.clear();
+    if (this.state.demo) {
+      try {
+        await this.loadRecording();
+        if (stale()) return;
+        this.afterGamesLoaded();
+      } catch (error) {
+        if (stale()) return;
+        this.update({ phase: "error", error: toMotifError(error) });
+      }
+      return;
+    }
     try {
       if (!this.kv) {
         const opened = await openCache();
@@ -220,6 +236,48 @@ export class PlayerSession {
     }
   }
 
+  /**
+   * The recorded demo: one file holds the games, the engine's results, the fact tables and the coach's
+   * checked replies. Nothing is fetched from Chess.com, no engine starts and no model is called.
+   */
+  private async loadRecording(): Promise<void> {
+    this.update({ loadingStep: "Opening the recorded demo" });
+    let recording: DemoRecording;
+    try {
+      const response = await fetch(DEMO_RECORDING_PATH);
+      if (!response.ok) throw new Error(`status ${response.status}`);
+      recording = (await response.json()) as DemoRecording;
+    } catch (error) {
+      throw new MotifError("api", "The recorded demo could not be loaded.", { cause: error });
+    }
+    if (recording.version !== 1 || !Array.isArray(recording.games)) {
+      throw new MotifError("api", "The recorded demo is in a form this version of Motif does not know.");
+    }
+    const recorded = new MemoryKV();
+    for (const [key, value] of recording.engine) await recorded.set("engine", key, value);
+    for (const [key, value] of recording.facts) await recorded.set("facts", key, value);
+    for (const [key, value] of recording.coach) await recorded.set("coach", key, value);
+    // The demo never writes to this device's cache; anything new stays in memory for the visit.
+    this.kv = new LayeredKV(recorded, new MemoryKV());
+    this.rawGames = new Map(recording.games.map((game) => [game.uuid, game]));
+    const analysed = recording.games
+      .map((game) => summarizeGame(game, recording.player.username))
+      .filter((summary): summary is GameSummary => summary !== null);
+    const games = [...analysed, ...recording.olderGames];
+    this.update({
+      player: recording.player,
+      ratings: recording.ratings,
+      timeClass: recording.timeClass,
+      timeClasses: [recording.timeClass],
+      games,
+      tier1: computeTier1(games),
+      fetchInfo: null,
+      recording: { recordedAt: recording.recordedAt, model: recording.model },
+      coachStatus: { available: false, model: recording.model },
+      phase: "ready",
+    });
+  }
+
   private analysisToken = 0;
   private parsed = new Map<string, ParsedGame>();
   readonly engineSetting = DEFAULT_ENGINE_SETTING;
@@ -249,6 +307,8 @@ export class PlayerSession {
    * at once, so the player can open it while the rest continue. Safe to call again to extend or retry.
    */
   async analyse(target: number): Promise<void> {
+    // The recorded demo holds a fixed set of analysed games and never starts an engine.
+    if (this.getState().demo) target = Math.min(target, DEMO_GAME_COUNT);
     const kv = this.kv;
     if (!kv || this.getState().phase !== "ready") return;
     const token = ++this.analysisToken;
@@ -395,7 +455,9 @@ export class PlayerSession {
     const built = this.buildCoachRequest(key);
     if (!kv || !built) return;
     const { request, factIds } = built;
-    const status = await this.checkCoach();
+    const recording = this.getState().recording;
+    // In the demo the model is the one that was recorded, and nothing is asked of the Worker.
+    const status: CoachStatus = recording ? { available: false, model: recording.model } : await this.checkCoach();
     const model = status.model ?? "claude-sonnet-5-5";
     const hash = await coachCacheKey(PROMPT_VERSION, model, request);
     // The same request is already shown or on its way.
@@ -415,6 +477,12 @@ export class PlayerSession {
     try {
       const cached = await kv.get<CoachResult>("coach", hash);
       if (cached && passes(cached)) return publish(cached, true, null);
+      if (!needsModel(request)) {
+        return publish(codeBuiltResult(request, "code_no_model"), false, "No clear mistakes to explain, so the language model was not asked. This note was built by code.");
+      }
+      if (recording) {
+        return publish(codeBuiltResult(request, "code_no_model"), false, "The recorded demo has no checked reply for this, so this text was built by code from the engine facts.");
+      }
       if (!status.available) {
         return publish(codeBuiltResult(request, "code_no_model"), false, "No language model is configured, so this text was built by code from the engine facts.");
       }

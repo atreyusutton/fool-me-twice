@@ -4,7 +4,7 @@ import type { CoachRequest } from "./types.ts";
  * Tokens are how the coach refers to a chess fact without writing it. The model writes
  * `[[played:F2]]`; the interface replaces it with the move from the fact table.
  */
-export const FACT_TOKEN_FIELDS = ["played", "best", "loss", "move"] as const;
+export const FACT_TOKEN_FIELDS = ["played", "best", "loss", "move", "time"] as const;
 export const THEME_TOKEN_FIELDS = ["count", "games", "total"] as const;
 export type FactTokenField = (typeof FACT_TOKEN_FIELDS)[number];
 export type ThemeTokenField = (typeof THEME_TOKEN_FIELDS)[number];
@@ -35,9 +35,19 @@ export function resolveToken(field: string, id: string, request: CoachRequest): 
         return { ok: true, part: { type: "number", text: `${fact.loss} points` } };
       case "move":
         return { ok: true, part: { type: "number", text: String(fact.moveNumber) } };
+      case "time":
+        if (fact.timeSpent === null) return { ok: false, reason: `fact ${id} has no time for the move` };
+        return { ok: true, part: { type: "number", text: fact.timeSpent === 1 ? "1 second" : `${fact.timeSpent} seconds` } };
       default:
         return { ok: false, reason: `field "${field}" does not exist on a fact` };
     }
+  }
+  if (id === "G1") {
+    // G1 is the game under review.
+    if (request.kind !== "game") return { ok: false, reason: "game token in a reply about the profile" };
+    if (field !== "mistakes") return { ok: false, reason: `field "${field}" does not exist on the game` };
+    const count = request.game.clearMistakes;
+    return { ok: true, part: { type: "number", text: count === 1 ? "1 clear mistake" : `${count} clear mistakes` } };
   }
   if (id.startsWith("T")) {
     const theme = request.profile.themes.find((entry) => entry.id === id);

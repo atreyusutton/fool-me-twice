@@ -1,5 +1,5 @@
 import { useEffect, useSyncExternalStore } from "react";
-import { gamePath } from "../app/router.ts";
+import { gamePath, profilePath } from "../app/router.ts";
 import { ENGINE_GAME_STEPS, type PlayerSession, type SessionState } from "../app/session.ts";
 import type { ProfileSummary, ProfileSummaryRequest } from "../core/coach/types.ts";
 import { isKeyMoment } from "../core/facts.ts";
@@ -62,10 +62,23 @@ export function Profile({ session }: { session: PlayerSession }) {
         </p>
       )}
 
+      <DemoBanner state={state} />
       <AnalysisProgress session={session} state={state} />
       <Themes session={session} state={state} />
       <Record tier1={state.tier1} gameCount={state.games.length} />
       <GamesList state={state} />
+    </div>
+  );
+}
+
+/** Shown on every demo screen, so recorded results are never mistaken for live ones. */
+export function DemoBanner({ state }: { state: SessionState }) {
+  if (!state.recording) return null;
+  return (
+    <div className="notice calm demo-banner" role="note">
+      <strong>Recorded demo.</strong> These are {state.player?.displayName ?? state.username}&apos;s real games, analysed and coached on{" "}
+      {formatDate(Date.parse(state.recording.recordedAt) / 1000)} and played back from a file. No engine or language model is running, and
+      no API key is needed. <Link href={profilePath(state.username, false)}>Run it live instead</Link>
     </div>
   );
 }
@@ -167,6 +180,13 @@ function AnalysisProgress({ session, state }: { session: PlayerSession; state: S
       </div>
     );
   }
+  if (engine.status === "done" && state.recording) {
+    return (
+      <p className="muted small" role="status">
+        {plural(total, "game")} analysed by the engine when the demo was recorded. Nothing is being computed now.
+      </p>
+    );
+  }
   if (engine.status === "done") {
     const next = ENGINE_GAME_STEPS.find((step) => step > engine.target && state.games.length > engine.target);
     const seconds = engine.startedAt && engine.finishedAt ? Math.round((engine.finishedAt - engine.startedAt) / 1000) : null;
@@ -254,7 +274,7 @@ function CoachSummary({ session, state }: { session: PlayerSession; state: Sessi
         <CoachText text={summary.focus.text} request={entry.request} />
       </p>
       {focus && <p className="muted small">Work on first: {focus.label}</p>}
-      <CoachSource entry={entry} />
+      <CoachSource entry={entry} recorded={state.recording !== null} />
     </section>
   );
 }
@@ -319,7 +339,7 @@ function Themes({ session, state }: { session: PlayerSession; state: SessionStat
   const weaknesses = profile?.themes.filter((theme) => theme.kind === "weakness") ?? [];
   const featured = weaknesses.filter((theme) => theme.featured);
   const others = profile?.themes.filter((theme) => !theme.featured) ?? [];
-  const next = ENGINE_GAME_STEPS.find((step) => step > state.engine.target && state.games.length > state.engine.target);
+  const next = state.demo ? undefined : ENGINE_GAME_STEPS.find((step) => step > state.engine.target && state.games.length > state.engine.target);
 
   return (
     <section aria-labelledby="themes-title">

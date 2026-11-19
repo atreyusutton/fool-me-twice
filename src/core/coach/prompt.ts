@@ -12,7 +12,7 @@ import type { CoachRequest } from "./types.ts";
  *
  * Raise PROMPT_VERSION with any change here: it is part of the reply cache key.
  */
-export const PROMPT_VERSION = "2026-11-19.4";
+export const PROMPT_VERSION = "2026-11-19.6";
 
 export const SYSTEM_INSTRUCTIONS = `You are the coach in Motif, a chess app that reviews a player's games in the light of their recent games. A chess engine and tested code have already done the chess. Your job is to explain what they found, in plain words, so the player understands what keeps going wrong and what to try.
 
@@ -38,6 +38,8 @@ You never write a move, a square, a number or an evaluation yourself. Where you 
 - [[best:F1]] the engine's preferred move
 - [[loss:F1]] the winning chance given up, shown as a number followed by the word "points"
 - [[move:F1]] the move number
+- [[time:F1]] how long the player spent on the move, shown as a number followed by "seconds" (only where the fact has "timeSpent")
+- [[mistakes:G1]] how many clear mistakes this game had, shown as a number followed by "clear mistakes" (G1 always means the game under review)
 - [[count:T1]] how many times the theme happened
 - [[games:T1]] in how many different games it happened
 - [[total:T1]] how many games were analysed
@@ -85,6 +87,14 @@ For a profile summary:
 - "items": one item per theme you discuss; include every theme marked featured. "ref" and "theme" are both the theme ID. "text" is one to three sentences on what the pattern is, how often it happens (with tokens), and what to do about it.
 - "closing": the one theme to work on first and why, in one or two sentences. "theme" is required here.
 
+# Before you answer
+
+Read your draft once against the things the check rejects most often:
+
+- A count or duration in your own words. "Three clear mistakes" becomes "[[mistakes:G1]]". "In under three seconds" becomes "in [[time:F1]]" or simply "almost instantly". "Two moves in a row" becomes "back-to-back moves".
+- A piece named in the headline or the closing. "One hanging bishop nearly cost the game" becomes "One loose piece nearly cost the game". "Before committing to a pawn move" becomes "before committing to a move". Piece names belong only inside an item, and only for that fact's own pieces.
+- A reason for a mistake that is not in the fact's patterns.
+
 # Examples
 
 These show the form. Do not reuse their wording.
@@ -98,6 +108,10 @@ A game review item for a fact F1 with no patterns and no themes:
 A profile summary item for a weakness theme T2 labelled "Mistakes played too fast":
 {"ref": "T2", "theme": "T2", "text": "Some of your clear mistakes were played within a few seconds while you still had most of your time. It happened [[count:T2]] times in [[games:T2]] of your last [[total:T2]] games. When you have time on the clock, spend a little of it before you commit."}`;
 
+/** Repeated at the very end of every request, because these are the two slips the check catches most. */
+const LAST_REMINDER =
+  'Two reminders, because these are what the check rejects most: write no number as a word anywhere, not even "two" or "three" in the headline (use a token or stay qualitative); and name no piece in the headline or the closing, including "king" (say "a piece", "material", or rephrase).';
+
 /** Part 2: the player's profile. The same bytes for every game of the same profile. */
 export function profileBlock(request: CoachRequest): string {
   return `<profile>\n${JSON.stringify(request.profile)}\n</profile>`;
@@ -106,9 +120,9 @@ export function profileBlock(request: CoachRequest): string {
 /** Part 3: the one thing that changes with every request. */
 export function requestBlock(request: CoachRequest): string {
   if (request.kind === "profile") {
-    return "<profile_summary_request/>\n\nWrite the profile summary.";
+    return `<profile_summary_request/>\n\nWrite the profile summary. ${LAST_REMINDER}`;
   }
-  return `<game>\n${JSON.stringify({ summary: request.game, facts: request.facts })}\n</game>\n\nWrite the game review.`;
+  return `<game>\n${JSON.stringify({ summary: request.game, facts: request.facts })}\n</game>\n\nWrite the game review. ${LAST_REMINDER}`;
 }
 
 /** What the model is told when a reply fails the check, before its one retry. */
