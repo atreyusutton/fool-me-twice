@@ -16,7 +16,10 @@
     "test": "vitest run",
     "eval": "tsx scripts/eval.ts",
     "record-demo": "tsx scripts/record-demo.ts",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "postinstall": "node scripts/copy-engine.mjs",
+    "predev": "node scripts/copy-engine.mjs",
+    "prebuild": "node scripts/copy-engine.mjs"
   },
   "dependencies": {
     "chess.js": "^1.4.0",
