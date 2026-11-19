@@ -4,6 +4,8 @@ Motif is an AI chess coach that remembers. It reviews one of your Chess.com game
 
 It is my take-home project (Option B) for the Chess.com engineering internship. The way it was built is part of the hand-in: see [How this was built](#how-this-was-built), `transcripts/` and `docs/`.
 
+**Live:** https://motif.atreyusutton.workers.dev (the demo needs nothing; a live username runs the engine in your browser).
+
 ## Run it
 
 You need Node 22 or newer.

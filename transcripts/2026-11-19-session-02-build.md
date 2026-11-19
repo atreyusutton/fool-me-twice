@@ -106,3 +106,11 @@ Written from `docs/STORY.md`, the time log and the code. Two items in the story 
 #### Step 9: polish and checks
 
 Browser checks of: player not found, rate limit, Chess.com unreachable, engine failed to load, model unavailable, dark theme, phone width. One real bug found: with Chess.com unreachable, saved games did not open although the error message said they would. Fixed by keeping the player lookup, ratings and month list, with a test. Not checked in a browser: the closed-account screen, Safari, Firefox, a real phone.
+
+#### Finish: clean-clone check, deploy, push
+
+A fresh clone with no key: `npm install`, `npm test` (93 pass), `npm run eval` (passes), lint and build all succeed, and the demo opens every game in a browser. Deployed to Cloudflare as `motif` (https://motif.atreyusutton.workers.dev), set the API key as a Worker secret without printing it, and checked the deployed demo and one live coached run in a browser. Then created the private GitHub repository `motif-chess-coach` and pushed.
+
+### Agent: final reply (condensed)
+
+Reported what was built, the eval numbers, what was and was not checked, the public-address cost exposure of the deployed key, and the two sentences in the README that need the user's confirmation (final hours, and who did what).
