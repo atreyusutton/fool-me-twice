@@ -294,3 +294,14 @@ details.why summary { cursor: pointer; padding: 4px 0; }
 .game-head { display: grid; gap: 6px; margin-bottom: 20px; }
 .backlink { font-size: 0.9rem; text-decoration: none; }
 .backlink:hover { text-decoration: underline; }
+
+/* Coach text and its cost disclosure */
+.spinner.tiny { display: inline-block; width: 12px; height: 12px; border-width: 2px; vertical-align: -1px; margin-right: 6px; }
+.coach-summary { margin-bottom: 16px; }
+.small-coach { font-size: 0.95rem; }
+.source-note p { margin: 0; }
+.source-note details { margin-top: 6px; }
+.source-note details p { margin-top: 6px; }
+.cost { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; margin: 8px 0 0; }
+.cost dt { color: var(--ink-3); }
+.cost dd { margin: 0; color: var(--ink-2); }

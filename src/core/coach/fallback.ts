@@ -78,7 +78,7 @@ function themeSummaryText(theme: CoachTheme): string {
   if (theme.kind === "strength") {
     return `You did this [[count:${theme.id}]] times, across [[games:${theme.id}]] games.${where}`;
   }
-  return "Your results differ between these two groups of games. The numbers are shown beside this note.";
+  return "Your results differ between the groups of games compared here. The numbers are shown beside this note.";
 }
 
 export function fallbackProfileSummary(request: ProfileSummaryRequest): ProfileSummary {

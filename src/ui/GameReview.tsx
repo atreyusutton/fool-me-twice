@@ -3,10 +3,12 @@ import { profilePath } from "../app/router.ts";
 import type { PlayerSession } from "../app/session.ts";
 import { fallbackGameReview } from "../core/coach/fallback.ts";
 import { gameReviewRequest } from "../core/coach/request.ts";
+import type { GameReview as GameReviewReply, GameReviewRequest } from "../core/coach/types.ts";
 import { isKeyMoment } from "../core/facts.ts";
 import { buildProfile, THEME_COPY } from "../core/profile.ts";
 import type { FactRow } from "../core/types.ts";
 import { Board, type BoardArrow } from "./Board.tsx";
+import { CoachSource } from "./CoachSource.tsx";
 import { CoachText } from "./CoachText.tsx";
 import { ENDING_WORD, OUTCOME_WORD, formatClock, formatDate, plural } from "./format.ts";
 import { Link } from "./Link.tsx";
@@ -74,8 +76,14 @@ function ReviewBody({ session, gameId }: { session: PlayerSession; gameId: strin
   const summary = state.games.find((game) => game.uuid === gameId)!;
   const game = useMemo(() => session.getGame(gameId), [session, gameId]);
   const profile = useMemo(() => state.profile ?? buildProfile([], state.tier1), [state.profile, state.tier1]);
-  const { request, factIds } = useMemo(() => gameReviewRequest(summary, table, profile), [summary, table, profile]);
-  const review = useMemo(() => fallbackGameReview(request), [request]);
+  const local = useMemo(() => gameReviewRequest(summary, table, profile), [summary, table, profile]);
+  const localReview = useMemo(() => fallbackGameReview(local.request), [local]);
+  // The coach's words are always rendered against the exact request they were written and checked for.
+  const entry = state.coach[gameId];
+  const request = entry ? (entry.request as GameReviewRequest) : local.request;
+  const factIds = entry ? entry.factIds : local.factIds;
+  const review = entry ? (entry.result.reply as GameReviewReply) : localReview;
+  useEffect(() => session.ensureCoach(gameId), [session, gameId]);
 
   const moves = game?.moves ?? [];
   const lastIndex = moves.length;
@@ -230,16 +238,13 @@ function ReviewBody({ session, gameId }: { session: PlayerSession; gameId: strin
             <p className="coach-line">
               <CoachText text={review.takeaway.text} request={request} />
             </p>
-            <p className="source-note">
-              Text built by code from the engine facts. {plural(keyRows.length, "key moment")} out of {plural(table.rows.length, "move")}{" "}
-              you played.
-            </p>
+            <CoachSource entry={entry} extra={`${plural(keyRows.length, "key moment")} out of ${plural(table.rows.length, "move")} you played.`} />
           </section>
 
           {review.moments.map((moment) => {
             const row = table.rows.find((entry) => entry.id === factIds[moment.fact]);
             if (!row) return null;
-            const theme = moment.theme ? profile.themes.find((entry) => entry.id === moment.theme) : null;
+            const theme = moment.theme ? request.profile.themes.find((candidate) => candidate.id === moment.theme) : null;
             return (
               <button key={moment.fact} className="moment" aria-current={index === row.ply - 1} onClick={() => setIndex(row.ply - 1)}>
                 <span className="moment-head">

@@ -1,4 +1,11 @@
 import { ChessCom, mostPlayedTimeClass, type PlayerInfo, type RatingInfo } from "../core/chesscom.ts";
+import { coachCacheKey } from "../core/coach/hash.ts";
+import { PROMPT_VERSION } from "../core/coach/prompt.ts";
+import { gameReviewRequest, profileSummaryRequest } from "../core/coach/request.ts";
+import { codeBuiltResult } from "../core/coach/run.ts";
+import { gameReviewToWire, profileSummaryToWire } from "../core/coach/schema.ts";
+import type { CoachRequest, CoachResult, GameReview, ProfileSummary } from "../core/coach/types.ts";
+import { validateReply } from "../core/coach/validator.ts";
 import { analysePositions, DEFAULT_ENGINE_SETTING, engineSettingKey } from "../core/engine.ts";
 import { MotifError, toMotifError } from "../core/errors.ts";
 import { buildFactTable, FACTS_VERSION, positionsOf } from "../core/facts.ts";
@@ -54,6 +61,26 @@ const IDLE_ENGINE: EngineProgress = {
   finishedAt: null,
 };
 
+/** The coach's words for the profile ("profile") or for one game (its uuid). */
+export interface CoachEntry {
+  status: "loading" | "ready";
+  /** The exact request the text was written for. The screen renders tokens against this, never against newer data. */
+  request: CoachRequest;
+  /** For a game: which real fact row each local fact ID stands for. */
+  factIds: Record<string, string>;
+  result: CoachResult;
+  /** True when the reply came from this device's cache (or the recorded demo) and cost nothing. */
+  fromCache: boolean;
+  /** Why the model was not used, when it was not. */
+  note: string | null;
+}
+
+export interface CoachStatus {
+  /** Null until the Worker has been asked. */
+  available: boolean | null;
+  model: string | null;
+}
+
 export interface SessionState {
   username: string;
   demo: boolean;
@@ -76,6 +103,8 @@ export interface SessionState {
   facts: Record<string, FactTable>;
   /** Themes across the games analysed so far. Rebuilt each time a game finishes. */
   profile: Profile | null;
+  coachStatus: CoachStatus;
+  coach: Record<string, CoachEntry>;
 }
 
 type Listener = () => void;
@@ -108,6 +137,8 @@ export class PlayerSession {
       engine: IDLE_ENGINE,
       facts: {},
       profile: null,
+      coachStatus: { available: null, model: null },
+      coach: {},
     };
   }
 
@@ -131,7 +162,8 @@ export class PlayerSession {
     const token = ++this.loadToken;
     const stale = () => token !== this.loadToken;
     this.analysisToken++;
-    this.update({ phase: "loading", error: null, loadingStep: "Opening the cache", notices: [], engine: IDLE_ENGINE, facts: {}, profile: null });
+    this.update({ phase: "loading", error: null, loadingStep: "Opening the cache", notices: [], engine: IDLE_ENGINE, facts: {}, profile: null, coach: {} });
+    this.coachWanted.clear();
     try {
       if (!this.kv) {
         const opened = await openCache();
@@ -312,6 +344,100 @@ export class PlayerSession {
     }
   }
 
+  private coachWanted = new Set<string>();
+  private coachInFlight = new Map<string, string>();
+  private healthCheck: Promise<CoachStatus> | null = null;
+
+  /** Asks the Worker once whether a model is configured. No key, or no Worker, means code-built text. */
+  private checkCoach(): Promise<CoachStatus> {
+    this.healthCheck ??= (async () => {
+      let status: CoachStatus = { available: false, model: null };
+      try {
+        const response = await fetch("/api/health");
+        if (response.ok) {
+          const body = (await response.json()) as { coach?: boolean; model?: string };
+          status = { available: body.coach === true, model: body.model ?? null };
+        }
+      } catch (error) {
+        console.warn("Motif: the coach service could not be reached; using text built by code.", error);
+      }
+      this.update({ coachStatus: status });
+      return status;
+    })();
+    return this.healthCheck;
+  }
+
+  private buildCoachRequest(key: string): { request: CoachRequest; factIds: Record<string, string> } | null {
+    const state = this.getState();
+    if (!state.profile) return null;
+    if (key === "profile") {
+      const rating = state.games[0]?.playerRating;
+      const request = profileSummaryRequest(state.profile, rating);
+      return request.profile.themes.length > 0 ? { request, factIds: {} } : null;
+    }
+    const table = state.facts[key];
+    const summary = state.games.find((game) => game.uuid === key);
+    if (!table || !summary) return null;
+    return gameReviewRequest(summary, table, state.profile);
+  }
+
+  /**
+   * Asks for the coach's words for the profile or one game. Nothing is requested until the engine has
+   * finished, because the profile (part of every request) keeps changing until then.
+   */
+  ensureCoach(key: string): void {
+    this.coachWanted.add(key);
+    if (this.getState().engine.status === "done") void this.loadCoach(key);
+  }
+
+  private async loadCoach(key: string): Promise<void> {
+    const kv = this.kv;
+    const built = this.buildCoachRequest(key);
+    if (!kv || !built) return;
+    const { request, factIds } = built;
+    const status = await this.checkCoach();
+    const model = status.model ?? "claude-sonnet-5-5";
+    const hash = await coachCacheKey(PROMPT_VERSION, model, request);
+    // The same request is already shown or on its way.
+    if (this.coachInFlight.get(key) === hash) return;
+    this.coachInFlight.set(key, hash);
+    const current = () => this.coachInFlight.get(key) === hash;
+    const publish = (result: CoachResult, fromCache: boolean, note: string | null, loading = false) => {
+      if (!current()) return;
+      this.update({ coach: { ...this.getState().coach, [key]: { status: loading ? "loading" : "ready", request, factIds, result, fromCache, note } } });
+    };
+    // Whatever is cached or returned is checked again here: nothing unchecked reaches the screen.
+    const passes = (result: CoachResult): boolean => {
+      const wire = request.kind === "game" ? gameReviewToWire(result.reply as GameReview) : profileSummaryToWire(result.reply as ProfileSummary);
+      return validateReply(request, wire).ok;
+    };
+
+    try {
+      const cached = await kv.get<CoachResult>("coach", hash);
+      if (cached && passes(cached)) return publish(cached, true, null);
+      if (!status.available) {
+        return publish(codeBuiltResult(request, "code_no_model"), false, "No language model is configured, so this text was built by code from the engine facts.");
+      }
+      publish(codeBuiltResult(request, "code_no_model"), false, "The coach is writing. Until it is checked, this is text built by code.", true);
+      const response = await fetch("/api/coach", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(request) });
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as { message?: string } | null;
+        throw new MotifError("coach", body?.message ?? `The coach service returned an error (${response.status}).`);
+      }
+      const result = (await response.json()) as CoachResult;
+      if (!passes(result)) {
+        return publish(codeBuiltResult(request, "code", result.attempts, result.model), false, "The coach's reply did not pass the check on this device, so this text was built by code.");
+      }
+      await kv.set("coach", hash, result);
+      publish(result, false, null);
+    } catch (error) {
+      const reason = toMotifError(error, "coach").message;
+      publish(codeBuiltResult(request, "code_no_model"), false, `${reason} This text was built by code from the engine facts instead.`);
+      // Let a later visit to this screen try the model again.
+      if (current()) this.coachInFlight.delete(key);
+    }
+  }
+
   /** Fact tables of the analysed games, newest game first. */
   analysedTables(): FactTable[] {
     const state = this.getState();
@@ -321,6 +447,10 @@ export class PlayerSession {
   /** The profile is rebuilt from scratch each time a game's facts arrive: it is only counting, so it is cheap. */
   protected afterGameAnalysed(): void {
     this.update({ profile: buildProfile(this.analysedTables(), this.getState().tier1) });
+    // Once the last game is in, the profile is settled and the coach can be asked for what is on screen.
+    if (this.getState().engine.status === "done") {
+      for (const key of this.coachWanted) void this.loadCoach(key);
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 import { keyMoments } from "../facts.ts";
 import { themesOfFact, type Profile } from "../profile.ts";
 import type { FactTable, GameSummary } from "../types.ts";
+import { NAME_PATTERN } from "./schema.ts";
 import type { CoachFact, CoachGame, CoachProfile, GameReviewRequest, ProfileSummaryRequest, RatingBand } from "./types.ts";
 
 export function ratingBand(rating: number | null | undefined): RatingBand {
@@ -17,7 +18,10 @@ export function coachProfile(profile: Profile, rating: number | null | undefined
     ratingBand: ratingBand(rating),
     gamesAnalysed: profile.gamesAnalysed,
     clearMistakes: profile.clearMistakes,
-    themes: profile.themes.map((theme) => ({
+    themes: profile.themes
+      // A record finding is only passed on if its group names are plain names; anything else stays on screen only.
+      .filter((theme) => !theme.comparison || (NAME_PATTERN.test(theme.comparison.a) && NAME_PATTERN.test(theme.comparison.b)))
+      .map((theme) => ({
       id: theme.id,
       key: theme.key,
       kind: theme.kind,
@@ -29,8 +33,8 @@ export function coachProfile(profile: Profile, rating: number | null | undefined
       phase: theme.phase,
       featured: theme.featured,
       chances: theme.chances,
-      comparison: theme.comparison,
-    })),
+        comparison: theme.comparison,
+      })),
   };
 }
 
@@ -68,7 +72,7 @@ export function gameReviewRequest(
     color: summary.playerColor,
     outcome: summary.outcome,
     ending: summary.ending,
-    opening: summary.opening,
+    opening: summary.opening && NAME_PATTERN.test(summary.opening) ? summary.opening : null,
     moves: table.rows.length,
     clearMistakes: table.rows.filter((row) => row.clear).length,
   };

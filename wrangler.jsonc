@@ -10,5 +10,7 @@
   },
   "vars": {
     "COACH_MODEL": "claude-sonnet-5-5"
-  }
+  },
+  // At most 20 coach requests a minute from one address. The key itself is a Worker secret, never in this file.
+  "ratelimits": [{ "name": "COACH_LIMIT", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }]
 }

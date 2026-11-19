@@ -1,10 +1,13 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { gamePath } from "../app/router.ts";
 import { ENGINE_GAME_STEPS, type PlayerSession, type SessionState } from "../app/session.ts";
+import type { ProfileSummary, ProfileSummaryRequest } from "../core/coach/types.ts";
 import { isKeyMoment } from "../core/facts.ts";
 import { evidenceRows, type Profile as PlayerProfile, type Theme } from "../core/profile.ts";
 import type { Tier1Stats } from "../core/tier1.ts";
 import type { Ending, FactTable } from "../core/types.ts";
+import { CoachSource } from "./CoachSource.tsx";
+import { CoachText } from "./CoachText.tsx";
 import { ENDING_WORD, OUTCOME_WORD, formatClock, formatDate, formatPercent, formatShortDate, plural } from "./format.ts";
 import { Link } from "./Link.tsx";
 import { ErrorScreen, Loading } from "./Status.tsx";
@@ -221,7 +224,43 @@ function themeNumbers(theme: Theme): string {
   return `In ${theme.games} of ${plural(theme.gamesAnalysed, "game")}${where}.`;
 }
 
+/** The coach's sentence for one theme, if a checked summary exists and still describes this exact theme. */
+function coachThemeText(theme: Theme, state: SessionState): { text: string; request: ProfileSummaryRequest } | null {
+  const entry = state.coach.profile;
+  if (!entry || entry.request.kind !== "profile") return null;
+  const sent = entry.request.profile.themes.find((candidate) => candidate.key === theme.key);
+  if (!sent || sent.count !== theme.count || sent.games !== theme.games || sent.gamesAnalysed !== theme.gamesAnalysed) return null;
+  const item = (entry.result.reply as ProfileSummary).themes.find((candidate) => candidate.theme === sent.id);
+  return item ? { text: item.text, request: entry.request } : null;
+}
+
+function CoachSummary({ session, state }: { session: PlayerSession; state: SessionState }) {
+  const done = state.engine.status === "done";
+  const hasThemes = (state.profile?.themes.length ?? 0) > 0;
+  useEffect(() => {
+    if (done && hasThemes) session.ensureCoach("profile");
+  }, [session, done, hasThemes, state.profile]);
+  const entry = state.coach.profile;
+  if (!done || !entry || entry.request.kind !== "profile") return null;
+  const summary = entry.result.reply as ProfileSummary;
+  const focus = entry.request.profile.themes.find((theme) => theme.id === summary.focus.theme);
+  return (
+    <section className="card stack coach-summary" aria-labelledby="coach-summary-title">
+      <div>
+        <p className="eyebrow">The coach&apos;s read</p>
+        <h2 id="coach-summary-title">{summary.headline}</h2>
+      </div>
+      <p className="coach-line">
+        <CoachText text={summary.focus.text} request={entry.request} />
+      </p>
+      {focus && <p className="muted small">Work on first: {focus.label}</p>}
+      <CoachSource entry={entry} />
+    </section>
+  );
+}
+
 function ThemeCard({ theme, state }: { theme: Theme; state: SessionState }) {
+  const coach = coachThemeText(theme, state);
   const tables = Object.values(state.facts) as FactTable[];
   const evidence = evidenceRows(theme, tables, 6);
   const gameOf = (gameId: string) => state.games.find((game) => game.uuid === gameId);
@@ -240,6 +279,11 @@ function ThemeCard({ theme, state }: { theme: Theme; state: SessionState }) {
         </div>
       )}
       <p className="muted small">{themeNumbers(theme)}</p>
+      {coach && (
+        <p className="coach-line small-coach">
+          <CoachText text={coach.text} request={coach.request} />
+        </p>
+      )}
       {evidence.length > 0 && (
         <div>
           <p className="eyebrow" style={{ marginBottom: 6 }}>
@@ -287,6 +331,7 @@ function Themes({ session, state }: { session: PlayerSession; state: SessionStat
             : "Patterns the engine and code can prove"}
         </span>
       </div>
+      <CoachSummary session={session} state={state} />
       {featured.length > 0 ? (
         <div className="grid-3">
           {featured.map((theme) => (
