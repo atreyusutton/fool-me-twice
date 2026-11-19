@@ -54,6 +54,33 @@ describe("Chess.com fetch layer", () => {
     expect(calls).not.toContain(`${base}/games/2026/10`);
   });
 
+  it("opens everything saved earlier when Chess.com cannot be reached, and says so", async () => {
+    const kv = new MemoryKV();
+    const routes = {
+      [base]: json({ username: "antwacky", url: "https://www.chess.com/member/Antwacky", status: "basic", joined: 1 }),
+      [`${base}/stats`]: json({ chess_rapid: { last: { rating: 815 }, record: { win: 1, loss: 1, draw: 0 } } }),
+      [`${base}/games/archives`]: json({ archives: [`${base}/games/2026/10`, `${base}/games/2026/11`] }),
+      [`${base}/games/2026/10`]: json({ games: [games[0]] }),
+      [`${base}/games/2026/11`]: json({ games: [games[1], games[2]] }),
+    };
+    const online = new ChessCom({ fetch: fakeApi(routes).fetchFn, kv, now: () => NOW });
+    await online.getPlayer("antwacky");
+    await online.getRatings("antwacky");
+    await online.getRecentGames("antwacky", { timeClass: "rapid", limit: 3 });
+
+    const notices: string[] = [];
+    const down = (async () => {
+      throw new TypeError("Failed to fetch");
+    }) as typeof fetch;
+    const offline = new ChessCom({ fetch: down, kv, now: () => NOW, onNotice: (notice) => notices.push(notice.message) });
+    expect((await offline.getPlayer("Antwacky")).displayName).toBe("Antwacky");
+    expect((await offline.getRatings("antwacky"))[0]!.rating).toBe(815);
+    expect((await offline.getRecentGames("antwacky", { timeClass: "rapid", limit: 3 })).games).toHaveLength(3);
+    expect(notices.some((message) => /saved earlier/.test(message))).toBe(true);
+    // A player never seen on this device still gets the plain network error.
+    await expect(offline.getPlayer("someone-else")).rejects.toMatchObject({ kind: "network" });
+  });
+
   it("stops asking for months once it has enough games", async () => {
     const { fetchFn, calls } = fakeApi({
       [`${base}/games/archives`]: json({ archives: [`${base}/games/2026/10`, `${base}/games/2026/11`] }),

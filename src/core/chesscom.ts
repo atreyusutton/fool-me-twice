@@ -85,15 +85,40 @@ export class ChessCom {
     throw new MotifError("rate_limited", "Chess.com is limiting requests right now.");
   }
 
+  /**
+   * Runs a lookup and keeps its answer. If Chess.com cannot be reached later, the kept answer is used
+   * and the player is told, so games already saved on the device still open.
+   */
+  private async withSavedCopy<T>(key: string, lookup: () => Promise<T>): Promise<T> {
+    try {
+      const value = await lookup();
+      await this.options.kv.set("archives", key, value);
+      return value;
+    } catch (error) {
+      if (error instanceof MotifError && (error.kind === "network" || error.kind === "rate_limited")) {
+        const saved = await this.options.kv.get<T>("archives", key);
+        if (saved !== undefined) {
+          this.options.onNotice?.({ kind: "month", message: "Could not reach Chess.com, so this is the copy saved earlier on this device." });
+          return saved;
+        }
+      }
+      throw error;
+    }
+  }
+
   /** Looks the player up and refuses closed accounts: some are closed for fair-play violations. */
   async getPlayer(username: string): Promise<PlayerInfo> {
     const clean = username.trim().toLowerCase();
     if (!/^[a-z0-9_-]{1,50}$/.test(clean)) {
       throw new MotifError("not_found", "That does not look like a Chess.com username.");
     }
+    return this.withSavedCopy(`player/${clean}`, () => this.lookUpPlayer(clean, username.trim()));
+  }
+
+  private async lookUpPlayer(clean: string, typed: string): Promise<PlayerInfo> {
     const data = await this.getJson<{ username: string; url?: string; status: string; joined: number }>(
       `${API}/player/${clean}`,
-      `player called "${username.trim()}"`,
+      `player called "${typed}"`,
     );
     if (data.status.startsWith("closed")) {
       throw new MotifError("closed", "This account is closed, so Motif will not coach from its games.");
@@ -103,6 +128,10 @@ export class ChessCom {
   }
 
   async getRatings(username: string): Promise<RatingInfo[]> {
+    return this.withSavedCopy(`ratings/${username.toLowerCase()}`, () => this.lookUpRatings(username));
+  }
+
+  private async lookUpRatings(username: string): Promise<RatingInfo[]> {
     type Stats = Record<string, { last?: { rating: number }; record?: { win: number; loss: number; draw: number } }>;
     const data = await this.getJson<Stats>(`${API}/player/${username}/stats`, "ratings for this player");
     const ratings: RatingInfo[] = [];
@@ -123,12 +152,10 @@ export class ChessCom {
 
   /** Monthly archive URLs, oldest first, as the API lists them. */
   async getArchiveList(username: string): Promise<string[]> {
-    const data = await this.getJson<{ archives: string[] }>(
-      `${API}/player/${username}/games/archives`,
-      "game history for this player",
-      true,
-    );
-    return data.archives;
+    return this.withSavedCopy(`months/${username.toLowerCase()}`, async () => {
+      const data = await this.getJson<{ archives: string[] }>(`${API}/player/${username}/games/archives`, "game history for this player", true);
+      return data.archives;
+    });
   }
 
   /** One month of games. A finished month is stored for good; the current month is re-checked. */
@@ -156,7 +183,7 @@ export class ChessCom {
       if (cached && error instanceof MotifError && (error.kind === "network" || error.kind === "rate_limited")) {
         this.options.onNotice?.({
           kind: "month",
-          message: "Could not check Chess.com for new games, so this is the copy saved earlier.",
+          message: "Could not reach Chess.com, so this is the copy saved earlier on this device.",
         });
         return { games: cached.games, fromCache: true };
       }

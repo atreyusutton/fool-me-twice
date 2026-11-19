@@ -2,6 +2,7 @@ import { getSession } from "../app/session.ts";
 import { parseRoute, usePathname } from "../app/router.ts";
 import { GameReview } from "./GameReview.tsx";
 import { Home } from "./Home.tsx";
+import { How } from "./How.tsx";
 import { Link } from "./Link.tsx";
 import { Profile } from "./Profile.tsx";
 import { Shell } from "./Shell.tsx";
@@ -16,9 +17,10 @@ export function App() {
       {route.name === "game" && (
         <GameReview key={`${route.username}/${route.gameId}`} session={getSession(route.username, route.demo)} gameId={route.gameId} />
       )}
-      {(route.name === "missing" || route.name === "how") && (
+      {route.name === "how" && <How />}
+      {route.name === "missing" && (
         <div className="status">
-          <h2>Nothing here yet</h2>
+          <h2>Nothing here</h2>
           <p className="muted">This page does not exist.</p>
           <Link className="btn" href="/">
             Back to the start

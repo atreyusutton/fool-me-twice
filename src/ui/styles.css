@@ -306,3 +306,14 @@ details.why summary { cursor: pointer; padding: 4px 0; }
 .cost dt { color: var(--ink-3); }
 .cost dd { margin: 0; color: var(--ink-2); }
 .demo-banner { margin-bottom: 16px; }
+
+/* Long-form page */
+.prose { max-width: 68ch; margin: 0 auto; }
+.prose h1 { margin-bottom: 12px; }
+.prose h2 { margin: 36px 0 10px; }
+.prose p, .prose li, .prose dd { line-height: 1.6; }
+.prose p { margin: 0 0 14px; }
+.prose ol, .prose ul { padding-left: 1.3em; margin: 0 0 14px; }
+.prose li { margin-bottom: 10px; }
+.prose .terms dt { font-weight: 650; margin-top: 14px; }
+.prose .terms dd { margin: 2px 0 0; color: var(--ink-2); }

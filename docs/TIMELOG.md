@@ -12,3 +12,6 @@ One line per block of work: date, minutes, what it went to. The README's time br
 | 2026-11-19 | 25 | Step 5: game review screen (board, move list, winning-chance chart, key moments with code-built text), browser checks on desktop and phone widths, parallel engines |
 | 2026-11-19 | 40 | Step 6: coach prompt, validator and tests, Worker route, reply cache, cost disclosure, live checks in the browser |
 | 2026-11-19 | 35 | Step 7: demo recorder, recorded demo playback, eval command, three measured prompt versions, browser check of all 25 demo games |
+| 2026-11-19 | 30 | Step 8: "How this was built" page, README, licence |
+| 2026-11-19 | 25 | Step 9: browser checks of error states, dark theme and phone layout; fix so saved games open when Chess.com is unreachable |
+| 2026-11-19 | 10 | Clean-clone check, deploy to Cloudflare, push to GitHub |

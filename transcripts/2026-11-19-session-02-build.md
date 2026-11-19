@@ -72,3 +72,37 @@ Recommended the repo `motif-chess-coach`, private until hand-in, and a Cloudflar
 1. Wrote the key to `.dev.vars` (git-ignored, confirmed with `git check-ignore`). The kickoff prompt said the user would add the key themselves; they pasted it into the chat instead, so the agent wrote the file. The key is not in this transcript or in any commit.
 2. Confirmed the key works with a free call that lists models; `claude-sonnet-5-5` is available.
 3. Created the branch `feat/motif-build` and started the build at step 1.
+
+The build then ran without further questions from the user. During it, the only other messages were automatic reminders from the tool asking the agent for a few words on what it was doing; the agent answered each with one line and carried on. What follows is what was done at each step, in order. The commit history has one commit per step.
+
+#### Step 1: scaffold
+
+Vite, React, the Cloudflare Vite plugin (one `npm run dev` runs the app and the Worker), Vitest, ESLint, TypeScript project references. A health route on the Worker. Checked in a browser.
+
+#### Step 2: fetch layer and the no-engine profile
+
+Chess.com client with clear errors (not found, closed account, rate limit with backoff, network), monthly archive cache, win/draw/loss record by colour, opening and opponent rating. Found by testing that a custom `If-None-Match` header forces a preflight request that Chess.com challenges, so the browser's own revalidation is used instead.
+
+#### Steps 3 and 4: engine, fact table, detectors, themes
+
+Stockfish wrapper with fixed depth and a cache by position. Fact table, six pattern detectors and two strengths, each with tests on positions where they must and must not fire. Measured depths 12, 14 and 16 on the demo player's 25 games and chose depth 14 with a 25-point threshold: all 38 clear mistakes are also clear at depth 16. Stepping through games by hand found three kinds of over-counting (recaptures counted as free material, one hanging rook counted five times, a mating sequence counted per move); each was fixed and tested.
+
+#### Step 5: background analysis and the game review screen
+
+Analysis in Web Workers with progress, each game opening as soon as it is done. One engine took 140 seconds for 25 games, so a pool of up to three was added (47 seconds). Board with arrows, move list, winning-chance chart, key moments. Checked at desktop and phone widths.
+
+#### Step 6: the coach
+
+Read the current Claude API documentation first (structured output, caching minimums, what this model rejects). Wrote the prompt file, the request schema the Worker accepts, the validator, the retry and code fallback, the reply cache and the cost disclosure. The first live calls were rejected by the validator for "Two" and "twice" in headlines and passed on the retry, which is the design working. Tests found two real bugs: a code-built sentence contained the word "two", and a malformed token was reported under the wrong rule. Checked in a browser: live text, cost shown, and a reload makes no new coach request.
+
+#### Step 7: recorded demo and eval
+
+`npm run record-demo` and `npm run eval`. The first recording passed the validator first time on only 11 of 20 requests. Read the rejected texts, added tokens for the numbers the model wanted to write, then repeated the two most-broken rules at the end of each request: 12 of 20, then 16 of 20. The piece-name rule was kept strict. Checked in a browser: the demo opens in half a second, all 25 games open, and no request goes to the Worker, Chess.com or the engine.
+
+#### Step 8: "How this was built" page, README, licence
+
+Written from `docs/STORY.md`, the time log and the code. Two items in the story were marked for the user to confirm (the final hours, and the sentence about who did what). The README gives the logged time and says the agent wrote the code and the user supplied the idea, the rules and the decisions. It does not claim the user checked the result, because that has not happened yet.
+
+#### Step 9: polish and checks
+
+Browser checks of: player not found, rate limit, Chess.com unreachable, engine failed to load, model unavailable, dark theme, phone width. One real bug found: with Chess.com unreachable, saved games did not open although the error message said they would. Fixed by keeping the player lookup, ratings and month list, with a test. Not checked in a browser: the closed-account screen, Safari, Firefox, a real phone.
