@@ -27,7 +27,7 @@ Opening ideas cannot be proven by an engine. They come only from text fetched fr
 - The coaches are characters from out-of-copyright books: Sherlock Holmes, Winnie-the-Pooh, Captain Hook and Count Dracula. Blundy McBlunderpants is the app's own character and the opening-drill opponent.
 - Draw and write them from the books only. Never copy a film, television or theme-park version (no red shirt on the bear, no film costumes, no film catchphrases).
 - A character changes the wording only. Every line still cites fact IDs and passes the same validator. The figure's expression is chosen by code from the facts, never by the model.
-- No voice or speech features. This is deliberate.
+- Voices (added late in version 2, reversing an earlier "no voice" decision): each coach has one designed voice, made from a written description of the book character. Never clone or imitate a real person or a film performance. The voice reads only text that has passed the validator, with values filled in from the fact table and moves written out by code (`src/core/speech.ts`). The voice route refuses free text.
 - No coaches modelled on real people.
 
 ## What to keep in front while building

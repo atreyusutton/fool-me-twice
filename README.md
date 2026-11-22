@@ -22,10 +22,11 @@ Open the address it prints (usually `http://localhost:5173`).
 
 - **Without an API key:** click **See the demo**. It plays back 25 real games of one public player, with the engine's results and each of the four coaches' checked replies, from a file. Practice and the opening drill work in the demo too. You can also enter any Chess.com username: the engine runs in your browser, and the coach's text is then built by code from the facts.
 - **With an API key:** copy `.dev.vars.example` to `.dev.vars`, put your Anthropic API key in it, and restart. Now the coach's sentences are written by Claude, in the voice of the coach you picked, and checked before you see them. `.dev.vars` is git-ignored.
+- **With a voice key (optional):** add `ELEVENLABS_API_KEY` to `.dev.vars` and a speaker button appears in the top bar and a play button on each coach bubble. Sound is off until you turn it on. The four voice IDs in `src/core/voice.ts` belong to my ElevenLabs account; with your own key, design or pick your own voices and put their IDs there.
 
 | Command | What it does |
 |---|---|
-| `npm test` | 117 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
+| `npm test` | 135 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, spoken notation and the voice request check, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
 | `npm run eval` | Checks every recorded coach reply and attacks the validator with broken replies. No key needed. Output below |
 | `npm run record-demo` | Re-records the demo for all four coaches (needs a key) |
 | `npm run build-openings` | Fetches the opening book and the quoted opening notes again |
@@ -67,6 +68,7 @@ What version 2 adds, and how each part stays inside the rule:
 - **Puzzles involve no model.** They are built from clear-mistake fact rows. An answer is accepted when the engine, run in your browser, says it gives up fewer than 8 points of winning chance against the engine's own move. If no engine can start, only the engine's move counts, and the screen says so.
 - **Book moves come from an open dataset,** the Lichess chess-openings list (3,865 named lines, public domain), replayed with the rules library when the data is built. A move is "book" only if a named line contains it. The app never says a book move is best.
 - **Opening ideas are a second kind of truth: sourced text.** An engine cannot prove ideas, and the model is not allowed to write theory from memory. They are quoted as written from Wikibooks *Chess Opening Theory* (CC BY-SA 4.0), with the page and licence beside them. Where the source has no page, the app says it has nothing.
+- **Voices read only checked text.** Each coach has one designed voice (made from a written description of the book character; no real person is imitated). The voice route gets the coach request and the reply, runs the same validator again, fills in the values from the fact table, writes each move out in words by code ("Nxe5+" becomes "knight takes E5, check"), and only then asks for speech. It refuses free text.
 - **What coaches and Blundy say in practice and the drill is fixed text** written for the app, with the moves and numbers put in by code. Where right or wrong must be instant and certain, the model is not called.
 
 ## System design
@@ -179,6 +181,8 @@ What this does and does not show: every reply the demo shows passes the validato
 - **Opening notes exist for 76 of the 90 largest opening families.** They are introductions, quoted and cut to at most three paragraphs.
 - **The session summaries on the Process tab were written by AI.** My messages in them are quotes, and a test checks each against the transcript; the agent's side is a summary, which is why the whole transcript is one click away.
 - **The coaches are from out-of-copyright books and drawn from the books.** Winnie-the-Pooh carries the most risk, because of trademarks on later versions. This is not legal advice.
+- **Voices cover the coach's read and the game review only.** Practice, the opening guide and the drill are silent, so Blundy has a voice designed but nothing to say yet. I chose the voices by ear; nothing measures whether a voice suits its character.
+- **A spoken line takes one to two seconds the first time anyone asks for it.** After that it comes from a cache.
 - **Not checked:** Safari and Firefox, a real phone (only a phone-sized window), a screen reader, the closed-account screen in a browser, and the deployed rate limit under load.
 
 ## What comes next
@@ -234,7 +238,8 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 35 | README, records, browser checks, clean-clone check |
 | 10 | Deploy as a new Worker, live checks, repository rename, push |
 | 20 | After the deploy: key rotation checks, live coach on the deployment, one consistent navigation bar |
-| **305** | **Total: 5 h 5 min** |
+| 75 | Coach voices: designing five voices, a checked voice route with caching, the player and controls |
+| **380** | **Total: 6 h 20 min** |
 
 ## Licences and credits
 
@@ -244,6 +249,7 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 - Winning-chance formula: the one Lichess publishes.
 - Opening names and book lines: [lichess-org/chess-openings](https://github.com/lichess-org/chess-openings), CC0.
 - Opening notes: quoted from [Wikibooks, Chess Opening Theory](https://en.wikibooks.org/wiki/Chess_Opening_Theory), CC BY-SA 4.0, credited on each page where they appear.
+- Voices: generated with [ElevenLabs](https://elevenlabs.io); each voice was designed from a text description for this app.
 - Heading typeface: Fraunces, SIL Open Font License (`public/fonts/README.txt`).
 - Coaches: Sherlock Holmes (Arthur Conan Doyle), Winnie-the-Pooh (A. A. Milne, 1926), Captain Hook (J. M. Barrie), Count Dracula (Bram Stoker), from the books. Blundy McBlunderpants and all five drawings were made for this app.
 - Game data: Chess.com's public API. Fool Me Twice is not affiliated with Chess.com, and does not use its interface, colours or move-quality names.

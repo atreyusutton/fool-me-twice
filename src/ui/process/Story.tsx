@@ -173,7 +173,9 @@ export function Story() {
             character changes the wording only. Every line passes the same checker.
           </li>
           <li>
-            <strong>No voice.</strong> I dropped spoken coaches on purpose, in favour of small animated figures with speech bubbles.
+            <strong>Voices, last.</strong> I first dropped spoken coaches on purpose, in favour of small animated figures with speech
+            bubbles. Once the rest worked I added them back: one voice per coach, designed from a written description of the book character
+            and never cloned from a real person. A voice reads only text that has already passed the checker.
           </li>
           <li>
             <strong>A second source of truth.</strong> Opening ideas cannot be proven by an engine, and I did not want the model writing theory
