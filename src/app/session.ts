@@ -15,7 +15,7 @@ import { LayeredKV, MemoryKV, type KV } from "../core/kv.ts";
 import { parseGame, summarizeGame } from "../core/pgn.ts";
 import { buildProfile, type Profile } from "../core/profile.ts";
 import { computeTier1, type Tier1Stats } from "../core/tier1.ts";
-import type { FactTable, GameSummary, ParsedGame, RawGame } from "../core/types.ts";
+import type { EngineResult, FactTable, GameSummary, ParsedGame, RawGame } from "../core/types.ts";
 import { engineCount, getBrowserEngine, resetBrowserEngines } from "./browser-engine.ts";
 import { getCoach } from "./coach-choice.ts";
 import { openCache } from "./kv-idb.ts";
@@ -25,6 +25,8 @@ export const TIER1_GAME_LIMIT = 100;
 
 /** Engine analysis starts with this many games and can be extended. */
 export const ENGINE_GAME_STEPS = [25, 50, 100];
+/** Practice answers are checked on an engine of their own, apart from the ones analysing games. */
+const PRACTICE_ENGINE_SLOT = 9;
 
 export interface EngineProgress {
   status: "idle" | "running" | "done" | "failed";
@@ -508,6 +510,43 @@ export class PlayerSession {
       publish(codeBuiltResult(request, "code_no_model"), false, `${reason} This text was built by code from the engine facts instead.`);
       // Let a later visit to this screen try the model again.
       if (current()) this.coachInFlight.delete(slot);
+    }
+  }
+
+  /**
+   * The engine's result for one position, for judging a practice answer. Uses its own engine so it never
+   * waits behind the game analysis, and the same position cache. Null when no engine can be started.
+   */
+  async evaluate(fen: string): Promise<EngineResult | null> {
+    const kv = this.kv;
+    if (!kv) return null;
+    try {
+      const results = await analysePositions([fen], () => getBrowserEngine(this.engineSetting, PRACTICE_ENGINE_SLOT), kv, engineSettingKey(this.engineSetting));
+      return results?.[0] ?? null;
+    } catch (error) {
+      console.warn("Fool Me Twice: the engine could not check a practice answer.", error);
+      return null;
+    }
+  }
+
+  /** Practice progress is kept on the device, per player. In the recorded demo it lasts for the visit. */
+  async loadProgress<T>(kind: string): Promise<T | null> {
+    const kv = this.kv;
+    if (!kv) return null;
+    try {
+      return (await kv.get<T>("practice", `${this.getState().username}/${kind}`)) ?? null;
+    } catch (error) {
+      console.warn("Fool Me Twice: saved practice progress could not be read.", error);
+      return null;
+    }
+  }
+  async saveProgress(kind: string, value: unknown): Promise<void> {
+    const kv = this.kv;
+    if (!kv) return;
+    try {
+      await kv.set("practice", `${this.getState().username}/${kind}`, value);
+    } catch (error) {
+      console.warn("Fool Me Twice: practice progress could not be saved.", error);
     }
   }
 

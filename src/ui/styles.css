@@ -351,3 +351,9 @@ a.game-row:hover { border-color: var(--ink); }
 .chart .cursor-dot { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
 .chart-tip { position: absolute; top: 0; transform: translateX(-50%); font-size: 0.82rem; background: var(--ink); color: var(--bg); padding: 2px 8px; border-radius: 6px; white-space: nowrap; pointer-events: none; }
 .marker-key { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--played); margin-right: 5px; }
+
+/* Practice */
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); text-decoration: none; font-weight: 650; font-size: 0.9rem; }
+.pill:hover { border-color: var(--ink); }
+.pill[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.pill .num { font-weight: 500; opacity: 0.7; }

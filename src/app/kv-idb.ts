@@ -1,7 +1,7 @@
 import { openDB, type IDBPDatabase } from "idb";
 import { MemoryKV, type KV, type StoreName } from "../core/kv.ts";
 
-const STORES: StoreName[] = ["archives", "engine", "facts", "coach"];
+const STORES: StoreName[] = ["archives", "engine", "facts", "coach", "practice"];
 
 /** The browser cache. Everything about a player's games stays here, on their machine. */
 class IndexedDbKV implements KV {
@@ -28,7 +28,7 @@ export interface OpenedCache {
 
 export async function openCache(): Promise<OpenedCache> {
   try {
-    const db = await openDB("motif", 1, {
+    const db = await openDB("motif", 2, {
       upgrade(database) {
         for (const store of STORES) {
           if (!database.objectStoreNames.contains(store)) database.createObjectStore(store);

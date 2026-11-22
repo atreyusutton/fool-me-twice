@@ -1,5 +1,5 @@
 /** The cache stores. Each one maps to a row of the caching table in the spec. */
-export type StoreName = "archives" | "engine" | "facts" | "coach";
+export type StoreName = "archives" | "engine" | "facts" | "coach" | "practice";
 
 export interface KV {
   get<T>(store: StoreName, key: string): Promise<T | undefined>;

@@ -4,6 +4,7 @@ import { Games } from "./Games.tsx";
 import { Home } from "./Home.tsx";
 import { Link } from "./Link.tsx";
 import { Player } from "./Player.tsx";
+import { Practice } from "./Practice.tsx";
 import { Review } from "./Review.tsx";
 import { Shell } from "./Shell.tsx";
 import { You } from "./You.tsx";
@@ -30,6 +31,7 @@ function PlayerScreens({ route }: { route: Extract<Route, { name: "player" }> })
         if (view.name === "you") return <You session={session} state={state} />;
         if (view.name === "games") return <Games state={state} />;
         if (view.name === "game") return <Review key={view.gameId} session={session} state={state} gameId={view.gameId} />;
+        if (view.name === "practice") return <Practice session={session} state={state} theme={view.theme} />;
         return <Missing />;
       }}
     </Player>
