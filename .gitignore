@@ -8,3 +8,5 @@ dist/
 .DS_Store
 public/engine/
 .cache/
+# Voice auditions: sample clips from designing the coach voices
+_voices/

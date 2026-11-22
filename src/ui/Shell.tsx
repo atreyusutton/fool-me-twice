@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useCoach } from "../app/coach-choice.ts";
 import { useLastPlayer, type PlayerRef } from "../app/last-player.ts";
 import { playerPath, type Route } from "../app/router.ts";
+import { setSound, useVoice } from "../app/voice.ts";
 import { PERSONAS } from "../core/coach/personas.ts";
 import { CoachPicker } from "./coaches/CoachPicker.tsx";
 import { Figure } from "./coaches/Figure.tsx";
@@ -81,6 +82,7 @@ function tabsFor(route: Route, last: PlayerRef): Tab[] {
 export function Shell({ route, children }: { route: Route; children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(readTheme);
   const coach = useCoach();
+  const voice = useVoice();
   const dialog = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -120,6 +122,20 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
             <Figure who={coach} size={32} decorative />
             <span>{PERSONAS[coach].name}</span>
           </button>
+          {voice.available && (
+            <button
+              className="iconbtn"
+              onClick={() => setSound(!voice.sound)}
+              aria-pressed={voice.sound}
+              aria-label={voice.sound ? "Coach voices are on. Turn them off." : "Coach voices are off. Turn them on."}
+              title={voice.sound ? "Coach voices: on" : "Coach voices: off"}
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 9.500h3l5-4v13l-5-4H4z" />
+                {voice.sound ? <path d="M15.500 9a4 4 0 0 1 0 6M18 6.500a7.500 7.500 0 0 1 0 11" /> : <path d="M16 9.500l5 5M21 9.500l-5 5" />}
+              </svg>
+            </button>
+          )}
           <button className="iconbtn" onClick={() => setTheme(next)} aria-label={`${label}. Change theme.`} title={label}>
             <span aria-hidden="true">{theme === "auto" ? "◐" : theme === "dark" ? "☾" : "☀"}</span>
           </button>

@@ -367,6 +367,11 @@ a.game-row:hover { border-color: var(--ink); }
 .quoted { margin: 0; padding: 4px 0 4px 20px; border-left: 4px solid var(--hl); font-family: var(--display); font-size: 1.12rem; line-height: 1.5; max-width: 68ch; }
 .quoted p + p { margin-top: 12px; }
 
+/* Coach voices */
+.who .speak { margin-left: 8px; width: 24px; height: 24px; display: inline-grid; place-items: center; vertical-align: middle; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.62rem; cursor: pointer; }
+.who .speak:hover { border-color: var(--ink-3); background: var(--hl-soft); }
+.iconbtn[aria-pressed="true"] { background: var(--hl); color: var(--hl-ink); border-color: transparent; }
+
 /* Process: prose */
 .prose { display: grid; gap: clamp(28px, 4vw, 44px); max-width: 860px; }
 .prose > section { display: grid; gap: 14px; }
