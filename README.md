@@ -229,8 +229,9 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 30 | Puzzles: core and tests, interactive board, engine-checked answers |
 | 45 | Openings: book core and tests, data builder, guide, drill against Blundy |
 | 45 | Process tab: story, transcripts as conversations, truth page with a live checker |
-| 35 | README, records, browser checks, clean-clone check, deploy |
-| **275** | **Total: 4 h 35 min** |
+| 35 | README, records, browser checks, clean-clone check |
+| 10 | Deploy as a new Worker, live checks, repository rename, push |
+| **285** | **Total: 4 h 45 min** |
 
 ## Licences and credits
 
