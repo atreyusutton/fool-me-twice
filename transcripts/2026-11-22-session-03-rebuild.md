@@ -147,3 +147,31 @@ Checked the three opening data sources before planning. The Lichess openings dat
 ### Agent: what was done
 
 Changed the plan: the transcript page becomes a messaging app, with an AI-written summary of each session first and the whole conversation on request; the design checkpoint became a progress note. Plan approved. Started the build on a new branch. Build notes follow as each step lands.
+
+The build then ran without further questions. The only other messages were automatic reminders from the tool asking for a few words on progress; the agent answered each with one line and carried on. What follows is what was done at each step, in order.
+
+#### Step 2: design system, shell, coach figures, home
+
+Started from an empty stylesheet: a paper background, near-black ink, one highlighter yellow, a display serif (Fraunces, self-hosted) for headings. Orange still means "the move you played" and blue "the engine's move". Top bar on a desktop, tab bar at the bottom on a phone. Version 1 screens moved to `_archive/v1/`. Drew the four coaches and Blundy as layered SVG figures with five expressions each (idle, talking, wince, pleased, thinking). The agent rendered a contact sheet of every figure in a headless browser, saw that its clipping cut the bear's head in half, and fixed it before going on.
+
+#### Steps 3 and 4: the You page, review with the coaches
+
+The chosen coach became part of every coach request, so it is part of the reply cache key and of the Worker's input check. The prompt gained a character block between the shared instructions and the player profile, with its own cache breakpoint. One live call per coach was read by eye for voice. One reply passed the checker with a one-letter item (`"text":"x"`), so the checker gained two rules: text must be long enough to say something, and a moment's text must cite its own fact. The demo was re-recorded for four coaches: 76 requests, 59 passed first time, 17 after one retry, none needed the code-built text. Captain Hook, live: "Brimstone and gall, I hear the crocodile ticking! Some of your clear mistakes came almost instantly..."
+
+The You page tells the coach's read as a short story: a headline in a speech bubble, what to work on first, at most three findings with "Show me" and "Practice this", then strengths, with the tables behind "See the numbers". In review the board sits beside the coach, whose expression is chosen by code from the size of the loss.
+
+#### Step 5: practice
+
+Puzzles are built by code from clear-mistake fact rows. The board now takes moves (click, drag, keyboard, promotion). An answer is checked by the engine in the browser: the engine's move and the game's move need no search; anything else is searched and accepted if it gives up fewer than 8 points of winning chance. Missed positions come back at the end of the run. What the coaches say here is fixed text written for the app, with the moves and numbers put in by code; the model is not called. Checked in a browser: a wrong move was searched and rejected with its cost, the answer was shown, the position was queued again.
+
+#### Step 6: openings
+
+`npm run build-openings` fetches 3,865 named lines from the Lichess chess-openings dataset and replays each with the rules library, then fetches the introductions of the matching Wikibooks pages. Wikibooks answered with "too many requests" on the first run; the script now waits as long as the server asks. The guide shows, from the player's own games, where they most often leave the book and what the book moves were, their first clear mistake in the opening, and the quoted ideas with source and licence. In the drill Blundy plays a random book move weighted towards what the player's own opponents played. The first browser run showed the English Opening drill starting with a king's pawn move (a transposition in the dataset), so the drill now starts from the position that defines the opening.
+
+#### Step 7: the Process tab
+
+Three pages. **The story** is written in the first person from `docs/STORY.md`, the decision log and the transcripts only, with a diagram of the two repositories. **Transcripts** is a messaging app: a list of sessions on the left, a conversation on the right. Each session opens on a short chat labelled "Summarised by AI"; the user's messages in it are word-for-word quotes, and a test fails if any of them is not found in the transcript file. A switch shows the whole conversation, read from the files in `transcripts/` and laid out the same way. **How it stays truthful** shows the six layers, the checker's rules, and a real recorded reply that a visitor can edit while the real checker runs on it. Its numbers are read from `public/demo/eval.json`, which `npm run eval` now writes, so the page and the command cannot disagree.
+
+#### Step 8: README, records and checks
+
+The README was rewritten for version 2, with the eval output pasted exactly as printed. Checked in a headless browser: every screen at desktop width in the light theme, every screen at phone width in the dark theme with no sideways scrolling, and the three Process pages including the switch to the whole conversation and a rejected edit in the checker. No console errors. The quoted opening notes were fetched again after the first fetch was found to drop short lines of prose. What was not checked is listed in the README under Limitations.

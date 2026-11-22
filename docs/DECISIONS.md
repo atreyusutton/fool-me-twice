@@ -100,3 +100,22 @@ Measured on the demo player's latest 25 rapid games (1,741 positions), same engi
 - **Transcripts as a messaging app,** with an AI-written summary first and the whole conversation on request. Summaries are written once at build time, labelled as AI-written, and Atreyu's messages in them are real quotes.
 - **Time is logged as a separate version 2 block.** Version 1 stays at 4 h 50 min.
 - **The build runs without a pause,** at Atreyu's request; the planned design checkpoint became a progress note.
+
+## During the rebuild
+
+- **One highlighter, no brand colour.** Paper background, ink, and a single yellow used the way a marker is used: on the word that matters and on the one main action. Orange (your move) and blue (the engine's move) are kept only for chess facts, so colour always means something.
+- **The coach is part of the cache key.** The chosen character is a field of the request, so each coach's words are stored and recorded separately and the Worker refuses an unknown coach. Cost: the recorded demo holds four sets of replies (76 instead of 20).
+- **The character block sits between the shared instructions and the profile.** Four fixed blocks, each cached once and shared by every player who picks that coach. Given up: a single cached prefix for everyone.
+- **Two new checker rules, from a real failure.** A live reply passed with the one-letter item "x". Now a text must be at least 20 characters after tokens are removed, and a moment's text must cite its own fact. They run last, so a more specific rule is reported first.
+- **Expressions are chosen by code.** A loss of 40 points or more makes the figure wince, 25 or more makes it think, a strength pleases it. The model has no field for it.
+- **Practice and drill lines are fixed text, not model output.** What the coaches and Blundy say there was written for the app and holds no chess facts; moves and numbers are put in by code. Why: right or wrong must be instant, free and impossible to get wrong. Given up: variety. This replaces the plan's "one validated framing line" on the opening guide, which would have needed a third request kind and another full re-recording for one sentence.
+- **A practice answer is accepted within 8 points of the engine's move.** Clear mistakes start at 25, so a near-equal second move counts and a real slip does not. With no engine, only the engine's own move is accepted and the screen says so.
+- **The demo may start an engine for practice only.** Reviews in the demo are still played back from the file. Checking a new answer cannot be recorded in advance.
+- **Book moves are replayed with the rules library when the data is built,** so every line in `public/openings/book.json` is known to be legal and written the same way as the game records.
+- **"In the book" is never called "best".** The guide says leaving the book is not a mistake in itself; mistakes are the engine's call. The drill says the same.
+- **The drill starts from the position that defines the opening.** Found in the first browser run: the dataset files some transpositions under a family (the English Opening reached from a king's pawn start), so starting from move one offered the wrong first move.
+- **Opening ideas are quoted for the families Wikibooks has a page for.** The rest say plainly that there is no sourced text. Given up: coverage.
+- **Session summaries are written once, by AI, and say so.** They live in one data file. The user's messages in them are quotes, and a test checks each quote against the transcript; the agent's side is summarised. Given up: a fully human-written account. The whole transcript is one click away for that reason.
+- **The truth page reads its numbers from a file the eval command writes.** Nothing on that page is typed by hand, so it cannot drift from what `npm run eval` prints.
+- **The "try to break it" box runs the real checker in the browser,** on a real recorded reply. It is the same function the Worker runs, not a demonstration copy.
+- **The opening framing line from the model was dropped.** The plan had the coach add one validated sentence to each opening guide. The guide now uses fixed text per coach with facts put in by code, the same as practice. Why: the guide already quotes a source, and a third voice on that screen blurred which words came from where.
