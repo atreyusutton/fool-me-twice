@@ -10,3 +10,6 @@ public/engine/
 .cache/
 # Voice auditions: sample clips from designing the coach voices
 _voices/
+
+# Private notes and drafts, never committed
+_private/

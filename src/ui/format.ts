@@ -1,4 +1,4 @@
-import type { Ending, Outcome } from "../core/types.ts";
+import type { Ending, Outcome, TimeControl } from "../core/types.ts";
 
 export function formatClock(seconds: number): string {
   const whole = Math.max(0, Math.round(seconds));
@@ -36,4 +36,11 @@ export const ENDING_WORD: Record<Ending, string> = {
 export function formatTimeControl(base: number, increment: number): string {
   const minutes = base % 60 === 0 ? String(base / 60) : (base / 60).toFixed(1);
   return increment > 0 ? `${minutes} min + ${increment}s` : `${minutes} min`;
+}
+
+/** "3-minute game" or "10 min + 5s game". Empty when the record has no time control. */
+export function gameLength(timeControl: TimeControl | null): string {
+  if (!timeControl) return "";
+  if (timeControl.increment === 0 && timeControl.base % 60 === 0) return `${timeControl.base / 60}-minute game`;
+  return `${formatTimeControl(timeControl.base, timeControl.increment)} game`;
 }

@@ -301,6 +301,10 @@ button.sq:focus-visible { outline: 3px solid var(--engine); outline-offset: -3px
 .sq.target::before { content: ""; position: absolute; left: 50%; top: 50%; width: 28%; height: 28%; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(23, 23, 27, 0.32); z-index: 2; }
 .sq.target.capture::before { width: 86%; height: 86%; background: transparent; border: 5px solid rgba(23, 23, 27, 0.32); }
 .sq img { position: absolute; inset: 4%; width: 92%; height: 92%; z-index: 1; pointer-events: none; }
+/* A piece is 92% of its square, so one square is 100/0.92 of the piece's own size. */
+.sq img.arriving { z-index: 4; animation: arrive 0.32s ease-out; }
+@keyframes arrive { from { transform: translate(calc(var(--dx) * 108.7%), calc(var(--dy) * 108.7%)); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sq img.arriving { animation: none; } }
 .sq img.dragging { z-index: 5; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.35)); }
 .coord { position: absolute; font-size: clamp(8px, 1.6vw, 11px); font-weight: 700; color: rgba(23, 23, 27, 0.55); z-index: 1; line-height: 1; }
 .coord.rank { top: 3px; left: 3px; }
@@ -449,3 +453,13 @@ code { font-family: var(--mono); font-size: 0.9em; background: var(--surface-2);
   .chat-body { max-height: none; overflow: visible; }
   .chat-row { max-width: 94%; }
 }
+
+/* After user testing: clocks under the board, and a disabled look for a link that has nowhere to go. */
+.clocks { display: flex; justify-content: center; gap: 18px; color: var(--ink-3); margin: 0; }
+.clocks strong { color: var(--ink); }
+.btn[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+.board-controls .btn { white-space: nowrap; }
+.facts-list { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 0.92rem; }
+.facts-list dt { color: var(--ink-3); }
+.facts-list dd { margin: 0; }
+.game-nav { flex-wrap: nowrap; }
