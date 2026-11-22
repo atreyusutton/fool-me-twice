@@ -1,35 +1,67 @@
 import { useSyncExternalStore } from "react";
 
+export type PlayerView =
+  | { name: "you" }
+  | { name: "games" }
+  | { name: "game"; gameId: string }
+  | { name: "practice"; theme: string | null }
+  | { name: "openings" }
+  | { name: "opening"; key: string }
+  | { name: "drill"; key: string };
+
+export type ProcessPage = "story" | "transcripts" | "truth";
+
 export type Route =
   | { name: "home" }
-  | { name: "how" }
-  | { name: "profile"; username: string; demo: boolean }
-  | { name: "game"; username: string; demo: boolean; gameId: string }
+  | { name: "process"; page: ProcessPage; session: string | null }
+  | { name: "player"; username: string; demo: boolean; view: PlayerView }
   | { name: "missing" };
 
 export const DEMO_USERNAME = "antwacky";
 
+function parseView(parts: string[]): PlayerView | null {
+  if (parts.length === 0) return { name: "you" };
+  const [first, second, third] = parts;
+  if (first === "games" && parts.length === 1) return { name: "games" };
+  if (first === "g" && second && parts.length === 2) return { name: "game", gameId: second };
+  if (first === "practice" && parts.length <= 2) return { name: "practice", theme: second ?? null };
+  if (first === "openings") {
+    if (parts.length === 1) return { name: "openings" };
+    if (second && parts.length === 2) return { name: "opening", key: second };
+    if (second && third === "drill" && parts.length === 3) return { name: "drill", key: second };
+  }
+  return null;
+}
+
 export function parseRoute(pathname: string): Route {
   const parts = pathname.split("/").filter(Boolean).map(decodeURIComponent);
   if (parts.length === 0) return { name: "home" };
-  if (parts[0] === "how" && parts.length === 1) return { name: "how" };
+  // The version 1 address still works.
+  if (parts[0] === "how" && parts.length === 1) return { name: "process", page: "story", session: null };
+  if (parts[0] === "process") {
+    if (parts.length === 1) return { name: "process", page: "story", session: null };
+    if (parts[1] === "truth" && parts.length === 2) return { name: "process", page: "truth", session: null };
+    if (parts[1] === "transcripts" && parts.length <= 3) return { name: "process", page: "transcripts", session: parts[2] ?? null };
+    return { name: "missing" };
+  }
   if (parts[0] === "demo") {
-    if (parts.length === 1) return { name: "profile", username: DEMO_USERNAME, demo: true };
-    if (parts[1] === "g" && parts[2]) return { name: "game", username: DEMO_USERNAME, demo: true, gameId: parts[2] };
+    const view = parseView(parts.slice(1));
+    return view ? { name: "player", username: DEMO_USERNAME, demo: true, view } : { name: "missing" };
   }
   if (parts[0] === "p" && parts[1]) {
-    const username = parts[1].toLowerCase();
-    if (parts.length === 2) return { name: "profile", username, demo: false };
-    if (parts[2] === "g" && parts[3]) return { name: "game", username, demo: false, gameId: parts[3] };
+    const view = parseView(parts.slice(2));
+    return view ? { name: "player", username: parts[1].toLowerCase(), demo: false, view } : { name: "missing" };
   }
   return { name: "missing" };
 }
 
-export function profilePath(username: string, demo: boolean): string {
-  return demo ? "/demo" : `/p/${encodeURIComponent(username.toLowerCase())}`;
+/** The address of a player's page. `sub` is the part after the player, for example "practice". */
+export function playerPath(username: string, demo: boolean, sub = ""): string {
+  const base = demo ? "/demo" : `/p/${encodeURIComponent(username.toLowerCase())}`;
+  return sub ? `${base}/${sub}` : base;
 }
-export function gamePath(username: string, demo: boolean, gameId: string): string {
-  return `${profilePath(username, demo)}/g/${encodeURIComponent(gameId)}`;
+export function gamePath(username: string, demo: boolean, gameId: string, ply?: number): string {
+  return `${playerPath(username, demo, `g/${encodeURIComponent(gameId)}`)}${ply ? `?ply=${ply}` : ""}`;
 }
 
 const listeners = new Set<() => void>();
@@ -43,7 +75,7 @@ function subscribe(listener: () => void): () => void {
 }
 
 export function navigate(path: string): void {
-  if (path === window.location.pathname) return;
+  if (path === window.location.pathname + window.location.search) return;
   window.history.pushState(null, "", path);
   for (const listener of listeners) listener();
   window.scrollTo(0, 0);
@@ -51,4 +83,7 @@ export function navigate(path: string): void {
 
 export function usePathname(): string {
   return useSyncExternalStore(subscribe, () => window.location.pathname);
+}
+export function useSearch(): string {
+  return useSyncExternalStore(subscribe, () => window.location.search);
 }
