@@ -4,12 +4,13 @@ import { useCoach } from "../app/coach-choice.ts";
 import { useOpeningData, type OpeningData } from "../app/opening-data.ts";
 import { gamePath, playerPath } from "../app/router.ts";
 import type { PlayerSession, SessionState } from "../app/session.ts";
-import type { CoachId } from "../core/coach/personas.ts";
+import { fixedLine } from "../app/voice.ts";
 import { familyKey, openingReports, type OpeningReport } from "../core/openings.ts";
 import type { Color, FactTable, ParsedGame } from "../core/types.ts";
 import { Board } from "./Board.tsx";
 import { Say } from "./coaches/Say.tsx";
 import { plural } from "./format.ts";
+import { LineText } from "./LineText.tsx";
 import { Link } from "./Link.tsx";
 import { Loading } from "./Status.tsx";
 
@@ -17,13 +18,6 @@ import { Loading } from "./Status.tsx";
 const CLASSICS = ["Italian Game", "Ruy Lopez", "Sicilian Defense", "French Defense", "Caro-Kann Defense", "Queen's Gambit Declined", "London System", "King's Indian Defense"];
 
 /** Fixed lines for the guide. They hold no chess facts; the facts beside them are put in by code. */
-const GUIDE_LINE: Record<CoachId, string> = {
-  sherlock: "Every opening leaves a trail. This is yours, taken from your own games.",
-  pooh: "This is how your games in this opening usually begin, and the place where they wander off the path.",
-  hook: "A captain knows his own waters. Here is your opening, and the spot where you run aground.",
-  dracula: "You return to this opening again and again. I approve of habits. Here is where yours breaks.",
-};
-
 export function fenAfter(sans: string[]): string {
   const chess = new Chess();
   for (const san of sans) chess.move(san);
@@ -221,8 +215,10 @@ export function OpeningGuide({ state, data, reports, openingKey }: { state: Sess
       </header>
 
       {report && (
-        <Say who={coach} mood="talking">
-          <p>{GUIDE_LINE[coach]}</p>
+        <Say who={coach} mood="talking" voice={fixedLine("guide.intro", coach).voice}>
+          <p>
+            <LineText parts={fixedLine("guide.intro", coach).parts} />
+          </p>
         </Say>
       )}
 

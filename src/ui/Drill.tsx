@@ -1,25 +1,19 @@
 import { Chess } from "chess.js";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { OpeningData } from "../app/opening-data.ts";
 import { playerPath } from "../app/router.ts";
 import type { PlayerSession, SessionState } from "../app/session.ts";
+import { fixedLine, voiceBusy, type FixedLine } from "../app/voice.ts";
+import { BLUNDY_MOVE_LINES } from "../core/lines.ts";
 import { bookMoves, checkDrillMove, familyKey, likelyReply, lineName, opponentReplies, type BookMove, type OpeningReport } from "../core/openings.ts";
 import type { Color, ParsedGame } from "../core/types.ts";
 import { Board } from "./Board.tsx";
 import type { Mood } from "./coaches/Figure.tsx";
 import { Say } from "./coaches/Say.tsx";
 import { plural } from "./format.ts";
+import { LineText } from "./LineText.tsx";
 import { Link } from "./Link.tsx";
 import { numbered, sideOf } from "./Openings.tsx";
-
-/** What Blundy says about his own move. Fixed lines; the move's name is put in by code from the book. */
-const BLUNDY_MOVES: ((move: ReactNode) => ReactNode)[] = [
-  (move) => <>I play {move}. I meant to do that.</>,
-  (move) => <>{move}! Is that good? It felt good.</>,
-  (move) => <>Behold: {move}. Somebody told me it is in the book.</>,
-  (move) => <>{move}. I have never lost with this move. I have never won with it either.</>,
-  (move) => <>Here comes {move}. My trousers are full of moves like this.</>,
-];
 
 interface DrillProgress {
   /** Lines finished, and lines finished without leaving the book once, by opening. */
@@ -33,8 +27,6 @@ type Feedback =
   | { kind: "not_book"; san: string; book: BookMove[] }
   | { kind: "other"; san: string; name: string | null; book: BookMove[] }
   | { kind: "done"; name: string | null; slips: number };
-
-const Move = ({ san, kind }: { san: string; kind?: "played" | "best" }) => <span className={`san fact${kind ? ` ${kind}` : ""}`}>{san}</span>;
 
 export function Drill({
   session,
@@ -190,7 +182,13 @@ function Line({
   // Blundy's turn: a likely book reply after a short pause, or the end of the line when the book runs out.
   useEffect(() => {
     if (!blundyToMove) return;
-    const timer = window.setTimeout(() => {
+    let timer = 0;
+    const play = () => {
+      // With sound on, Blundy finishes his sentence before he moves.
+      if (voiceBusy()) {
+        timer = window.setTimeout(play, 250);
+        return;
+      }
       const reply = likelyReply(book, line, family, replies, Math.random);
       if (!reply) {
         setFeedback({ kind: "done", name: lineName(book, line), slips });
@@ -206,9 +204,10 @@ function Line({
         setFeedback({ kind: "done", name: lineName(book, nextLine), slips });
         onDone(slips === 0);
       } else {
-        setFeedback({ kind: "blundy", san: reply.san, variant: Math.floor(Math.random() * BLUNDY_MOVES.length) });
+        setFeedback({ kind: "blundy", san: reply.san, variant: Math.floor(Math.random() * BLUNDY_MOVE_LINES) });
       }
-    }, 800);
+    };
+    timer = window.setTimeout(play, 800);
     return () => window.clearTimeout(timer);
     // Runs once each time it becomes Blundy's turn; the other values are read as they are at that moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -230,48 +229,26 @@ function Line({
     setFeedback(check.kind === "not_book" ? { kind: "not_book", san: played.san, book: check.book } : { kind: "other", san: played.san, name: check.name, book: check.book });
   };
 
+  // What Blundy says is one of the app's fixed lines; the moves and names are put in by code from the book.
   let mood: Mood;
-  let speech: ReactNode;
+  let said: FixedLine;
   if (feedback.kind === "start") {
-    speech = blundyToMove
-      ? `This is the ${family}. It is my move. Stand back.`
-      : `This is the ${family}. It is your move. Take your time. I certainly would not.`;
+    said = fixedLine(blundyToMove ? "drill.start_mine" : "drill.start_yours", "blundy", { family });
     mood = "talking";
   } else if (feedback.kind === "blundy") {
-    speech = BLUNDY_MOVES[feedback.variant]!(<Move san={feedback.san} />);
+    said = fixedLine("drill.move", "blundy", { move: feedback.san, variant: feedback.variant });
     mood = "talking";
   } else if (feedback.kind === "right") {
-    speech = (
-      <>
-        <Move san={feedback.san} kind="best" />. Hmph. That is in the book.{feedback.name ? ` You have reached the ${feedback.name}.` : ""} Let me think.
-      </>
-    );
+    said = fixedLine("drill.right", "blundy", { move: feedback.san, name: feedback.name });
     mood = "thinking";
   } else if (feedback.kind === "not_book") {
-    speech = (
-      <>
-        Ha! <Move san={feedback.san} kind="played" /> is not in the book. Even I know that, and I am me. Take it back and try again.
-      </>
-    );
+    said = fixedLine("drill.not_book", "blundy", { move: feedback.san });
     mood = "pleased";
   } else if (feedback.kind === "other") {
-    speech = (
-      <>
-        <Move san={feedback.san} kind="played" /> is a book move, but it belongs to {feedback.name ? `the ${feedback.name}` : "another opening"}. We are
-        drilling the {family}. Again!
-      </>
-    );
+    said = fixedLine("drill.other", "blundy", { move: feedback.san, name: feedback.name, family });
     mood = "pleased";
   } else {
-    speech =
-      feedback.slips === 0 ? (
-        <>That is the end of the book for this line{feedback.name ? `: the ${feedback.name}` : ""}. You never left it. I am as surprised as you are.</>
-      ) : (
-        <>
-          End of the line{feedback.name ? `: the ${feedback.name}` : ""}. You wandered off {plural(feedback.slips, "time")}, but you got there. I wandered
-          off years ago.
-        </>
-      );
+    said = feedback.slips === 0 ? fixedLine("drill.done_clean", "blundy", { name: feedback.name }) : fixedLine("drill.done_slips", "blundy", { name: feedback.name, slips: feedback.slips });
     mood = "wince";
   }
   const slipped = feedback.kind === "not_book" || feedback.kind === "other";
@@ -295,8 +272,10 @@ function Line({
 
       <div className="review-coach stack">
         <div aria-live="polite">
-          <Say who="blundy" mood={mood} size={88}>
-            <p>{speech}</p>
+          <Say who="blundy" mood={mood} size={88} voice={said.voice}>
+            <p>
+              <LineText parts={said.parts} />
+            </p>
           </Say>
         </div>
 

@@ -56,7 +56,8 @@ async function coach(request: Request, env: Env): Promise<Response> {
 /**
  * Reads one piece of checked coach text aloud. Like the coach route, this is not a general door:
  * it accepts a coach request and a reply, runs the same validator the screen relies on, fills in the
- * values from the fact table and only then asks for speech. Free text is refused.
+ * values from the fact table and only then asks for speech; or it accepts the name of one of the
+ * app's fixed lines with a move, a number or an opening name for its slots. Free text is refused.
  * The same voice, model and words are generated once and then served from Cloudflare's cache.
  */
 async function voice(request: Request, env: Env, context: ExecutionContext): Promise<Response> {
@@ -75,7 +76,7 @@ async function voice(request: Request, env: Env, context: ExecutionContext): Pro
   const spoken = voiceText(payload);
   if (!spoken.ok) return json({ error: "invalid_request", message: spoken.error }, 400);
 
-  const voiceId = VOICE_IDS[spoken.coach];
+  const voiceId = VOICE_IDS[spoken.speaker];
   const model = env.VOICE_MODEL || DEFAULT_VOICE_MODEL;
   const cacheKey = new Request(`https://voice.cache.invalid/${await voiceCacheKey(voiceId, model, spoken.text)}`);
   const cached = await caches.default.match(cacheKey);
