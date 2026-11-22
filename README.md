@@ -8,7 +8,7 @@ It is my take-home project (Option B) for the Chess.com engineering internship. 
 
 Version 1 was called Motif. Version 2 is a rebuild of the interface and the scope on the same truthful core; the story of why is in the app and in `docs/DECISIONS.md`.
 
-**Live:** https://fool-me-twice.atreyusutton.workers.dev (the demo needs nothing; a live username runs the engine in your browser). No API key is set on this deployment, so for a live username the coach's text is built by code from the facts. Version 1 is still up at https://motif.atreyusutton.workers.dev.
+**Live:** https://fool-me-twice.atreyusutton.workers.dev (the demo needs nothing; a live username runs the engine in your browser). The coach is live there too: for any username its sentences are written by Claude and checked before you see them, limited to 20 requests a minute per address. Version 1 is still up at https://motif.atreyusutton.workers.dev.
 
 ## Run it
 
@@ -32,6 +32,8 @@ Open the address it prints (usually `http://localhost:5173`).
 | `npm run deploy` | Builds and deploys to Cloudflare Workers |
 
 ## The flow
+
+The same six tabs are on every page, so you can always get back to Home and see everything. From Home and Process, the coaching tabs open the last player you loaded, or the demo player.
 
 1. **Home.** A username or the demo, and a coach: Sherlock Holmes, Winnie-the-Pooh, Captain Hook or Count Dracula. You can change coach on any screen.
 2. **You.** Your coach's read, as a short story: what to work on first, at most three things that keep coming back (each with **Show me** and **Practice this**), and what is going well. The tables are behind **See the numbers**.
@@ -231,7 +233,8 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 45 | Process tab: story, transcripts as conversations, truth page with a live checker |
 | 35 | README, records, browser checks, clean-clone check |
 | 10 | Deploy as a new Worker, live checks, repository rename, push |
-| **285** | **Total: 4 h 45 min** |
+| 20 | After the deploy: key rotation checks, live coach on the deployment, one consistent navigation bar |
+| **305** | **Total: 5 h 5 min** |
 
 ## Licences and credits
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useCoach } from "../app/coach-choice.ts";
+import { useLastPlayer, type PlayerRef } from "../app/last-player.ts";
 import { playerPath, type Route } from "../app/router.ts";
 import { PERSONAS } from "../core/coach/personas.ts";
 import { CoachPicker } from "./coaches/CoachPicker.tsx";
@@ -53,23 +54,21 @@ interface Tab {
   current: boolean;
 }
 
-function tabsFor(route: Route): Tab[] {
-  const processTab: Tab = { key: "process", label: "Process", href: "/process", current: route.name === "process" };
-  if (route.name !== "player") {
-    return [
-      { key: "home", label: "Home", href: "/", current: route.name === "home" },
-      { key: "you", label: "Demo", href: "/demo", current: false },
-      processTab,
-    ];
-  }
-  const to = (sub = "") => playerPath(route.username, route.demo, sub);
-  const view = route.view.name;
+/**
+ * The same six destinations on every page. The four coaching tabs lead to the player on screen, or,
+ * from Home and Process, to the last player loaded on this device (the demo player if there is none).
+ */
+function tabsFor(route: Route, last: PlayerRef): Tab[] {
+  const player: PlayerRef = route.name === "player" ? { username: route.username, demo: route.demo } : last;
+  const to = (sub = "") => playerPath(player.username, player.demo, sub);
+  const view = route.name === "player" ? route.view.name : null;
   return [
+    { key: "home", label: "Home", href: "/", current: route.name === "home" },
     { key: "you", label: "You", href: to(), current: view === "you" },
     { key: "review", label: "Review", href: to("games"), current: view === "games" || view === "game" },
     { key: "practice", label: "Practice", href: to("practice"), current: view === "practice" },
     { key: "openings", label: "Openings", href: to("openings"), current: view === "openings" || view === "opening" || view === "drill" },
-    processTab,
+    { key: "process", label: "Process", href: "/process", current: route.name === "process" },
   ];
 }
 
@@ -91,7 +90,12 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
 
   const next: Theme = theme === "auto" ? "dark" : theme === "dark" ? "light" : "auto";
   const label = theme === "auto" ? "Theme: follows your device" : theme === "dark" ? "Theme: dark" : "Theme: light";
-  const tabs = tabsFor(route);
+  const last = useLastPlayer();
+  const tabs = tabsFor(route, last);
+  // Five tabs fit a phone; Home is the logo in the top bar, which is always on screen.
+  const phoneTabs = tabs.filter((tab) => tab.key !== "home");
+  // On Home and Process, say whose pages the coaching tabs open.
+  const leadsTo = route.name === "player" ? null : last.demo ? "Demo player" : last.username;
 
   return (
     <div className="shell">
@@ -107,6 +111,11 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
             </Link>
           ))}
         </nav>
+        {leadsTo && (
+          <span className="nav-player" title="You, Review, Practice and Openings open this player">
+            {leadsTo}
+          </span>
+        )}
         <div className="topbar-end">
           <button className="coach-chip" onClick={() => dialog.current?.showModal()} aria-label={`Your coach is ${PERSONAS[coach].name}. Change coach.`}>
             <Figure who={coach} size={32} decorative />
@@ -123,7 +132,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
         coaches are characters from out-of-copyright books. Free software under GPL-3.0.
       </footer>
       <nav className="tabbar" aria-label="Main">
-        {tabs.map((tab) => (
+        {phoneTabs.map((tab) => (
           <Link key={tab.label} href={tab.href} aria-current={tab.current ? "page" : undefined}>
             <Icon name={tab.key} />
             {tab.label}

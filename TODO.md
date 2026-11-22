@@ -16,5 +16,5 @@ Plan approved 22 November 2026. Details: `docs/SPEC.md` section 13.
 
 ## Next
 
-- [ ] Rotate the API key, then add it as the Worker secret to turn the live coach on
+- [x] API key rotated; new key set as the Worker secret, live coach on
 - [ ] Confirm the `[CONFIRM]` items in `docs/STORY.md`

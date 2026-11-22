@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { rememberPlayer } from "../app/last-player.ts";
 import type { PlayerSession, SessionState } from "../app/session.ts";
 import { DemoBanner } from "./DemoBanner.tsx";
 import { useSession } from "./hooks.ts";
@@ -10,6 +11,11 @@ import { ErrorScreen, Loading } from "./Status.tsx";
  */
 export function Player({ session, children }: { session: PlayerSession; children: (state: SessionState) => ReactNode }) {
   const state = useSession(session);
+  const loaded = state.phase !== "loading" && state.phase !== "error" && Boolean(state.tier1) && Boolean(state.player);
+  // The navigation's coaching tabs lead back to this player from Home and Process.
+  useEffect(() => {
+    if (loaded) rememberPlayer(state.username, state.demo);
+  }, [loaded, state.username, state.demo]);
   if (state.phase === "error" && state.error) {
     return <ErrorScreen error={state.error} onRetry={() => void session.load()} />;
   }
