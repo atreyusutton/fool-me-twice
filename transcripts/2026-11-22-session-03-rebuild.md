@@ -305,3 +305,13 @@ Built it: a small store remembers the last player whose games loaded, the bar is
 ### Agent: what was done
 
 Merged the two waiting commits into `main` through a pull request, redeployed the live site and checked it.
+
+## Turn: back to the earlier navigation
+
+### User
+
+> I actually think it was better the previous way is there a cleaner way to do it though it was pretty good
+
+### Agent: what was done
+
+Put the earlier navigation back (three tabs on Home and Process, the coaching tabs only inside a player) and kept two small things from the attempt: Home is a tab inside a player as well, and the middle tab outside a player is named for where it goes, "Demo" or the last username loaded. Checked at four widths; tests and lint pass. Committed locally and left the live site alone until the user has looked.

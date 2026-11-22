@@ -33,7 +33,7 @@ Open the address it prints (usually `http://localhost:5173`).
 
 ## The flow
 
-The same six tabs are on every page, so you can always get back to Home and see everything. From Home and Process, the coaching tabs open the last player you loaded, or the demo player.
+Home and Process are on every page. Inside a player the four coaching tabs sit between them; outside one, a single tab leads to the demo or to the last player you loaded.
 
 1. **Home.** A username or the demo, and a coach: Sherlock Holmes, Winnie-the-Pooh, Captain Hook or Count Dracula. You can change coach on any screen.
 2. **You.** Your coach's read, as a short story: what to work on first, at most three things that keep coming back (each with **Show me** and **Practice this**), and what is going well. The tables are behind **See the numbers**.
