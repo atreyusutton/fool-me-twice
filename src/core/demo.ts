@@ -64,3 +64,31 @@ export function planCoachRequests(summaries: GameSummary[], tables: FactTable[],
 export function needsModel(request: CoachRequest): boolean {
   return request.kind === "profile" || request.facts.length > 0;
 }
+
+/** What `npm run eval` measured, written to `public/demo/eval.json` and shown on the Process pages. */
+export interface EvalReport {
+  username: string;
+  games: number;
+  timeClass: string;
+  recordedAt: string;
+  model: string;
+  promptVersion: string;
+  engineSetting: string;
+  /** Coach requests the demo can make, and how many have a recorded reply. */
+  requests: number;
+  found: number;
+  firstTime: number;
+  afterRetry: number;
+  codeBuilt: number;
+  /** Recorded replies that pass the validator as it is today. */
+  shownValid: number;
+  byCoach: { coach: CoachId; name: string; firstTime: number; afterRetry: number; codeBuilt: number }[];
+  rejectedByRule: { rule: number; count: number }[];
+  usage: { calls: number; input: number; cacheRead: number; cacheWrite: number; output: number };
+  /** Each way a passing reply was deliberately broken, and how many of the broken versions were rejected. */
+  mutations: { name: string; tried: number; rejected: number }[];
+  mutationsTried: number;
+  mutationsRejected: number;
+  passed: boolean;
+}
+export const EVAL_REPORT_PATH = "/demo/eval.json";

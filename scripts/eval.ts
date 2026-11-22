@@ -5,7 +5,7 @@
 //   did the model need its retry or the code fallback when the demo was recorded?
 // Part 2, the validator: take every recorded reply that passed, break it in a known way (an invented move,
 //   a number, an unknown ID, a wrong theme link, a wrong piece, a wrong phase), and confirm each is rejected.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { coachCacheKey } from "../src/core/coach/hash.ts";
 import { COACH_IDS, PERSONAS } from "../src/core/coach/personas.ts";
 import { PROMPT_VERSION } from "../src/core/coach/prompt.ts";
@@ -13,7 +13,7 @@ import { codeBuiltWire } from "../src/core/coach/run.ts";
 import { gameReviewToWire, profileSummaryToWire, type CoachWire } from "../src/core/coach/schema.ts";
 import type { CoachRequest, CoachResult, GameReview, ProfileSummary } from "../src/core/coach/types.ts";
 import { validateReply } from "../src/core/coach/validator.ts";
-import { planCoachRequests, type DemoRecording } from "../src/core/demo.ts";
+import { planCoachRequests, type DemoRecording, type EvalReport } from "../src/core/demo.ts";
 import { FACTS_VERSION } from "../src/core/facts.ts";
 import { summarizeGame } from "../src/core/pgn.ts";
 import { buildProfile } from "../src/core/profile.ts";
@@ -198,6 +198,32 @@ for (const row of mutationRows) {
 }
 console.log(`   Total: ${rejected} of ${tried} rejected (${percent(rejected, tried)})`);
 console.log("");
+// The same numbers, written where the app's "How it stays truthful" page reads them, so the page and
+// this printout cannot disagree.
+const report: EvalReport = {
+  username: recording.username,
+  games: recording.games.length,
+  timeClass: recording.timeClass,
+  recordedAt: recording.recordedAt,
+  model: recording.model,
+  promptVersion: recording.promptVersion,
+  engineSetting: recording.engineSetting,
+  requests: planned.length,
+  found,
+  firstTime: sources.model,
+  afterRetry: sources.model_retry,
+  codeBuilt: sources.code,
+  shownValid,
+  byCoach: COACH_IDS.map((coach) => ({ coach, name: PERSONAS[coach].name, firstTime: byCoach.get(coach)!.model, afterRetry: byCoach.get(coach)!.model_retry, codeBuilt: byCoach.get(coach)!.code })),
+  rejectedByRule: [...rejectedByRule.entries()].sort((a, b) => a[0] - b[0]).map(([rule, count]) => ({ rule, count })),
+  usage,
+  mutations: mutationRows.map((row) => ({ name: row.name, tried: row.tried, rejected: row.rejected })),
+  mutationsTried: tried,
+  mutationsRejected: rejected,
+  passed: problems.length === 0,
+};
+writeFileSync(new URL("../public/demo/eval.json", import.meta.url), `${JSON.stringify(report, null, 1)}\n`);
+
 if (problems.length > 0) {
   console.log(`FAILED: ${problems.length} problem(s)`);
   for (const problem of [...new Set(problems)]) console.log(`  - ${problem}`);

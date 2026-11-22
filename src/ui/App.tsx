@@ -6,6 +6,7 @@ import { Home } from "./Home.tsx";
 import { Link } from "./Link.tsx";
 import { OpeningGuide, Openings, WithOpenings } from "./Openings.tsx";
 import { Player } from "./Player.tsx";
+import { Process } from "./process/Process.tsx";
 import { Practice } from "./Practice.tsx";
 import { Review } from "./Review.tsx";
 import { Shell } from "./Shell.tsx";
@@ -54,7 +55,8 @@ export function App() {
     <Shell route={route}>
       {route.name === "home" && <Home />}
       {route.name === "player" && <PlayerScreens route={route} />}
-      {(route.name === "missing" || route.name === "process") && <Missing />}
+      {route.name === "process" && <Process page={route.page} session={route.session} />}
+      {route.name === "missing" && <Missing />}
     </Shell>
   );
 }

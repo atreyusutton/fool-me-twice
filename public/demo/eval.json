@@ -1,0 +1,154 @@
+{
+ "username": "antwacky",
+ "games": 25,
+ "timeClass": "rapid",
+ "recordedAt": "2026-11-22T17:14:41.191Z",
+ "model": "claude-sonnet-5-5",
+ "promptVersion": "2026-11-22.1",
+ "engineSetting": "sf19-lite-single/d14/h16",
+ "requests": 76,
+ "found": 76,
+ "firstTime": 59,
+ "afterRetry": 17,
+ "codeBuilt": 0,
+ "shownValid": 76,
+ "byCoach": [
+  {
+   "coach": "sherlock",
+   "name": "Sherlock Holmes",
+   "firstTime": 10,
+   "afterRetry": 9,
+   "codeBuilt": 0
+  },
+  {
+   "coach": "pooh",
+   "name": "Winnie-the-Pooh",
+   "firstTime": 18,
+   "afterRetry": 1,
+   "codeBuilt": 0
+  },
+  {
+   "coach": "hook",
+   "name": "Captain Hook",
+   "firstTime": 16,
+   "afterRetry": 3,
+   "codeBuilt": 0
+  },
+  {
+   "coach": "dracula",
+   "name": "Count Dracula",
+   "firstTime": 15,
+   "afterRetry": 4,
+   "codeBuilt": 0
+  }
+ ],
+ "rejectedByRule": [
+  {
+   "rule": 1,
+   "count": 6
+  },
+  {
+   "rule": 2,
+   "count": 2
+  },
+  {
+   "rule": 4,
+   "count": 7
+  },
+  {
+   "rule": 6,
+   "count": 1
+  },
+  {
+   "rule": 7,
+   "count": 1
+  }
+ ],
+ "usage": {
+  "calls": 93,
+  "input": 49600,
+  "cacheRead": 392719,
+  "cacheWrite": 6649,
+  "output": 38934
+ },
+ "mutations": [
+  {
+   "name": "an invented move",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "an invented square",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "castling written out",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "a number in digits",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "a count in words",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "an unknown fact or theme ID",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "a token for an unknown ID",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "a token for a field that does not exist",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "a theme the moment is not evidence for",
+   "tried": 72,
+   "rejected": 72
+  },
+  {
+   "name": "a piece the fact row does not involve",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "a piece named in the headline",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "the wrong phase of the game",
+   "tried": 64,
+   "rejected": 64
+  },
+  {
+   "name": "the wrong result",
+   "tried": 72,
+   "rejected": 72
+  },
+  {
+   "name": "an extra field",
+   "tried": 76,
+   "rejected": 76
+  },
+  {
+   "name": "a missing moment or theme",
+   "tried": 76,
+   "rejected": 76
+  }
+ ],
+ "mutationsTried": 1120,
+ "mutationsRejected": 1120,
+ "passed": true
+}
