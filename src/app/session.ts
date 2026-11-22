@@ -1,5 +1,6 @@
 import { ChessCom, mostPlayedTimeClass, type PlayerInfo, type RatingInfo } from "../core/chesscom.ts";
 import { coachCacheKey } from "../core/coach/hash.ts";
+import type { CoachId } from "../core/coach/personas.ts";
 import { PROMPT_VERSION } from "../core/coach/prompt.ts";
 import { gameReviewRequest, profileSummaryRequest } from "../core/coach/request.ts";
 import { codeBuiltResult } from "../core/coach/run.ts";
@@ -16,6 +17,7 @@ import { buildProfile, type Profile } from "../core/profile.ts";
 import { computeTier1, type Tier1Stats } from "../core/tier1.ts";
 import type { FactTable, GameSummary, ParsedGame, RawGame } from "../core/types.ts";
 import { engineCount, getBrowserEngine, resetBrowserEngines } from "./browser-engine.ts";
+import { getCoach } from "./coach-choice.ts";
 import { openCache } from "./kv-idb.ts";
 
 /** Tier-1 statistics use up to this many games. */
@@ -427,32 +429,35 @@ export class PlayerSession {
     return this.healthCheck;
   }
 
-  private buildCoachRequest(key: string): { request: CoachRequest; factIds: Record<string, string> } | null {
+  private buildCoachRequest(key: string, coach: CoachId): { request: CoachRequest; factIds: Record<string, string> } | null {
     const state = this.getState();
     if (!state.profile) return null;
     if (key === "profile") {
       const rating = state.games[0]?.playerRating;
-      const request = profileSummaryRequest(state.profile, rating);
+      const request = profileSummaryRequest(state.profile, rating, coach);
       return request.profile.themes.length > 0 ? { request, factIds: {} } : null;
     }
     const table = state.facts[key];
     const summary = state.games.find((game) => game.uuid === key);
     if (!table || !summary) return null;
-    return gameReviewRequest(summary, table, state.profile);
+    return gameReviewRequest(summary, table, state.profile, coach);
   }
 
   /**
    * Asks for the coach's words for the profile or one game. Nothing is requested until the engine has
    * finished, because the profile (part of every request) keeps changing until then.
    */
-  ensureCoach(key: string): void {
-    this.coachWanted.add(key);
-    if (this.getState().engine.status === "done") void this.loadCoach(key);
+  ensureCoach(key: string, coach: CoachId = getCoach()): void {
+    const slot = coachSlot(coach, key);
+    this.coachWanted.add(slot);
+    if (this.getState().engine.status === "done") void this.loadCoach(slot);
   }
 
-  private async loadCoach(key: string): Promise<void> {
+  /** `slot` is the coach and the subject together, so each character's words are kept apart. */
+  private async loadCoach(slot: string): Promise<void> {
     const kv = this.kv;
-    const built = this.buildCoachRequest(key);
+    const [coach, key] = splitSlot(slot);
+    const built = this.buildCoachRequest(key, coach);
     if (!kv || !built) return;
     const { request, factIds } = built;
     const recording = this.getState().recording;
@@ -461,12 +466,12 @@ export class PlayerSession {
     const model = status.model ?? "claude-sonnet-5-5";
     const hash = await coachCacheKey(PROMPT_VERSION, model, request);
     // The same request is already shown or on its way.
-    if (this.coachInFlight.get(key) === hash) return;
-    this.coachInFlight.set(key, hash);
-    const current = () => this.coachInFlight.get(key) === hash;
+    if (this.coachInFlight.get(slot) === hash) return;
+    this.coachInFlight.set(slot, hash);
+    const current = () => this.coachInFlight.get(slot) === hash;
     const publish = (result: CoachResult, fromCache: boolean, note: string | null, loading = false) => {
       if (!current()) return;
-      this.update({ coach: { ...this.getState().coach, [key]: { status: loading ? "loading" : "ready", request, factIds, result, fromCache, note } } });
+      this.update({ coach: { ...this.getState().coach, [slot]: { status: loading ? "loading" : "ready", request, factIds, result, fromCache, note } } });
     };
     // Whatever is cached or returned is checked again here: nothing unchecked reaches the screen.
     const passes = (result: CoachResult): boolean => {
@@ -502,7 +507,7 @@ export class PlayerSession {
       const reason = toMotifError(error, "coach").message;
       publish(codeBuiltResult(request, "code_no_model"), false, `${reason} This text was built by code from the engine facts instead.`);
       // Let a later visit to this screen try the model again.
-      if (current()) this.coachInFlight.delete(key);
+      if (current()) this.coachInFlight.delete(slot);
     }
   }
 
@@ -520,6 +525,15 @@ export class PlayerSession {
       for (const key of this.coachWanted) void this.loadCoach(key);
     }
   }
+}
+
+/** The key under which one coach's words about one subject ("profile" or a game) are kept. */
+export function coachSlot(coach: CoachId, key: string): string {
+  return `${coach}|${key}`;
+}
+function splitSlot(slot: string): [CoachId, string] {
+  const at = slot.indexOf("|");
+  return [slot.slice(0, at) as CoachId, slot.slice(at + 1)];
 }
 
 const sessions = new Map<string, PlayerSession>();

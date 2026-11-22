@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { coachCacheKey } from "../src/core/coach/hash.ts";
+import { COACH_IDS } from "../src/core/coach/personas.ts";
 import { PROMPT_VERSION } from "../src/core/coach/prompt.ts";
 import { gameReviewToWire, profileSummaryToWire } from "../src/core/coach/schema.ts";
 import type { GameReview, ProfileSummary } from "../src/core/coach/types.ts";
@@ -34,13 +35,16 @@ describe("the recorded demo", () => {
 
   it("holds a checked coach reply for every request the app can make", async () => {
     const replies = new Map(recording.coach);
-    const planned = planCoachRequests(summaries, tables, buildProfile(tables, computeTier1(summaries)));
-    expect(planned.length).toBeGreaterThan(1);
-    for (const item of planned) {
-      const result = replies.get(await coachCacheKey(PROMPT_VERSION, recording.model, item.request));
-      expect(result, `reply for ${item.key}`).toBeDefined();
-      const wire = item.request.kind === "game" ? gameReviewToWire(result!.reply as GameReview) : profileSummaryToWire(result!.reply as ProfileSummary);
-      expect(validateReply(item.request, wire).ok, `reply for ${item.key} passes the validator`).toBe(true);
+    const profile = buildProfile(tables, computeTier1(summaries));
+    for (const coach of COACH_IDS) {
+      const planned = planCoachRequests(summaries, tables, profile, coach);
+      expect(planned.length).toBeGreaterThan(1);
+      for (const item of planned) {
+        const result = replies.get(await coachCacheKey(PROMPT_VERSION, recording.model, item.request));
+        expect(result, `${coach}'s reply for ${item.key}`).toBeDefined();
+        const wire = item.request.kind === "game" ? gameReviewToWire(result!.reply as GameReview) : profileSummaryToWire(result!.reply as ProfileSummary);
+        expect(validateReply(item.request, wire).ok, `${coach}'s reply for ${item.key} passes the validator`).toBe(true);
+      }
     }
   });
 

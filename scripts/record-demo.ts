@@ -8,6 +8,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createModelCall, DEFAULT_COACH_MODEL } from "../src/core/coach/anthropic.ts";
 import { coachCacheKey } from "../src/core/coach/hash.ts";
+import { COACH_IDS } from "../src/core/coach/personas.ts";
 import { PROMPT_VERSION } from "../src/core/coach/prompt.ts";
 import { runCoach } from "../src/core/coach/run.ts";
 import type { CoachResult } from "../src/core/coach/types.ts";
@@ -65,7 +66,8 @@ for (const game of games) {
 }
 
 const profile = buildProfile(tables, computeTier1(summaries));
-const planned = planCoachRequests(summaries, tables, profile);
+const plans = COACH_IDS.map((coach) => planCoachRequests(summaries, tables, profile, coach));
+const planned = plans.flat();
 const model = DEFAULT_COACH_MODEL;
 const previous = new Map<string, CoachResult>();
 if (!fresh && existsSync(OUT)) {
@@ -73,7 +75,7 @@ if (!fresh && existsSync(OUT)) {
   for (const [hash, result] of old.coach) previous.set(hash, result);
 }
 
-console.log(`Coach: ${planned.length} requests (${model}, prompt ${PROMPT_VERSION})`);
+console.log(`Coach: ${planned.length} requests for ${COACH_IDS.length} characters (${model}, prompt ${PROMPT_VERSION})`);
 const call = createModelCall(apiKey, model);
 const coach: [string, CoachResult][] = [];
 let asked = 0;
@@ -86,18 +88,20 @@ const one = async (item: (typeof planned)[number]) => {
   }
   coach.push([hash, result]);
   const usage = result.attempts.at(-1)?.usage;
-  console.log(`  ${item.key === "profile" ? "profile" : item.key.slice(0, 8)}: ${result.source}${previous.has(hash) ? " (kept)" : ""}${usage ? `, cache read ${usage.cacheReadTokens}` : ""}`);
+  console.log(`  ${item.coach} ${item.key === "profile" ? "profile" : item.key.slice(0, 8)}: ${result.source}${previous.has(hash) ? " (kept)" : ""}${usage ? `, cache read ${usage.cacheReadTokens}` : ""}`);
 };
-// The first request writes the shared prefix to the prompt cache; the rest then read it.
-const [first, ...rest] = planned;
-if (first) await one(first);
+// For each character, the first request writes that character's prefix to the prompt cache; the rest read it.
 const CONCURRENCY = 4;
-let next = 0;
-await Promise.all(
-  Array.from({ length: CONCURRENCY }, async () => {
-    for (let item = rest[next++]; item; item = rest[next++]) await one(item);
-  }),
-);
+for (const plan of plans) {
+  const [first, ...rest] = plan;
+  if (first) await one(first);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: CONCURRENCY }, async () => {
+      for (let item = rest[next++]; item; item = rest[next++]) await one(item);
+    }),
+  );
+}
 
 const recording: DemoRecording = {
   version: 1,

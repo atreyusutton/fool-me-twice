@@ -1,6 +1,7 @@
 import { keyMoments } from "../facts.ts";
 import { themesOfFact, type Profile } from "../profile.ts";
 import type { FactTable, GameSummary } from "../types.ts";
+import type { CoachId } from "./personas.ts";
 import { NAME_PATTERN } from "./schema.ts";
 import type { CoachFact, CoachGame, CoachProfile, GameReviewRequest, ProfileSummaryRequest, RatingBand } from "./types.ts";
 
@@ -46,6 +47,7 @@ export function gameReviewRequest(
   summary: GameSummary,
   table: FactTable,
   profile: Profile,
+  coach: CoachId,
 ): { request: GameReviewRequest; factIds: Record<string, string> } {
   const factIds: Record<string, string> = {};
   const facts: CoachFact[] = keyMoments(table).map((row, index) => {
@@ -76,9 +78,9 @@ export function gameReviewRequest(
     moves: table.rows.length,
     clearMistakes: table.rows.filter((row) => row.clear).length,
   };
-  return { request: { kind: "game", profile: coachProfile(profile, summary.playerRating), game, facts }, factIds };
+  return { request: { kind: "game", coach, profile: coachProfile(profile, summary.playerRating), game, facts }, factIds };
 }
 
-export function profileSummaryRequest(profile: Profile, rating: number | null | undefined): ProfileSummaryRequest {
-  return { kind: "profile", profile: coachProfile(profile, rating) };
+export function profileSummaryRequest(profile: Profile, rating: number | null | undefined, coach: CoachId): ProfileSummaryRequest {
+  return { kind: "profile", coach, profile: coachProfile(profile, rating) };
 }

@@ -1,11 +1,12 @@
 import { fallbackGameReview, fallbackProfileSummary } from "./fallback.ts";
-import { profileBlock, PROMPT_VERSION, requestBlock, retryMessage } from "./prompt.ts";
+import { characterBlock, profileBlock, PROMPT_VERSION, requestBlock, retryMessage } from "./prompt.ts";
 import { gameReviewToWire, profileSummaryToWire, wireToGameReview, wireToProfileSummary, type CoachWire } from "./schema.ts";
 import type { CoachAttempt, CoachReply, CoachRequest, CoachResult, CoachUsage, ReplySource } from "./types.ts";
 import { validateReply } from "./validator.ts";
 
 /** The three parts of the prompt after the system instructions, in order. Only `retry` is new on a second attempt. */
 export interface ModelInput {
+  character: string;
   profile: string;
   request: string;
   retry: string | null;
@@ -40,7 +41,7 @@ export async function runCoach(request: CoachRequest, model: string, call: Model
   const attempts: CoachAttempt[] = [];
   let retry: string | null = null;
   for (let attempt = 1; attempt <= 2; attempt++) {
-    const output = await call({ profile: profileBlock(request), request: requestBlock(request), retry });
+    const output = await call({ character: characterBlock(request), profile: profileBlock(request), request: requestBlock(request), retry });
     const finished = output.stopReason === null || output.stopReason === "end_turn";
     const validation = finished
       ? validateReply(request, output.text)

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { THEME_COPY } from "../profile.ts";
+import { COACH_IDS } from "./personas.ts";
 import type { CoachRequest, GameReview, ProfileSummary } from "./types.ts";
 
 /**
@@ -86,8 +87,8 @@ const gameSchema = z.strictObject({
 });
 
 export const coachRequestSchema = z.discriminatedUnion("kind", [
-  z.strictObject({ kind: z.literal("game"), profile: profileSchema, game: gameSchema, facts: z.array(factSchema).max(6) }),
-  z.strictObject({ kind: z.literal("profile"), profile: profileSchema.extend({ themes: z.array(themeSchema).min(1).max(12) }) }),
+  z.strictObject({ kind: z.literal("game"), coach: z.enum(COACH_IDS), profile: profileSchema, game: gameSchema, facts: z.array(factSchema).max(6) }),
+  z.strictObject({ kind: z.literal("profile"), coach: z.enum(COACH_IDS), profile: profileSchema.extend({ themes: z.array(themeSchema).min(1).max(12) }) }),
 ]);
 
 /** Largest request body the Worker reads. A full game review request is about 4 KB. */

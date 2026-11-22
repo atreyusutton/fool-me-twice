@@ -7,6 +7,7 @@
 //   a number, an unknown ID, a wrong theme link, a wrong piece, a wrong phase), and confirm each is rejected.
 import { existsSync, readFileSync } from "node:fs";
 import { coachCacheKey } from "../src/core/coach/hash.ts";
+import { COACH_IDS, PERSONAS } from "../src/core/coach/personas.ts";
 import { PROMPT_VERSION } from "../src/core/coach/prompt.ts";
 import { codeBuiltWire } from "../src/core/coach/run.ts";
 import { gameReviewToWire, profileSummaryToWire, type CoachWire } from "../src/core/coach/schema.ts";
@@ -34,7 +35,8 @@ const summaries = [
 ];
 const tables = recording.facts.map(([, table]) => table);
 const profile = buildProfile(tables, computeTier1(summaries));
-const planned = planCoachRequests(summaries, tables, profile);
+const planned = COACH_IDS.flatMap((coach) => planCoachRequests(summaries, tables, profile, coach));
+const byCoach = new Map(COACH_IDS.map((coach) => [coach, { model: 0, model_retry: 0, code: 0, code_no_model: 0 }]));
 const recorded = new Map(recording.coach);
 
 if (recording.promptVersion !== PROMPT_VERSION) problems.push(`the recording used prompt ${recording.promptVersion}, the code has ${PROMPT_VERSION}`);
@@ -55,11 +57,12 @@ for (const item of planned) {
   const hash = await coachCacheKey(PROMPT_VERSION, recording.model, item.request);
   const result = recorded.get(hash);
   if (!result) {
-    problems.push(`no recorded reply for ${item.key} (the recording is out of date: run npm run record-demo)`);
+    problems.push(`no recorded reply for ${item.coach} on ${item.key} (the recording is out of date: run npm run record-demo)`);
     continue;
   }
   found++;
   sources[result.source]++;
+  byCoach.get(item.coach)![result.source]++;
   const wire = toWire(item.request, result);
   if (validateReply(item.request, wire).ok) {
     shownValid++;
@@ -78,7 +81,7 @@ for (const item of planned) {
     if (now.ok !== attempt.ok) problems.push(`an attempt for ${item.key} was recorded as ${attempt.ok ? "passing" : "failing"} but today's validator disagrees`);
     if (!attempt.ok && attempt.failure) {
       rejectedByRule.set(attempt.failure.rule, (rejectedByRule.get(attempt.failure.rule) ?? 0) + 1);
-      rejections.push(`rule ${attempt.failure.rule}: ${attempt.failure.detail}`);
+      rejections.push(`${item.coach}, rule ${attempt.failure.rule}: ${attempt.failure.detail}`);
     }
   }
   // The code-built text for the same request must always pass: it is the safety net.
@@ -165,18 +168,24 @@ const tried = mutationRows.reduce((sum, row) => sum + row.tried, 0);
 const rejected = mutationRows.reduce((sum, row) => sum + row.rejected, 0);
 
 const modelRequests = sources.model + sources.model_retry + sources.code;
-console.log("Motif eval");
-console.log("==========");
+console.log("Fool Me Twice eval");
+console.log("==================");
 console.log(`Recording: ${recording.username}, ${recording.games.length} ${recording.timeClass} games, recorded ${recording.recordedAt.slice(0, 10)}`);
 console.log(`Model: ${recording.model} · prompt ${recording.promptVersion} · engine ${recording.engineSetting}`);
 console.log("");
 console.log("1. Recorded coach replies");
-console.log(`   Requests the app can make:        ${planned.length} (1 profile summary, ${planned.length - 1} game reviews)`);
+const perCoach = planned.length / COACH_IDS.length;
+console.log(`   Requests the app can make:        ${planned.length} (${COACH_IDS.length} coaches × ${perCoach}: 1 profile summary and ${perCoach - 1} game reviews each)`);
 console.log(`   Found in the recording:           ${found} of ${planned.length}`);
 console.log(`   Passed the validator first time:  ${sources.model} of ${modelRequests} (${percent(sources.model, modelRequests)})`);
 console.log(`   Passed after one retry:           ${sources.model_retry} of ${modelRequests} (${percent(sources.model_retry, modelRequests)})`);
 console.log(`   Replaced by code-built text:      ${sources.code} of ${modelRequests} (${percent(sources.code, modelRequests)})`);
 console.log(`   Replies shown that pass today:    ${shownValid} of ${found} (${percent(shownValid, found)})`);
+console.log("   By coach (first time / after retry / code-built):");
+for (const coach of COACH_IDS) {
+  const row = byCoach.get(coach)!;
+  console.log(`     ${PERSONAS[coach].name.padEnd(18)} ${String(row.model).padStart(2)} / ${String(row.model_retry).padStart(2)} / ${String(row.code).padStart(2)}`);
+}
 if (rejections.length > 0) {
   console.log(`   Rejected attempts by rule:        ${[...rejectedByRule.entries()].sort((a, b) => a[0] - b[0]).map(([rule, count]) => `rule ${rule} × ${count}`).join(", ")}`);
   for (const line of rejections) console.log(`     - ${line}`);

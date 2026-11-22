@@ -1,4 +1,5 @@
 import type { ThemeKey, ThemeKind } from "../profile.ts";
+import type { CoachId } from "./personas.ts";
 import type { Color, Ending, Outcome, PatternTag, Phase, PieceName } from "../types.ts";
 
 /** One key moment as the coach sees it. Local IDs (F1, F2, ...) keep the request small and the same shape every time. */
@@ -62,12 +63,15 @@ export interface CoachGame {
 
 export interface GameReviewRequest {
   kind: "game";
+  /** Which character speaks. It changes the wording only. */
+  coach: CoachId;
   profile: CoachProfile;
   game: CoachGame;
   facts: CoachFact[];
 }
 export interface ProfileSummaryRequest {
   kind: "profile";
+  coach: CoachId;
   profile: CoachProfile;
 }
 export type CoachRequest = GameReviewRequest | ProfileSummaryRequest;

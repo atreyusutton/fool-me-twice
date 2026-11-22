@@ -1,5 +1,6 @@
 import type { PlayerInfo, RatingInfo } from "./chesscom.ts";
 import { gameReviewRequest, profileSummaryRequest } from "./coach/request.ts";
+import type { CoachId } from "./coach/personas.ts";
 import type { CoachRequest, CoachResult } from "./coach/types.ts";
 import type { Profile } from "./profile.ts";
 import type { EngineResult, FactTable, GameSummary, RawGame } from "./types.ts";
@@ -36,6 +37,7 @@ export const DEMO_GAME_COUNT = 25;
 export interface PlannedCoachRequest {
   /** "profile", or a game's uuid. */
   key: string;
+  coach: CoachId;
   request: CoachRequest;
   factIds: Record<string, string>;
 }
@@ -45,15 +47,15 @@ export interface PlannedCoachRequest {
  * that has key moments. The recorder, the eval and the app all build requests through the same functions,
  * so a recorded reply is found again by its hash.
  */
-export function planCoachRequests(summaries: GameSummary[], tables: FactTable[], profile: Profile): PlannedCoachRequest[] {
+export function planCoachRequests(summaries: GameSummary[], tables: FactTable[], profile: Profile, coach: CoachId): PlannedCoachRequest[] {
   const planned: PlannedCoachRequest[] = [];
-  const summaryRequest = profileSummaryRequest(profile, summaries[0]?.playerRating);
-  if (summaryRequest.profile.themes.length > 0) planned.push({ key: "profile", request: summaryRequest, factIds: {} });
+  const summaryRequest = profileSummaryRequest(profile, summaries[0]?.playerRating, coach);
+  if (summaryRequest.profile.themes.length > 0) planned.push({ key: "profile", coach, request: summaryRequest, factIds: {} });
   for (const table of tables) {
     const summary = summaries.find((entry) => entry.uuid === table.gameId);
     if (!summary) continue;
-    const { request, factIds } = gameReviewRequest(summary, table, profile);
-    if (needsModel(request)) planned.push({ key: summary.uuid, request, factIds });
+    const { request, factIds } = gameReviewRequest(summary, table, profile, coach);
+    if (needsModel(request)) planned.push({ key: summary.uuid, coach, request, factIds });
   }
   return planned;
 }

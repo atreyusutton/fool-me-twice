@@ -1,3 +1,4 @@
+import { PERSONAS } from "./personas.ts";
 import type { CoachRequest } from "./types.ts";
 
 /**
@@ -5,14 +6,15 @@ import type { CoachRequest } from "./types.ts";
  *
  * Layout, in the order the API reads it, so the parts that do not change are reused from the cache:
  *   1. SYSTEM_INSTRUCTIONS  identical for every request from every player
- *   2. profile block        changes only when new games are analysed
- *   3. request block        changes with every game
- * Cache breakpoints sit after parts 1 and 2. Nothing in parts 1 or 2 may depend on the time,
+ *   2. character block      one of four, identical for everyone who picked that coach
+ *   3. profile block        changes only when new games are analysed
+ *   4. request block        changes with every game
+ * Cache breakpoints sit after parts 1, 2 and 3. Nothing in parts 1 to 3 may depend on the time,
  * the player's name or the game being reviewed.
  *
  * Raise PROMPT_VERSION with any change here: it is part of the reply cache key.
  */
-export const PROMPT_VERSION = "2026-11-19.6";
+export const PROMPT_VERSION = "2026-11-22.1";
 
 export const SYSTEM_INSTRUCTIONS = `You are the coach in Motif, a chess app that reviews a player's games in the light of their recent games. A chess engine and tested code have already done the chess. Your job is to explain what they found, in plain words, so the player understands what keeps going wrong and what to try.
 
@@ -59,9 +61,16 @@ This rule is checked by code before the player sees anything, in every field inc
 
 # Voice
 
-Speak to the player as "you". Be direct, calm and specific, like a good club coach after a game: honest about the mistake, never scornful, never gushing. One idea per sentence. No exclamation marks, no emoji, no chess jargon the rating band would not know.
+You speak as a character. A <character> block follows these instructions and describes who you are and how you talk. Take on that voice fully: the player chose this coach and should hear them in every reply.
 
-Pitch it to the rating band in the profile:
+The character changes how you say things, never what is true:
+- Every rule above still applies. The character may not invent a move, a number, a reason or a result, and may not name a piece outside its fact.
+- Keep the chess content as clear as a plain coach would. One flourish of character per item is plenty; the headline and the closing may carry more of the voice.
+- A catchphrase is seasoning. Do not use the same one in two items of one reply.
+- Always speak to the player as "you". No exclamation marks unless the character block quotes one. No emoji.
+- Never be cruel. A villain's menace is theatre and the player is in on the joke.
+
+Pitch the vocabulary to the rating band in the profile:
 - under_1000: everyday words. The lessons are about noticing: what is attacked, what is undefended, checking before moving. Avoid terms like "initiative", "tempo" or "prophylaxis".
 - 1000_1400: basic terms such as "undefended", "trade" and "threat" are fine. Still concrete.
 - 1400_1800 and over_1800: you may be brisker and assume the vocabulary.
@@ -112,12 +121,18 @@ A profile summary item for a weakness theme T2 labelled "Mistakes played too fas
 const LAST_REMINDER =
   'Two reminders, because these are what the check rejects most: write no number as a word anywhere, not even "two" or "three" in the headline (use a token or stay qualitative); and name no piece in the headline or the closing, including "king" (say "a piece", "material", or rephrase).';
 
-/** Part 2: the player's profile. The same bytes for every game of the same profile. */
+/** Part 2: who is speaking. One of four fixed blocks, so each is cached once and shared by every player. */
+export function characterBlock(request: CoachRequest): string {
+  const persona = PERSONAS[request.coach];
+  return `<character name="${persona.name}">\n${persona.style}\n</character>`;
+}
+
+/** Part 3: the player's profile. The same bytes for every game of the same profile. */
 export function profileBlock(request: CoachRequest): string {
   return `<profile>\n${JSON.stringify(request.profile)}\n</profile>`;
 }
 
-/** Part 3: the one thing that changes with every request. */
+/** Part 4: the one thing that changes with every request. */
 export function requestBlock(request: CoachRequest): string {
   if (request.kind === "profile") {
     return `<profile_summary_request/>\n\nWrite the profile summary. ${LAST_REMINDER}`;

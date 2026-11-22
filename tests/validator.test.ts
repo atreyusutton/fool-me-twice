@@ -20,6 +20,7 @@ const profile = { ratingBand: "under_1000" as const, gamesAnalysed: 25, clearMis
 
 const game: GameReviewRequest = {
   kind: "game",
+  coach: "sherlock",
   profile,
   game: { color: "white", outcome: "loss", ending: "resignation", opening: "English Opening", moves: 31, clearMistakes: 2 },
   facts: [
@@ -27,7 +28,7 @@ const game: GameReviewRequest = {
     { id: "F2", moveNumber: 20, played: "Rxh7", best: "Rab1", loss: 49, winBefore: 50, winAfter: 1, phase: "middlegame", patterns: [], pieces: ["rook", "pawn"], lostPiece: null, timeSpent: 21, themes: [] },
   ],
 };
-const summary: ProfileSummaryRequest = { kind: "profile", profile };
+const summary: ProfileSummaryRequest = { kind: "profile", coach: "pooh", profile };
 
 const good: CoachWire = {
   headline: "A level game until a piece was left loose",
@@ -63,6 +64,12 @@ describe("validator: rule 1, the shape", () => {
     expect(ruleOf(game, { ...good, items: [good.items[0]] })).toBe(1);
     expect(ruleOf(game, { ...good, items: [good.items[0], good.items[0]] })).toBe(1);
     expect(ruleOf(game, { ...good, items: [good.items[1], good.items[0]] })).toBe(1);
+  });
+  it("rejects a stub, and a moment that never cites its own fact", () => {
+    expect(ruleOf(game, withItem(1, { text: "x" }))).toBe(1);
+    expect(ruleOf(game, withItem(1, { text: "[[played:F2]] oh." }))).toBe(1);
+    expect(ruleOf(game, withItem(1, { text: "This was a mistake and the engine preferred something else entirely." }))).toBe(1);
+    expect(ruleOf(game, { ...good, closing: { theme: null, text: "Hm." } })).toBe(1);
   });
   it("rejects empty or overlong text", () => {
     expect(ruleOf(game, { ...good, headline: " " })).toBe(1);
@@ -116,7 +123,7 @@ describe("validator: rule 4, no chess facts in the model's own words", () => {
     expect(ruleOf(game, { ...good, closing: { theme: null, text: "You did this twice." } })).toBe(4);
   });
   it("lets ordinary words through", () => {
-    expect(ruleOf(game, withItem(1, { text: "Be careful: the second mistake came at once, in a few seconds, after the first one." }))).toBe("ok");
+    expect(ruleOf(game, withItem(1, { text: "Be careful: [[played:F2]], the second mistake, came at once, in a few seconds, after the first one." }))).toBe("ok");
   });
 });
 
@@ -256,6 +263,8 @@ describe("the Worker's request check", () => {
   it("refuses unknown theme references, too many facts and a summary with no themes", () => {
     expect(parseCoachRequest({ ...game, facts: [{ ...game.facts[0], themes: ["T9"] }] }).ok).toBe(false);
     expect(parseCoachRequest({ ...game, facts: Array.from({ length: 7 }, (_, index) => ({ ...game.facts[0], id: `F${index + 1}` })) }).ok).toBe(false);
-    expect(parseCoachRequest({ kind: "profile", profile: { ...profile, themes: [] } }).ok).toBe(false);
+    expect(parseCoachRequest({ kind: "profile", coach: "hook", profile: { ...profile, themes: [] } }).ok).toBe(false);
+    expect(parseCoachRequest({ ...game, coach: "magnus" }).ok).toBe(false);
+    expect(parseCoachRequest({ ...game, coach: undefined }).ok).toBe(false);
   });
 });

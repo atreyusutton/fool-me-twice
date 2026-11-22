@@ -10,9 +10,10 @@ export const DEFAULT_COACH_MODEL = "claude-sonnet-5-5";
 /**
  * The one place Motif calls the Claude API. Used by the Worker, and by the scripts that record the demo.
  *
- * Caching: the system instructions and the output format are identical for every request, and the
- * profile block is identical for every game of one profile. A cache breakpoint after each lets the API
- * reuse them, so a second game review pays full price only for that game's facts.
+ * Caching: the system instructions and the output format are identical for every request, the character
+ * block is one of four, and the profile block is identical for every game of one profile. A cache
+ * breakpoint after each lets the API reuse them, so a second game review pays full price only for that
+ * game's facts.
  */
 export function createModelCall(apiKey: string, model: string): ModelCall {
   const client = new Anthropic({ apiKey, maxRetries: 2, timeout: 60_000 });
@@ -27,7 +28,10 @@ export function createModelCall(apiKey: string, model: string): ModelCall {
       const response = await client.messages.create({
         model,
         max_tokens: 16_000,
-        system: [{ type: "text", text: SYSTEM_INSTRUCTIONS, cache_control: { type: "ephemeral" } }],
+        system: [
+          { type: "text", text: SYSTEM_INSTRUCTIONS, cache_control: { type: "ephemeral" } },
+          { type: "text", text: input.character, cache_control: { type: "ephemeral" } },
+        ],
         messages: [{ role: "user", content }],
         // The task is wording, not problem solving: low effort keeps it quick and cheap.
         output_config: { effort: "low", format: zodOutputFormat(coachWireSchema) },

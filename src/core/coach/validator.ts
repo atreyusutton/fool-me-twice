@@ -73,6 +73,9 @@ const OUTCOME_CLAIMS: { outcome: "win" | "loss" | "draw"; pattern: RegExp }[] = 
   { outcome: "draw", pattern: /\byou drew\b|\bended in a draw\b|\bdrawn game\b/i },
 ];
 
+/** Shortest text that can be a real sentence. Catches a reply that fills a field with a stub. */
+export const MIN_TEXT_LENGTH = 20;
+
 function checkLength(text: string, where: string, max: number): Validation | null {
   if (text.trim().length === 0) return fail(1, `${where} is empty`);
   if (text.length > max) return fail(1, `${where} is longer than ${max} characters`);
@@ -166,5 +169,14 @@ export function validateReply(request: CoachRequest, raw: unknown): Validation {
       if (checkPieces(text, where, [])) return fail(6, `${where} names a piece; a profile summary may not name pieces`);
     }
   }
+  // Last, so a more specific rule is reported first: every field must say something, and a moment's
+  // text must point at its own fact, so the screen has a move or a number to show.
+  for (const item of wire.items) {
+    if (stripTokens(item.text).trim().length < MIN_TEXT_LENGTH) return fail(1, `the text for ${item.ref} is too short to say anything`);
+    if (request.kind === "game" && !item.text.includes(`:${item.ref}]]`)) {
+      return fail(1, `the text for ${item.ref} does not cite ${item.ref} with any token`);
+    }
+  }
+  if (stripTokens(wire.closing.text).trim().length < MIN_TEXT_LENGTH) return fail(1, "the closing is too short to say anything");
   return { ok: true, wire };
 }
