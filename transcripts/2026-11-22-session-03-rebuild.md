@@ -447,3 +447,11 @@ Gave the live site, the session 03 transcript page and the repository.
 ### Agent: what was done
 
 The lines on the picker cards described each coach in the third person, which would sound wrong in the coach's own voice, so they were rewritten in the first person and made a fixed line like the others: the card shows exactly what is spoken. Picking a coach plays it, even with the sound switch off, because picking is asking to hear them. The first browser check found the hello cut off after a second: the page's bubble was replaced when the coach changed, and a bubble leaving the screen stopped whatever was playing. Now a bubble stops only its own line, and the page's line waits for the hello to finish.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the picker voices into `main` through a pull request, redeployed and checked the live site.
