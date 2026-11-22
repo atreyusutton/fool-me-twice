@@ -369,3 +369,11 @@ Yes: each voice is one ID in a file. Proposed pre-recording the demo's lines.
 ### Agent: what was done
 
 Timed a real coach line through four voice models: first sound in 0.3 to 1.2 seconds, the whole clip in 0.4 to 4.6. Then built it in real time: code that writes a move out in words, a voice route in the Worker that checks the reply with the same validator before speaking and refuses free text, a cache so a line is generated once, a sound switch (off by default) and a play button on the coach's bubble. Tests for the spoken notation and for the route's refusals. Tried it in a headless browser: about one to two seconds to sound, the next key moment read as it appeared, and a repeat request served from the cache.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Set the voice key as a secret on the Worker (piped from the local file, never shown), merged the navigation and voice commits into `main` through a pull request, redeployed and checked the live site.
