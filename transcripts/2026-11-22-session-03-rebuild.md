@@ -421,3 +421,37 @@ Merged the fix through a pull request, redeployed, and confirmed on the live sit
 ### Agent: what was done
 
 Added these turns to this file and merged them into `main` through a pull request.
+
+### User
+
+> deploy
+
+### Agent: what was done
+
+Redeployed so the transcript on the live site matches the file, and checked it.
+
+### User
+
+> link?
+
+### Agent: reply
+
+Gave the live site, the session 03 transcript page and the repository.
+
+## Turn: the picked coach speaks
+
+### User
+
+> When you are picking your coach have them play the line
+
+### Agent: what was done
+
+The lines on the picker cards described each coach in the third person, which would sound wrong in the coach's own voice, so they were rewritten in the first person and made a fixed line like the others: the card shows exactly what is spoken. Picking a coach plays it, even with the sound switch off, because picking is asking to hear them. The first browser check found the hello cut off after a second: the page's bubble was replaced when the coach changed, and a bubble leaving the screen stopped whatever was playing. Now a bubble stops only its own line, and the page's line waits for the hello to finish.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the picker voices into `main` through a pull request, redeployed and checked the live site.

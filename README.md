@@ -22,11 +22,11 @@ Open the address it prints (usually `http://localhost:5173`).
 
 - **Without an API key:** click **See the demo**. It plays back 25 real games of one public player, with the engine's results and each of the four coaches' checked replies, from a file. Practice and the opening drill work in the demo too. You can also enter any Chess.com username: the engine runs in your browser, and the coach's text is then built by code from the facts.
 - **With an API key:** copy `.dev.vars.example` to `.dev.vars`, put your Anthropic API key in it, and restart. Now the coach's sentences are written by Claude, in the voice of the coach you picked, and checked before you see them. `.dev.vars` is git-ignored.
-- **With a voice key (optional):** add `ELEVENLABS_API_KEY` to `.dev.vars` and a speaker button appears in the top bar and a play button on each coach bubble. Sound is off until you turn it on. The four voice IDs in `src/core/voice.ts` belong to my ElevenLabs account; with your own key, design or pick your own voices and put their IDs there.
+- **With a voice key (optional):** add `ELEVENLABS_API_KEY` to `.dev.vars` and a speaker button appears in the top bar and a play button on each coach bubble. Sound is off until you turn it on, except that the coach you pick says their one line. The four voice IDs in `src/core/voice.ts` belong to my ElevenLabs account; with your own key, design or pick your own voices and put their IDs there.
 
 | Command | What it does |
 |---|---|
-| `npm test` | 142 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, spoken notation, the fixed lines and the voice request check, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
+| `npm test` | 143 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, spoken notation, the fixed lines and the voice request check, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
 | `npm run eval` | Checks every recorded coach reply and attacks the validator with broken replies. No key needed. Output below |
 | `npm run record-demo` | Re-records the demo for all four coaches (needs a key) |
 | `npm run build-openings` | Fetches the opening book and the quoted opening notes again |
@@ -240,7 +240,8 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 20 | After the deploy: key rotation checks, live coach on the deployment, one consistent navigation bar |
 | 75 | Coach voices: designing five voices, a checked voice route with caching, the player and controls |
 | 35 | Voices for practice, the opening guide and Blundy: fixed lines moved into shared code with typed slots, tests, browser checks |
-| **415** | **Total: 6 h 55 min** |
+| 20 | The picked coach says their line |
+| **435** | **Total: 7 h 15 min** |
 
 ## Licences and credits
 

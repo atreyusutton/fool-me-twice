@@ -17,6 +17,11 @@ describe("fixed lines: what the screen shows", () => {
     expect(text("practice.set", "dracula", { right: 3, missed: 2 })).toBe("That is the set. 3 positions right first time, 2 to see again.");
   });
 
+  it("has each coach say the line the picker shows under their name", () => {
+    expect(text("picker.hello", "pooh", {})).toBe("I am a Bear of Very Little Brain, so I think before I move.");
+    expect(text("picker.hello", "blundy", {})).toContain("refused");
+  });
+
   it("fills Blundy's drill lines, with and without a name from the book", () => {
     expect(text("drill.right", "blundy", { move: "Nf3", name: "Sicilian Defense: Najdorf Variation" })).toBe(
       "Nf3. Hmph. That is in the book. You have reached the Sicilian Defense: Najdorf Variation. Let me think.",
