@@ -421,7 +421,7 @@ export class PlayerSession {
           status = { available: body.coach === true, model: body.model ?? null };
         }
       } catch (error) {
-        console.warn("Motif: the coach service could not be reached; using text built by code.", error);
+        console.warn("Fool Me Twice: the coach service could not be reached; using text built by code.", error);
       }
       this.update({ coachStatus: status });
       return status;

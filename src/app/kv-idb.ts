@@ -37,7 +37,7 @@ export async function openCache(): Promise<OpenedCache> {
     });
     return { kv: new IndexedDbKV(db), persistent: true };
   } catch (error) {
-    console.warn("Motif: IndexedDB is unavailable, so results are kept in memory for this visit only.", error);
+    console.warn("Fool Me Twice: IndexedDB is unavailable, so results are kept in memory for this visit only.", error);
     return { kv: new MemoryKV(), persistent: false };
   }
 }

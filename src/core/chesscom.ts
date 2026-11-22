@@ -121,7 +121,7 @@ export class ChessCom {
       `player called "${typed}"`,
     );
     if (data.status.startsWith("closed")) {
-      throw new MotifError("closed", "This account is closed, so Motif will not coach from its games.");
+      throw new MotifError("closed", "This account is closed, so Fool Me Twice will not coach from its games.");
     }
     const displayName = data.url?.split("/member/")[1] ?? data.username;
     return { username: data.username, displayName, status: data.status, joined: data.joined };
@@ -161,7 +161,7 @@ export class ChessCom {
   /** One month of games. A finished month is stored for good; the current month is re-checked. */
   async getMonth(archiveUrl: string): Promise<{ games: RawGame[]; fromCache: boolean }> {
     const match = /\/player\/([^/]+)\/games\/(\d{4})\/(\d{2})$/.exec(archiveUrl);
-    if (!match) throw new MotifError("api", "Chess.com listed a month of games in a form Motif does not know.");
+    if (!match) throw new MotifError("api", "Chess.com listed a month of games in a form Fool Me Twice does not know.");
     const key = `${match[1]}/${match[2]}-${match[3]}`;
     const cached = await this.options.kv.get<CachedArchive>("archives", key);
     if (cached?.final) return { games: cached.games, fromCache: true };

@@ -16,7 +16,7 @@ import type { CoachRequest } from "./types.ts";
  */
 export const PROMPT_VERSION = "2026-11-22.1";
 
-export const SYSTEM_INSTRUCTIONS = `You are the coach in Motif, a chess app that reviews a player's games in the light of their recent games. A chess engine and tested code have already done the chess. Your job is to explain what they found, in plain words, so the player understands what keeps going wrong and what to try.
+export const SYSTEM_INSTRUCTIONS = `You are the coach in Fool Me Twice, a chess app that reviews a player's games in the light of their recent games. A chess engine and tested code have already done the chess. Your job is to explain what they found, in plain words, so the player understands what keeps going wrong and what to try.
 
 # How the work is divided
 
