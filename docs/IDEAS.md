@@ -9,6 +9,10 @@ Review one game in the context of the player's recent games. The coach reports r
 - Origin: Atreyu, session 01.
 - Why first: it is the gap between Chess.com's single-game review and its statistics page.
 
+## Built in version 2 (session 03)
+
+Idea 2 (puzzles from your own blunders) and an opening guide with a drill were built in the version 2 rebuild. Scout an opponent is still next.
+
 ## Next
 
 ### 2. Puzzles from your own blunders

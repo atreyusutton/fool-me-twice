@@ -212,3 +212,45 @@ After step 5 the app is already useful and already truthful with no model at all
 ## 12. README must contain
 
 What it is, in two sentences. How to run it with one command, with and without a key. How it stays truthful (the five layers and the validator), in words a beginner follows. System design, context and prompting strategy. Limitations, honestly. What comes next. Time breakdown from `docs/TIMELOG.md`. Where the transcripts are. Eval results as printed.
+
+## 13. Version 2: Fool Me Twice (22 November 2026)
+
+This section overrides earlier sections where they differ. The approved plan is summarised here; decisions are in `docs/DECISIONS.md`.
+
+### Two jobs
+
+1. Be a good chess coach. 2. Explain and show the process. Version 1 showed data well and did neither job fully.
+
+### The flow
+
+| Screen | What it is for | Leads to |
+|---|---|---|
+| Home | Username or the demo, then pick a coach | You |
+| You | The coach's read of the player: at most three findings in sentences, then strengths. Numbers and the game list on request | Review ("Show me"), Practice ("Practice this") |
+| Review | One game with the chosen coach; the figure reacts as you step through key moments | Practice ("Try it again") |
+| Practice | Puzzles from the player's own mistakes, grouped by theme; missed ones return | Review |
+| Openings | A guide to the openings the player plays, and a drill against Blundy McBlunderpants | Practice |
+| Process | Story, Transcripts (as a messaging app: AI-written summary first, whole conversation on request), How it stays truthful | |
+
+Top bar on desktop, bottom tab bar on a phone. One primary action per screen.
+
+### Coaches
+
+Sherlock Holmes, Winnie-the-Pooh, Captain Hook, Count Dracula. Each is a layered SVG figure with states (idle, talking, wince, pleased, thinking, one signature move) chosen by code. The prompt gains a persona block after the shared instructions with its own cache breakpoint; the reply cache key gains the coach ID; the validator is unchanged; a reply that fails twice becomes plain code-built text.
+
+### Puzzles
+
+Built by code from fact rows that are clear mistakes with an engine move. The attempt is checked by the engine in the browser at the fixed depth: accepted when it gives up less than `PUZZLE_TOLERANCE` points of winning chance compared with the engine's move. If the engine cannot load, only the engine's own move is accepted. Progress is stored on the device.
+
+### Openings
+
+- Book lines and names: the Lichess `chess-openings` dataset (CC0).
+- Ideas: Wikibooks "Chess Opening Theory" (CC BY-SA), quoted as written with a link.
+- Likely replies for the drill: how often the player's own opponents played each book move, then how many named lines follow it.
+- All fetched once by `npm run build-openings` into `public/openings/`.
+- The guide shows the player's record in each opening, where they most often leave the book and what the book moves were, their first clear mistake in the opening, and the quoted ideas.
+- The drill: Blundy plays a likely book reply; the player must stay in the book. Any book move is accepted and named.
+
+### Out of scope
+
+Voice, coaches modelled on real people, accounts, server storage of player data, chat with your games, scouting an opponent.

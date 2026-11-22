@@ -1,8 +1,10 @@
-# Motif: project rules for coding agents
+# Fool Me Twice: project rules for coding agents
 
-Motif is an AI chess coach that remembers. It reviews one game in the context of a player's recent games and reports the recurring themes behind their results. It is a take-home project for an engineering internship, and the way it is built is judged along with the result.
+Fool Me Twice (version 1 was called Motif) is an AI chess coach that remembers. It reads a player's recent games, finds the mistakes that keep coming back, reviews a game with a coach character, and turns the player's own mistakes and openings into practice. It is a take-home project for an engineering internship, and the way it is built is judged along with the result.
 
-Read `docs/SPEC.md` before writing code. Read `docs/STORY.md` before writing the README or the in-app "How this was built" page.
+It has two jobs: (1) be a good chess coach, and (2) explain and show the process behind it. Every screen should serve one of them, and the flow between screens must be clean enough that a player and a reviewer can both follow the story.
+
+Read `docs/SPEC.md` before writing code (version 2 is the last section and overrides earlier sections where they differ). Read `docs/STORY.md` before writing the README or the Process pages.
 
 ## The one rule: engine truth
 
@@ -15,6 +17,18 @@ The chess engine and the game record are the only sources of chess facts. The la
 - If a shortcut would let unverified chess text reach the screen, stop and choose the slower path.
 
 Why: a coach that is wrong once about a move loses the player. Trust and a good experience come before anything clever.
+
+### The second source: sourced text (version 2)
+
+Opening ideas cannot be proven by an engine. They come only from text fetched from a named open source, shown as written, with its source and licence beside it. The model never writes or rewrites opening theory. Book moves come from an open dataset, not from the model.
+
+### Coach characters (version 2)
+
+- The coaches are characters from out-of-copyright books: Sherlock Holmes, Winnie-the-Pooh, Captain Hook and Count Dracula. Blundy McBlunderpants is the app's own character and the opening-drill opponent.
+- Draw and write them from the books only. Never copy a film, television or theme-park version (no red shirt on the bear, no film costumes, no film catchphrases).
+- A character changes the wording only. Every line still cites fact IDs and passes the same validator. The figure's expression is chosen by code from the facts, never by the model.
+- No voice or speech features. This is deliberate.
+- No coaches modelled on real people.
 
 ## What to keep in front while building
 
@@ -37,7 +51,7 @@ Check current documentation before relying on memory for: the Claude API (model 
 - Handle errors explicitly. No empty `catch` blocks. A failed fetch, engine crash or model error must show the player a clear message and a way forward.
 - Prefer integration tests. The pattern detectors and the validator are the exceptions: each needs focused tests, because trust depends on them.
 - Do not delete files; move them to `_archive/` and say so.
-- Do not imitate Chess.com's interface, colours, move-quality names or icons. Motif has its own look and its own words.
+- Do not imitate Chess.com's interface, colours, move-quality names or icons. Fool Me Twice has its own look and its own words.
 
 ## Records to keep (they are part of the hand-in)
 
@@ -45,6 +59,7 @@ Check current documentation before relying on memory for: the Claude API (model 
 - `docs/TIMELOG.md`: one line per block of work: date, minutes, what it went to.
 - `docs/DECISIONS.md`: one short entry whenever a choice in the spec changes or a new trade-off is made: what, why, what was given up.
 - `docs/IDEAS.md`: features for later. Add to it; do not build from it without being asked.
+- `TODO.md`: what is done, in progress and next for the version 2 rebuild.
 
 ## Done means
 

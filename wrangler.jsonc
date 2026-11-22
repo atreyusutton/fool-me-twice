@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fool-me-twice",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    // Unknown paths serve index.html so client-side routes work on reload.
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    "COACH_MODEL": "claude-sonnet-5-5"
+  },
+  // At most 20 coach requests a minute from one address. The key itself is a Worker secret, never in this file.
+  "ratelimits": [{ "name": "COACH_LIMIT", "namespace_id": "1002", "simple": { "limit": 20, "period": 60 } }]
+}
