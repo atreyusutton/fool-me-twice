@@ -175,6 +175,12 @@ export const SESSIONS: SessionSummary[] = [
         text: "Practice answers are judged by the engine in the browser, and book moves by the open dataset. What the coaches say on those screens is fixed text with the moves put in by code: where right or wrong must be instant and certain, the model is not called at all.",
         tags: ["grounding", "caching"],
       },
+      { who: "user", text: "Is there a way to get really good voices for each character?" },
+      {
+        who: "note",
+        text: "I had asked about famous voices first. The agent searched, found no licensed option, and pointed out that an unlicensed clone on a public site undercuts a project about not faking things. So each coach got a voice designed from a written description of the book character, picked by ear. The voice service is sent the checked reply, checks it again, writes each move out in words by code, and refuses free text. Four voice models were timed on a real line before one was chosen.",
+        tags: ["grounding", "evaluation", "caching"],
+      },
       {
         who: "note",
         text: "Each screen was opened in a headless browser and looked at. That caught a drawing cut in half by its own frame, and an opening drill that began with the wrong first move because of how the dataset files transpositions.",

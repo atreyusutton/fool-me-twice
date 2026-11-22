@@ -84,15 +84,16 @@ Browser
 
 Cloudflare Worker
   static files
-  POST /api/coach -> Claude API (the only reason a server exists: the key never reaches a browser)
+  POST /api/coach -> Claude API      (a server exists so that the keys never reach a browser)
+  POST /api/voice -> ElevenLabs API  (reads checked text aloud; cached by voice, model and words)
 ```
 
-- **Your games stay in your browser.** The Worker receives only the compact fact payload for the coach, and stores nothing.
+- **Your games stay in your browser.** The Worker receives only the compact fact payload for the coach (and, for a voice, that payload with the reply to be read), and stores nothing but cached audio.
 - **The Worker is not a general door to the model.** It accepts only a size-limited payload in which every field is a number, a fixed choice (including which of the four coaches), a chess move, a plain name or the app's own wording. It builds the prompt itself and limits each address to 20 requests a minute.
-- **Four caches, so a second visit costs nothing:** monthly game archives, engine results by position, fact tables by game, coach replies by a hash of prompt version, model and request. The coach is part of the request, so each coach's words are kept apart.
+- **Four caches, so a second visit costs nothing:** monthly game archives, engine results by position, fact tables by game, coach replies by a hash of prompt version, model and request. The coach is part of the request, so each coach's words are kept apart. Spoken lines are a fifth: the same voice, model and words are generated once and then served from Cloudflare's cache.
 - **Analysis never blocks the page.** Games are analysed newest first in the background; each opens as soon as it is done. Measured in version 1 on the demo player's 25 games: 47 seconds with three engines, under a second on a reload.
 
-Code map: `src/core/` (facts, detectors, themes, puzzles, openings, transcript reader, coach prompt and validator; shared by the app, the Worker, the scripts and the tests), `src/app/` (session, cache, engine workers), `src/ui/` (screens, `coaches/` figures, `process/` pages), `worker/` (the one route), `scripts/`, `tests/`, `_archive/v1/` (the version 1 screens, kept, not used).
+Code map: `src/core/` (facts, detectors, themes, puzzles, openings, transcript reader, coach prompt and validator; shared by the app, the Worker, the scripts and the tests), `src/app/` (session, cache, engine workers), `src/ui/` (screens, `coaches/` figures, `process/` pages), `worker/` (the coach and voice routes), `scripts/`, `tests/`, `_archive/v1/` (the version 1 screens, kept, not used).
 
 ## Context and prompting strategy
 
@@ -241,7 +242,8 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 75 | Coach voices: designing five voices, a checked voice route with caching, the player and controls |
 | 35 | Voices for practice, the opening guide and Blundy: fixed lines moved into shared code with typed slots, tests, browser checks |
 | 20 | The picked coach says their line |
-| **435** | **Total: 7 h 15 min** |
+| 15 | Check before sending: clean clone, live sweep, stale wording |
+| **450** | **Total: 7 h 30 min** |
 
 ## Licences and credits
 

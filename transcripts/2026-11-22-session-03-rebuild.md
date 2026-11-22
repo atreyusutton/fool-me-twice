@@ -455,3 +455,13 @@ The lines on the picker cards described each coach in the third person, which wo
 ### Agent: what was done
 
 Merged the picker voices into `main` through a pull request, redeployed and checked the live site.
+
+## Turn: check before sending
+
+### User
+
+> I will send the email with the live link and the github repo to Olga. Can you check everything write and email and make sure it it good to go for an interview?
+
+### Agent: what was done
+
+Checked the hand-in the way a reviewer would meet it. Cloned the public repository fresh with no keys: install, 143 tests, the eval, lint and the build passed, and every screen opened at desktop and phone width with no errors. Swept the same screens on the live site, and typed a real username into it: the coach's read, written by the model and checked, appeared after 46 seconds. The eval block in the README matches what the command prints. Found three stale things: the README's system design and the session summary on the Process tab did not mention the voice route (fixed here), and the repository's description on GitHub still said Motif. Two `[CONFIRM]` notes in `docs/STORY.md` still need the user's answer. Drafted the email.
