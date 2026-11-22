@@ -9,8 +9,13 @@
     "run_worker_first": ["/api/*"]
   },
   "vars": {
-    "COACH_MODEL": "claude-sonnet-5-5"
+    "COACH_MODEL": "claude-sonnet-5-5",
+    "VOICE_MODEL": "eleven_multilingual_v2"
   },
-  // At most 20 coach requests a minute from one address. The key itself is a Worker secret, never in this file.
-  "ratelimits": [{ "name": "COACH_LIMIT", "namespace_id": "1002", "simple": { "limit": 20, "period": 60 } }]
+  // At most 20 coach requests a minute from one address. The keys themselves are Worker secrets, never in this file.
+  "ratelimits": [
+    { "name": "COACH_LIMIT", "namespace_id": "1002", "simple": { "limit": 20, "period": 60 } },
+    // New spoken lines only; a line already generated is served from the cache and does not count.
+    { "name": "VOICE_LIMIT", "namespace_id": "1003", "simple": { "limit": 20, "period": 60 } }
+  ]
 }

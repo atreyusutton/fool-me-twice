@@ -114,8 +114,7 @@ img, svg { display: block; }
 .nav a { padding: 8px 13px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 0.95rem; color: var(--ink-2); }
 .nav a:hover { color: var(--ink); background: var(--surface-2); }
 .nav a[aria-current="page"] { color: var(--hl-ink); background: var(--hl); }
-.nav-player { font-size: 0.78rem; font-weight: 600; color: var(--ink-3); padding: 3px 10px; border: 1px dashed var(--line); border-radius: 999px; white-space: nowrap; }
-@media (max-width: 1080px) { .nav-player { display: none; } .topbar { gap: 10px; } .nav a { padding: 8px 10px; } }
+@media (max-width: 1080px) { .topbar { gap: 10px; } .nav a { padding: 8px 10px; } }
 @media (max-width: 940px) { .coach-chip span { display: none; } .coach-chip { padding: 3px; } }
 .topbar-end { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .coach-chip { display: flex; align-items: center; gap: 8px; padding: 3px 12px 3px 3px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 600; font-size: 0.9rem; }
@@ -367,6 +366,11 @@ a.game-row:hover { border-color: var(--ink); }
 .book-moves li:first-child { border-top: 0; }
 .quoted { margin: 0; padding: 4px 0 4px 20px; border-left: 4px solid var(--hl); font-family: var(--display); font-size: 1.12rem; line-height: 1.5; max-width: 68ch; }
 .quoted p + p { margin-top: 12px; }
+
+/* Coach voices */
+.who .speak { margin-left: 8px; width: 24px; height: 24px; display: inline-grid; place-items: center; vertical-align: middle; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.62rem; cursor: pointer; }
+.who .speak:hover { border-color: var(--ink-3); background: var(--hl-soft); }
+.iconbtn[aria-pressed="true"] { background: var(--hl); color: var(--hl-ink); border-color: transparent; }
 
 /* Process: prose */
 .prose { display: grid; gap: clamp(28px, 4vw, 44px); max-width: 860px; }

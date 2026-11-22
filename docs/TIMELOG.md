@@ -29,3 +29,4 @@ One line per block of work: date, minutes, what it went to. The README's time br
 | 2026-11-22 | 35 | Step 8: README, records, browser checks on desktop, phone width and dark theme, clean-clone check, deploy |
 | 2026-11-22 | 10 | Step 9: deploy as a new Worker, live checks, repository rename, push |
 | 2026-11-22 | 20 | After hand-in checks: key rotation checks, live coach on the deployment, one consistent navigation bar |
+| 2026-11-22 | 75 | Coach voices: choosing a service, designing and picking five voices, spoken-notation code and tests, a checked voice route with caching, player and controls, browser checks |

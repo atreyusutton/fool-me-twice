@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useCoach } from "../app/coach-choice.ts";
 import { gamePath, playerPath } from "../app/router.ts";
 import { coachSlot, ENGINE_GAME_STEPS, type CoachEntry, type PlayerSession, type SessionState } from "../app/session.ts";
+import { voiceLine } from "../app/voice.ts";
 import type { CoachId } from "../core/coach/personas.ts";
 import type { ProfileSummary } from "../core/coach/types.ts";
 import { evidenceRows, type Theme } from "../core/profile.ts";
@@ -185,7 +186,12 @@ function Read({ session, state, coach, entry }: { session: PlayerSession; state:
   const focus = entry.request.profile.themes.find((theme) => theme.id === summary.focus.theme);
   return (
     <section className="stack" aria-label="Your coach's read">
-      <Say who={coach} mood={entry.status === "loading" ? "thinking" : "talking"} big>
+      <Say
+        who={coach}
+        mood={entry.status === "loading" ? "thinking" : "talking"}
+        big
+        voice={entry.status === "ready" ? voiceLine(entry.request, summary, ["headline", "closing"]) : null}
+      >
         <p>{summary.headline}</p>
       </Say>
       <div className="read-body stack">

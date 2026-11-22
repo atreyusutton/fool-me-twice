@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useCoach } from "../app/coach-choice.ts";
 import { useLastPlayer, type PlayerRef } from "../app/last-player.ts";
 import { playerPath, type Route } from "../app/router.ts";
+import { setSound, useVoice } from "../app/voice.ts";
 import { PERSONAS } from "../core/coach/personas.ts";
 import { CoachPicker } from "./coaches/CoachPicker.tsx";
 import { Figure } from "./coaches/Figure.tsx";
@@ -55,26 +56,33 @@ interface Tab {
 }
 
 /**
- * The same six destinations on every page. The four coaching tabs lead to the player on screen, or,
- * from Home and Process, to the last player loaded on this device (the demo player if there is none).
+ * Home and Process are on every page. Between them: one tab to a player's pages when no player is
+ * on screen (the last player loaded on this device, or the demo), and that player's four coaching
+ * tabs once inside.
  */
 function tabsFor(route: Route, last: PlayerRef): Tab[] {
-  const player: PlayerRef = route.name === "player" ? { username: route.username, demo: route.demo } : last;
-  const to = (sub = "") => playerPath(player.username, player.demo, sub);
-  const view = route.name === "player" ? route.view.name : null;
+  const home: Tab = { key: "home", label: "Home", href: "/", current: route.name === "home" };
+  const processTab: Tab = { key: "process", label: "Process", href: "/process", current: route.name === "process" };
+  if (route.name !== "player") {
+    const label = last.demo ? "Demo" : last.username;
+    return [home, { key: "you", label, href: playerPath(last.username, last.demo), current: false }, processTab];
+  }
+  const to = (sub = "") => playerPath(route.username, route.demo, sub);
+  const view = route.view.name;
   return [
-    { key: "home", label: "Home", href: "/", current: route.name === "home" },
+    home,
     { key: "you", label: "You", href: to(), current: view === "you" },
     { key: "review", label: "Review", href: to("games"), current: view === "games" || view === "game" },
     { key: "practice", label: "Practice", href: to("practice"), current: view === "practice" },
     { key: "openings", label: "Openings", href: to("openings"), current: view === "openings" || view === "opening" || view === "drill" },
-    { key: "process", label: "Process", href: "/process", current: route.name === "process" },
+    processTab,
   ];
 }
 
 export function Shell({ route, children }: { route: Route; children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(readTheme);
   const coach = useCoach();
+  const voice = useVoice();
   const dialog = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -92,10 +100,8 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
   const label = theme === "auto" ? "Theme: follows your device" : theme === "dark" ? "Theme: dark" : "Theme: light";
   const last = useLastPlayer();
   const tabs = tabsFor(route, last);
-  // Five tabs fit a phone; Home is the logo in the top bar, which is always on screen.
-  const phoneTabs = tabs.filter((tab) => tab.key !== "home");
-  // On Home and Process, say whose pages the coaching tabs open.
-  const leadsTo = route.name === "player" ? null : last.demo ? "Demo player" : last.username;
+  // A phone's bottom bar holds five tabs at most; there the logo in the top bar is Home.
+  const phoneTabs = tabs.length > 5 ? tabs.filter((tab) => tab.key !== "home") : tabs;
 
   return (
     <div className="shell">
@@ -111,16 +117,25 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
             </Link>
           ))}
         </nav>
-        {leadsTo && (
-          <span className="nav-player" title="You, Review, Practice and Openings open this player">
-            {leadsTo}
-          </span>
-        )}
         <div className="topbar-end">
           <button className="coach-chip" onClick={() => dialog.current?.showModal()} aria-label={`Your coach is ${PERSONAS[coach].name}. Change coach.`}>
             <Figure who={coach} size={32} decorative />
             <span>{PERSONAS[coach].name}</span>
           </button>
+          {voice.available && (
+            <button
+              className="iconbtn"
+              onClick={() => setSound(!voice.sound)}
+              aria-pressed={voice.sound}
+              aria-label={voice.sound ? "Coach voices are on. Turn them off." : "Coach voices are off. Turn them on."}
+              title={voice.sound ? "Coach voices: on" : "Coach voices: off"}
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 9.500h3l5-4v13l-5-4H4z" />
+                {voice.sound ? <path d="M15.500 9a4 4 0 0 1 0 6M18 6.500a7.500 7.500 0 0 1 0 11" /> : <path d="M16 9.500l5 5M21 9.500l-5 5" />}
+              </svg>
+            </button>
+          )}
           <button className="iconbtn" onClick={() => setTheme(next)} aria-label={`${label}. Change theme.`} title={label}>
             <span aria-hidden="true">{theme === "auto" ? "◐" : theme === "dark" ? "☾" : "☀"}</span>
           </button>

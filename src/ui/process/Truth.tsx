@@ -90,7 +90,8 @@ export function Truth() {
         </ol>
         <p className="small muted">
           Opening ideas are a second, separate source: text quoted as written from a named open source, with its licence. The model does not
-          write or reword it. Practice answers and book moves never touch the model at all.
+          write or reword it. Practice answers and book moves never touch the model at all. The coaches' voices read only text that has
+          passed the checker: the voice service is sent the checked reply, checks it again, and refuses anything else.
         </p>
       </section>
 

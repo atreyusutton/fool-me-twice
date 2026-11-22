@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useCoach } from "../app/coach-choice.ts";
 import { playerPath } from "../app/router.ts";
 import { coachSlot, type PlayerSession, type SessionState } from "../app/session.ts";
+import { voiceLine } from "../app/voice.ts";
 import { fallbackGameReview } from "../core/coach/fallback.ts";
 import { gameReviewRequest } from "../core/coach/request.ts";
 import type { GameReview as GameReviewReply, GameReviewRequest } from "../core/coach/types.ts";
@@ -158,6 +159,11 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
     pair[move.color] = move;
   }
   const loading = entry?.status === "loading";
+  // What the bubble shows can be read aloud once the text is final. The voice route checks it again.
+  const line =
+    entry?.status === "ready"
+      ? voiceLine(request, review, current ? [review.moments.indexOf(current.moment)] : ["headline", "closing"])
+      : null;
   // The figure's expression is chosen here, from the fact row. The model has no say in it.
   const mood = loading
     ? "thinking"
@@ -228,7 +234,7 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
 
         <div className="review-coach stack">
           <div aria-live="polite">
-            <Say who={coach} mood={mood} size={88}>
+            <Say who={coach} mood={mood} size={88} voice={line}>
               {current ? (
                 <>
                   <p className="bubble-kicker">
