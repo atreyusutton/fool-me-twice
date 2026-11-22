@@ -116,6 +116,8 @@ img, svg { display: block; }
 .nav a[aria-current="page"] { color: var(--hl-ink); background: var(--hl); }
 @media (max-width: 1080px) { .topbar { gap: 10px; } .nav a { padding: 8px 10px; } }
 @media (max-width: 940px) { .coach-chip span { display: none; } .coach-chip { padding: 3px; } }
+/* Between a phone and a small laptop the bar holds six tabs and three buttons: the logo stands alone. */
+@media (max-width: 900px) and (min-width: 761px) { .brand { font-size: 0; gap: 0; } .nav { margin-left: 0; } .nav a { padding: 8px 8px; font-size: 0.9rem; } }
 .topbar-end { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .coach-chip { display: flex; align-items: center; gap: 8px; padding: 3px 12px 3px 3px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 600; font-size: 0.9rem; }
 .coach-chip:hover { border-color: var(--ink-3); }
