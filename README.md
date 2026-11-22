@@ -174,7 +174,7 @@ What this does and does not show: every reply the demo shows passes the validato
 - **The validator cannot check everything.** It blocks invented moves, numbers, pieces, phases and results. It cannot prove that a general sentence of advice is wise, or that a character's joke lands.
 - **Practice answers near the 8-point line can go either way,** because the check is a quick search.
 - **"In the book" is not "best".** The dataset files some transpositions under an opening family; the drill starts from the position that defines the opening to avoid them.
-- **Opening notes exist for 71 of the 90 largest opening families.** They are introductions, quoted and cut to at most three paragraphs.
+- **Opening notes exist for 76 of the 90 largest opening families.** They are introductions, quoted and cut to at most three paragraphs.
 - **The session summaries on the Process tab were written by AI.** My messages in them are quotes, and a test checks each against the transcript; the agent's side is a summary, which is why the whole transcript is one click away.
 - **The coaches are from out-of-copyright books and drawn from the books.** Winnie-the-Pooh carries the most risk, because of trademarks on later versions. This is not legal advice.
 - **Not checked:** Safari and Firefox, a real phone (only a phone-sized window), a screen reader, the closed-account screen in a browser, and the deployed rate limit under load.
