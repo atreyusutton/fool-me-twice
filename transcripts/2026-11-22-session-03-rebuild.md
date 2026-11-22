@@ -245,3 +245,37 @@ Made the repository public and confirmed it loads without a login.
 ### Agent: what was done
 
 Added these turns to this file and merged them into `main` through a pull request.
+
+## Turn: the new key, local and live
+
+### User
+
+> Can you make sure the key is added and runs
+
+### Agent: what was done
+
+Tried to write the new key into `.dev.vars`; the permission system refused, and the project rules keep that file read-only for the agent. Asked the user to paste it in by hand.
+
+### User
+
+> where can i find the key
+
+### User
+
+> It's added
+
+### Agent: what was done
+
+Checked the file's shape without printing it, sent one real coach request from the command line (both replies passed the checker first time), restarted the dev server and loaded a live player: the text was labelled as written by the model and checked by code.
+
+### User
+
+> how to add a spend limit
+
+### User
+
+> I'm okay with no spend limit for now push it
+
+### Agent: what was done
+
+Set the key as the secret on the `fool-me-twice` Worker, piped from the local file so it never appeared on screen. Checked the deployed site with a live player: the coach route answered, and the text shown was the model's second reply after the checker rejected the first. The recorded demo still plays. README and to-do updated.
