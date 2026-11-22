@@ -395,3 +395,11 @@ Checking the live site after the voice deploy had found the top bar overflowing 
 ### Agent: what was done
 
 The fixed lines were text inside three screens, so the Worker could not know them. Moved them into one shared file where each move, number and opening name is a typed slot. The screen builds its text from that file; the voice route is sent only a line's name and its values, builds the words itself, and refuses a value that is not a chess move, a small whole number or an opening name. Tests cover the wording and the refusals. Blundy now waits to finish his sentence before he moves. Checked in a headless browser with sound on: practice lines, the guide line and Blundy's lines were all read, and the earlier practice and drill walkthroughs still show the same words.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the fixed-line voices into `main` through a pull request, redeployed and checked the live site.
