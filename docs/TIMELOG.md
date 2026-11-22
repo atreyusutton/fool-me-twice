@@ -15,3 +15,9 @@ One line per block of work: date, minutes, what it went to. The README's time br
 | 2026-11-19 | 30 | Step 8: "How this was built" page, README, licence |
 | 2026-11-19 | 25 | Step 9: browser checks of error states, dark theme and phone layout; fix so saved games open when Chess.com is unreachable |
 | 2026-11-19 | 10 | Clean-clone check, deploy to Cloudflare, push to GitHub |
+
+## Version 2: Fool Me Twice (separate from the take-home time above)
+
+| Date | Minutes | What |
+|---|---|---|
+| 2026-11-22 | 40 | Session 03: rescoping with Atreyu (name, cast, flow, sources), two naming rounds, checking the opening data sources, plan |

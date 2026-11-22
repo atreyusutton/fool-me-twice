@@ -84,3 +84,19 @@ Measured on the demo player's latest 25 rapid games (1,741 positions), same engi
 - **README and "How this was built" do not say the user checked the result.** `docs/STORY.md` marked that sentence and the final hours as needing confirmation; the build ran without a pause, so both pages state only what the records show. To be confirmed by Atreyu.
 - **Deployed as the Worker `motif`** at https://motif.atreyusutton.workers.dev, with the API key as a Worker secret. Checked in a browser after deploy: the demo (no outside requests) and one live run with the coach. Trade-off: the address is public, so anyone who finds it can spend the key through the coach route, limited to 20 requests a minute per address and to Motif's own fact payloads. Remove the secret (`npx wrangler secret delete ANTHROPIC_API_KEY --name motif`) to turn the live coach off; the demo and code-built text keep working.
 - **Development tools kept in `scripts/`:** `tune.ts`, `measure-engine.ts`, `try-coach.ts`. They are how the measured settings were produced.
+
+# Version 2: Fool Me Twice (session 03, 22 November 2026)
+
+## Before the rebuild
+
+- **Renamed to Fool Me Twice.** "Motif" was abstract, an art word before a chess word, and in chess means the tactical motif the model is not allowed to name. Two naming rounds (one by a separate agent) produced Takeback, Hindsight and others; Atreyu chose Fool Me Twice from a "funnier" round because it states the thesis: the coach remembers, so the repeat gets caught. A quick search found no chess product with the name; not a trademark check. The repo and Worker are renamed at the end.
+- **Coaches are book characters, not real people.** Atreyu first asked for coaches modelled on well-known chess personalities. The agent raised that Chess.com's permission could not cover those individuals' names and personas on a public site. Atreyu chose out-of-copyright characters instead: Sherlock Holmes, Winnie-the-Pooh, Captain Hook, Count Dracula. Given up: the pull of famous chess names. Gained: no permission question, and a cast with its own look.
+- **Winnie-the-Pooh is the one with risk.** The 1926 book is out of copyright in the United States; Disney holds trademarks and the red-shirt design. He is drawn from the book (no shirt) and credited to A. A. Milne. Atreyu accepted the risk after it was raised twice. Not legal advice.
+- **No voice.** Atreyu dropped the speech buttons deliberately, in favour of animated figures with speech bubbles.
+- **Blundy McBlunderpants** is the opening-drill opponent, not a coach: a bot that plays likely moves, not perfect ones.
+- **A second source of truth: sourced text.** Opening ideas cannot be proven by the engine, and the model is not allowed to write theory from memory. They are quoted as written from Wikibooks, with source and licence. Book lines come from the Lichess openings dataset (CC0).
+- **The Lichess opening explorer is not used.** It now refuses requests without a login (checked: HTTP 401). "Likely replies" come from the player's own opponents first, then from how many named lines follow each move. Given up: population statistics by rating.
+- **The application repo is described, not shown.** The Process tab tells the two-repo story from `docs/STORY.md` only.
+- **Transcripts as a messaging app,** with an AI-written summary first and the whole conversation on request. Summaries are written once at build time, labelled as AI-written, and Atreyu's messages in them are real quotes.
+- **Time is logged as a separate version 2 block.** Version 1 stays at 4 h 50 min.
+- **The build runs without a pause,** at Atreyu's request; the planned design checkpoint became a progress note.
