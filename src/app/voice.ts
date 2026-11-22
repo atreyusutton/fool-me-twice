@@ -59,6 +59,8 @@ const listeners = new Set<() => void>();
 const clips = new Map<string, Promise<string>>();
 let audio: HTMLAudioElement | null = null;
 let requestNumber = 0;
+// True while a line the player asked for by picking a coach is playing; automatic reading waits for it.
+let held = false;
 
 function readSound(): boolean {
   try {
@@ -111,11 +113,17 @@ export function setSound(on: boolean): void {
 
 export function stop(): void {
   requestNumber++;
+  held = false;
   if (audio) {
     audio.pause();
     audio = null;
   }
   if (state.status !== "idle") update({ lineId: null, status: "idle" });
+}
+
+/** Stops one line if it is the one being fetched or played. A screen uses this when it goes away. */
+export function stopLine(id: string | null): void {
+  if (id !== null && state.lineId === id) stop();
 }
 
 function fetchClip(line: VoiceLine): Promise<string> {
@@ -146,10 +154,12 @@ async function requestClip(line: VoiceLine): Promise<string> {
 /**
  * Reads one line aloud, stopping whatever was playing. `byPlayer` is true for a press of the play
  * button; a line started automatically may be blocked by the browser until the player has clicked
- * something, and that is not reported as a failure.
+ * something, and that is not reported as a failure. `hold` asks automatic reading to wait until
+ * this line has finished.
  */
-export async function speak(line: VoiceLine, byPlayer: boolean): Promise<void> {
+export async function speak(line: VoiceLine, byPlayer: boolean, hold = false): Promise<void> {
   stop();
+  held = hold;
   const mine = ++requestNumber;
   update({ lineId: line.id, status: "loading", problem: null });
   try {
@@ -160,6 +170,7 @@ export async function speak(line: VoiceLine, byPlayer: boolean): Promise<void> {
     element.addEventListener("ended", () => {
       if (audio === element) {
         audio = null;
+        held = false;
         update({ lineId: null, status: "idle" });
       }
     });
@@ -168,6 +179,7 @@ export async function speak(line: VoiceLine, byPlayer: boolean): Promise<void> {
   } catch (error) {
     if (mine !== requestNumber) return;
     audio = null;
+    held = false;
     const blocked = error instanceof DOMException && error.name === "NotAllowedError";
     if (blocked && !byPlayer) {
       update({ lineId: null, status: "idle" });
@@ -176,4 +188,22 @@ export async function speak(line: VoiceLine, byPlayer: boolean): Promise<void> {
     console.warn("Fool Me Twice: a coach line could not be played.", error);
     update({ lineId: null, status: "idle", problem: blocked ? "The browser blocked the sound. Press play again." : `No voice just now. ${error instanceof Error ? error.message : ""}`.trim() });
   }
+}
+
+/**
+ * Reads a line that appeared on its own (not by a press of play). If the player has just picked a
+ * coach and that coach is still saying hello, it waits for them to finish. Returns a function that
+ * cancels the wait.
+ */
+export function speakWhenFree(line: VoiceLine): () => void {
+  let timer = 0;
+  const attempt = () => {
+    if (held && state.status !== "idle") {
+      timer = window.setTimeout(attempt, 250);
+      return;
+    }
+    void speak(line, false);
+  };
+  attempt();
+  return () => window.clearTimeout(timer);
 }

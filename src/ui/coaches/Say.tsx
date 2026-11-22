@@ -1,5 +1,5 @@
-import { useEffect, type ReactNode } from "react";
-import { speak, stop, useVoice, type VoiceLine } from "../../app/voice.ts";
+import { useEffect, useRef, type ReactNode } from "react";
+import { speak, speakWhenFree, stop, stopLine, useVoice, type VoiceLine } from "../../app/voice.ts";
 import { PERSONAS, type CoachId } from "../../core/coach/personas.ts";
 import { COACH_COLOR, Figure, type FigureId, type Mood } from "./Figure.tsx";
 
@@ -40,12 +40,22 @@ export function Say({
   // only the one that stays should be asked for and paid for.
   useEffect(() => {
     if (!lineId || !voice || !sound.sound) return;
-    const timer = window.setTimeout(() => void speak(voice, false), AUTO_READ_DELAY_MS);
-    return () => window.clearTimeout(timer);
+    let cancel = () => {};
+    const timer = window.setTimeout(() => {
+      cancel = speakWhenFree(voice);
+    }, AUTO_READ_DELAY_MS);
+    return () => {
+      window.clearTimeout(timer);
+      cancel();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the line's id and the sound switch only
   }, [lineId, sound.sound]);
-  // Leaving the screen stops the voice.
-  useEffect(() => stop, []);
+  // Leaving the screen stops this bubble's own line, and nothing else that may be playing.
+  const lastLine = useRef<string | null>(null);
+  useEffect(() => {
+    lastLine.current = voice?.id ?? null;
+  });
+  useEffect(() => () => stopLine(lastLine.current), []);
   const speaking = mine && sound.status === "playing";
   return (
     <div className={`say${big ? " big" : ""}`} style={{ "--coach": COACH_COLOR[who] } as React.CSSProperties}>

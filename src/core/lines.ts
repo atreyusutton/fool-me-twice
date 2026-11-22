@@ -1,4 +1,4 @@
-import { COACH_IDS, type CoachId } from "./coach/personas.ts";
+import { COACH_IDS, PERSONAS, type CoachId } from "./coach/personas.ts";
 import { SAN_PATTERN } from "./coach/schema.ts";
 import { spokenMove } from "./speech.ts";
 
@@ -130,6 +130,8 @@ const DEFS = {
       Number(v.missed) > 0 ? [", ", { slot: "missed" }, " to see again."] : ".",
     ],
   },
+  // What a coach says when picked: the same line the picker shows under their name.
+  "picker.hello": { who: "coach", slots: {}, build: (s) => [PERSONAS[s as CoachId].tagline] },
   "guide.intro": { who: "coach", slots: {}, build: (s) => [GUIDE[s as CoachId]] },
   "drill.start_mine": { who: "blundy", slots: { family: name }, build: () => ["This is the ", { slot: "family" }, ". It is my move. Stand back."] },
   "drill.start_yours": {
