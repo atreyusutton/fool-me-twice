@@ -207,3 +207,41 @@ Yes. Revoke the old key in the Anthropic Console, create a new one, put it in `.
 ### Agent: reply
 
 The key was pasted into the chat. The agent did not write it anywhere: `.dev.vars` is kept read-only for the agent, and the transcript holds a placeholder. It explained where the key now sits (this session's local log) and left the choice of using it or replacing it to the user.
+
+## Turn: merge and publish
+
+### User
+
+> push it and merge to main
+
+### Agent: what was done
+
+Pushed the branch, opened pull request #1 into `main` and merged it with a merge commit, so the step-by-step commits are kept. Local `main` was brought up to date.
+
+### User
+
+> make the repo public
+
+### Agent: what was done
+
+Before changing anything, scanned the whole git history: no API key strings in any commit, `.dev.vars` never committed, no email addresses in tracked files. One thing was found: the author email on every commit is a personal address, which becomes public with the repository and cannot be taken back.
+
+### Agent: reply
+
+Did not publish yet. Offered two choices: publish as is, or rewrite the author email first (new commit hashes and a force-push). Recommended the first.
+
+### User
+
+> 1
+
+### Agent: what was done
+
+Made the repository public and confirmed it loads without a login.
+
+### User
+
+> add them and push
+
+### Agent: what was done
+
+Added these turns to this file and merged them into `main` through a pull request.
