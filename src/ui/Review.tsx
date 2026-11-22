@@ -73,7 +73,8 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
   const table = state.facts[gameId]!;
   const summary = state.games.find((game) => game.uuid === gameId)!;
   const game = useMemo(() => session.getGame(gameId), [session, gameId]);
-  const profile = useMemo(() => state.profile ?? buildProfile([], state.tier1), [state.profile, state.tier1]);
+  const basis = state.coachProfile ?? state.profile;
+  const profile = useMemo(() => basis ?? buildProfile([], state.tier1), [basis, state.tier1]);
   const local = useMemo(() => gameReviewRequest(summary, table, profile, coach), [summary, table, profile, coach]);
   const localReview = useMemo(() => fallbackGameReview(local.request), [local]);
   // The coach's words are always rendered against the exact request they were written and checked for.
