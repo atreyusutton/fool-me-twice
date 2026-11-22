@@ -403,3 +403,21 @@ The fixed lines were text inside three screens, so the Worker could not know the
 ### Agent: what was done
 
 Merged the fixed-line voices into `main` through a pull request, redeployed and checked the live site.
+
+Checking the live site after that deploy showed Blundy and the practice lines speaking, and free words refused where a move belongs. It also showed a waste: opening Practice with sound on asked for three lines at once while the page settled, and only the last was heard. The agent made automatic reading wait 300 milliseconds so that only the line that stays is requested, committed it, and again waited for the user's word before pushing.
+
+### User
+
+> push the fix
+
+### Agent: what was done
+
+Merged the fix through a pull request, redeployed, and confirmed on the live site that Practice now sends one voice request for the question where it sent three.
+
+### User
+
+> update the transcript and push
+
+### Agent: what was done
+
+Added these turns to this file and merged them into `main` through a pull request.
