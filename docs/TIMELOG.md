@@ -27,3 +27,4 @@ One line per block of work: date, minutes, what it went to. The README's time br
 | 2026-11-22 | 45 | Step 6: opening book core and tests, data builder (Lichess lines, Wikibooks text), opening guide, drill against Blundy, browser run and fixes |
 | 2026-11-22 | 45 | Step 7: Process tab (story, transcripts as a messaging app with AI-written summaries and the full files, truth page with a live checker), eval numbers written to a file, tests that the summary quotes are verbatim |
 | 2026-11-22 | 35 | Step 8: README, records, browser checks on desktop, phone width and dark theme, clean-clone check, deploy |
+| 2026-11-22 | 10 | Step 9: deploy as a new Worker, live checks, repository rename, push |

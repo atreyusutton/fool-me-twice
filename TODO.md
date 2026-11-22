@@ -12,7 +12,9 @@ Plan approved 22 November 2026. Details: `docs/SPEC.md` section 13.
 - [x] 6. Openings: book data, guide, drill against Blundy
 - [x] 7. Process tab: story, transcripts as a messaging app, how it stays truthful
 - [x] 8. Eval per coach written to a file, README, final checks
+- [x] 9. Deployed as a new Worker `fool-me-twice`; repo renamed and branch pushed
 
 ## Next
 
-- [ ] 9. Deploy; ask before renaming the Worker and the GitHub repo
+- [ ] Rotate the API key, then add it as the Worker secret to turn the live coach on
+- [ ] Confirm the `[CONFIRM]` items in `docs/STORY.md`

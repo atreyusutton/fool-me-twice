@@ -175,3 +175,17 @@ Three pages. **The story** is written in the first person from `docs/STORY.md`, 
 #### Step 8: README, records and checks
 
 The README was rewritten for version 2, with the eval output pasted exactly as printed. Checked in a headless browser: every screen at desktop width in the light theme, every screen at phone width in the dark theme with no sideways scrolling, and the three Process pages including the switch to the whole conversation and a rejected edit in the checker. No console errors. The quoted opening notes were fetched again after the first fetch was found to drop short lines of prose. What was not checked is listed in the README under Limitations.
+
+## Turn: deploy
+
+### User
+
+> go how much longer do we have?
+
+### Agent: what was done
+
+The agent had asked three questions with defaults: deploy as a new Worker and leave version 1 running; rename the GitHub repository and push the branch; keep the new deployment demo-only until the API key is rotated. On "go" it did all three. The Worker config was renamed and given its own rate-limit namespace, the app was deployed to `https://fool-me-twice.atreyusutton.workers.dev`, and the live site was checked in a headless browser: the review flow, the three Process pages, a full drill line, a deep link, and the coach route answering that no key is configured. The README link, the to-do list, the decision log and the time log were updated.
+
+### Agent: reply
+
+About ten minutes of work were left. Reported the live address, what was checked on it, and what is still owed by the user: rotating the key and confirming two sentences in the story.

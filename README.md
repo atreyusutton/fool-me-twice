@@ -8,7 +8,7 @@ It is my take-home project (Option B) for the Chess.com engineering internship. 
 
 Version 1 was called Motif. Version 2 is a rebuild of the interface and the scope on the same truthful core; the story of why is in the app and in `docs/DECISIONS.md`.
 
-**Live (version 1, until version 2 is deployed over it):** https://motif.atreyusutton.workers.dev
+**Live:** https://fool-me-twice.atreyusutton.workers.dev (the demo needs nothing; a live username runs the engine in your browser). No API key is set on this deployment, so for a live username the coach's text is built by code from the facts. Version 1 is still up at https://motif.atreyusutton.workers.dev.
 
 ## Run it
 
