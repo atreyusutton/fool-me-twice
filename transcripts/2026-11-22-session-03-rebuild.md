@@ -189,3 +189,21 @@ The agent had asked three questions with defaults: deploy as a new Worker and le
 ### Agent: reply
 
 About ten minutes of work were left. Reported the live address, what was checked on it, and what is still owed by the user: rotating the key and confirming two sentences in the story.
+
+## Turn: a new key
+
+### User
+
+> should i get another key now?
+
+### Agent: reply
+
+Yes. Revoke the old key in the Anthropic Console, create a new one, put it in `.dev.vars` by hand, and only add it to the deployed Worker if the live coach should be public, with a low spend limit. Do not paste it into the chat.
+
+### User
+
+> [API key removed]
+
+### Agent: reply
+
+The key was pasted into the chat. The agent did not write it anywhere: `.dev.vars` is kept read-only for the agent, and the transcript holds a placeholder. It explained where the key now sits (this session's local log) and left the choice of using it or replacing it to the user.
