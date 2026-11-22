@@ -279,3 +279,21 @@ Checked the file's shape without printing it, sent one real coach request from t
 ### Agent: what was done
 
 Set the key as the secret on the `fool-me-twice` Worker, piped from the local file so it never appeared on screen. Checked the deployed site with a live player: the coach route answered, and the text shown was the model's second reply after the checker rejected the first. The recorded demo still plays. README and to-do updated.
+
+## Turn: one navigation bar
+
+### User
+
+> Is there a good way to keep the nav bar consistent so you can always go back to home and see all the things? What do you think about this idea?
+
+### Agent: reply
+
+Agreed, and said why: the bar swapped between two sets of tabs, so Home vanished inside a player and the coaching tabs vanished on Process. Proposed one fixed bar of six, with the coaching tabs leading to the last player or the demo when no player is on screen, five tabs on a phone, and named the trade-off.
+
+### User
+
+> do it
+
+### Agent: what was done
+
+Built it: a small store remembers the last player whose games loaded, the bar is the same on every page, and a label on Home and Process says whose pages the tabs open. Checked in a headless browser at four widths (no overflow), that a live player is remembered and a mistyped one is not, and that the tests and lint pass. A formatter run by mistake had rewritten the whole shell file; that was undone and the change reapplied by hand so the diff shows only the change.
