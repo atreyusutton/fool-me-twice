@@ -134,7 +134,7 @@ img, svg { display: block; }
   .footer { padding-bottom: 96px; }
 }
 
-.stack { display: grid; gap: 16px; }
+.stack { display: grid; gap: 16px; align-content: start; }
 .stack.tight { gap: 8px; }
 .stack.loose { gap: 28px; }
 .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
@@ -357,3 +357,10 @@ a.game-row:hover { border-color: var(--ink); }
 .pill:hover { border-color: var(--ink); }
 .pill[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .pill .num { font-weight: 500; opacity: 0.7; }
+
+/* Openings */
+.book-moves { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.book-moves li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--line); }
+.book-moves li:first-child { border-top: 0; }
+.quoted { margin: 0; padding: 4px 0 4px 20px; border-left: 4px solid var(--hl); font-family: var(--display); font-size: 1.12rem; line-height: 1.5; max-width: 68ch; }
+.quoted p + p { margin-top: 12px; }

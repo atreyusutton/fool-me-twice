@@ -1,0 +1,865 @@
+{
+ "fetchedAt": "2026-11-22T17:30:10.862Z",
+ "ideas": {
+  "sicilian-defense": {
+   "family": "Sicilian Defense",
+   "paragraphs": [
+    "The main approach for White is the Open Sicilian: 2. Nf3 intending to bust open the position with 3. d4. This is the most testing approach, but as it is also normally what Black is most prepared for, a number of other approaches, the \"anti-Sicilians\", are also popular."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...c5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...c5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "ruy-lopez": {
+   "family": "Ruy Lopez",
+   "paragraphs": [
+    "White is playing for quick development (they are ready to castle already) and control of the centre. They'd like to eventually play c3 and d4 to build a pawn majority in the centre.",
+    "Usually, Black wishes to play ...Nf6, which develops a piece while threatening to take White's undefended e4 pawn, so the most common lines are to develop the knight straight away (3...Nf6) or after first kicking the bishop (3...a6 usually followed by 4...Nf6). However, Black has a wide range of turn three or turn four sidelines to choose from so can respond in a variety of ways."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...Nc6/3. Bb5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...Nc6/3._Bb5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "french-defense": {
+   "family": "French Defense",
+   "paragraphs": [
+    "The trade-off in supporting ...d5 with ...e6 is that it obstructs Black's queen-side bishop and makes it harder to develop. In the Caro-Kann on the other hand, 1...c6 is played to prepare the way for ...d5, where Black avoids the \"French bishop\" but with the trade off that ...c6 prevents developing ...Nc6, and Black has lost a tempo if they ever want to play ...c5.",
+    "White can now play 2. d4 and build a two pawn centre―which they almost invariably do―and Black can continue 2...d5."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "queens-gambit-declined": {
+   "family": "Queen's Gambit Declined",
+   "paragraphs": [
+    "The Austrian chess players Hans Haberditz (c. 1901–57), Hans Müller (1896–1971), and GM Ernst Grünfeld studied this defense, which was initially introduced by Italian chess player Alessandro Salvio in 1604. Black creates a lot of tension and aims to disrupt White's center and prevent white from seizing the initiative by mirroring White's moves, adding a little complexity to the position. This defence is prone to complete equality, but current theory suggests that white should gain a practical (although still equal when analyzed with engines) advantage with the appropriate moves."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...d5/2. c4/2...c5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...d5/2._c4/2...c5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "italian-game": {
+   "family": "Italian Game",
+   "paragraphs": [
+    "White develops the bishop to a good square where it controls a valuable diagonal. From c4 the Bishop controls d5 and pressures Black's f7-pawn, the most vulnerable pawn in Blacks position. Having developed both their kingside minor pieces quickly, White is ready to castle. White's plans include a swift attack on f7 and building a big centre with c3 and d4.",
+    "There is no immediate threat to Black's position so they have some flexibility in how to respond. It would be good to develop a piece, and there are several options, the top two being 3...Nf6, the Two Knights, or 3...Bc5, the Giuoco Piano, which is a choice of whether to keep or to release control of g5."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...Nc6/3. Bc4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...Nc6/3._Bc4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "english-opening": {
+   "family": "English Opening",
+   "paragraphs": [
+    "While this opening is not as sharp as 1. e4 or 1. d4, it is still effective in controlling the d5 square and is highly flexible, allowing for easy transpositions into other openings, and is often used when White desires to avoid certain responses to 1. d4 by Black. For example, transposition to Queen's Gambit and Indian Defence positions are very frequently seen."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. c4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._c4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "kings-gambit-accepted": {
+   "family": "King's Gambit Accepted",
+   "paragraphs": [
+    "If Black could make a free move in this position, it would undoubtedly be ...Qh4+. White couldn't successfully block the check with the g-pawn thanks to the Black pawn on f4, and the awkward move Ke2 would be forced.",
+    "How should White deal with the threat? There are two main approaches, 3. Nf3 and 3. Bc4."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. f4/2...exf4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._f4/2...exf4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "caro-kann-defense": {
+   "family": "Caro-Kann Defense",
+   "paragraphs": [
+    "In the traditional Open Game (1. e4 e5), many of the major threats that Black faces target their weak f7-square with White's bishop positioned on c4. Black often can consider this threat resolved if they succeed in pushing their queen's pawn to d5, controlling c4. So, by achieving d5, Black makes their kingside safer.",
+    "Compared to the French defence, which prepares 2...d5 with 1...e6 instead, this avoids blocking in Black's own bishop, but at the cost of preventing Black from playing Nc6. Additionally, if Black later wishes to assault White's centre with c5, they will have lost a tempo on this move.",
+    "A sideline is the Two Knights attack, where White plays 2. Nc3, defending e4, followed by 3. Nf3, or 2. Nf3 followed by 3. Nc3. It is played about once for every ten games in the mainline. Usually, White will wait a little bit before placing the d pawn on d4 and sometimes just places it on the d3 square."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...c6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...c6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "nimzo-indian-defense": {
+   "family": "Nimzo-Indian Defense",
+   "paragraphs": [
+    "A second implication of the pin is that Black is threatening to exchange bishop for knight and double White's pawns. The resulting position would be unbalanced, with White trying to open the position to utilize the power of his two bishops, and Black working to keep the position closed and exploit White's pawn weaknesses. White must decide how they feel about this prospect when choosing their next moves.",
+    "Black also does not commit to a certain pawn structure. This makes the Nimzo-Indian highly flexible, allowing Black to go for a wide range of setups against almost all of White’s systems. Usually, Black goes for a queenside fianchetto with ...b6 and ...Bb7 or ...Ba6. But Black can play ...d5 in Queen’s Gambit Declined style, the Benoni-esque ...c5, and even the hedgehog style ...d6, and ...Nc6.",
+    "Due to the Nimzo-Indian’s flexibility and incredible theoretical reputation, it has been one of Black’s main defences against 1. d4, being a frequent guest in high-level play since the opening was invented in the early 20th century. As such, its theory is highly developed and White often goes 3. Nf3 or 3. g3 just to avoid the Nimzo-Indian."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. c4/2...e6/3. Nc3/3...Bb4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._c4/2...e6/3._Nc3/3...Bb4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "queens-pawn-game": {
+   "family": "Queen's Pawn Game",
+   "paragraphs": [
+    "If allowed, White could play 2. e4 next and achieve a big, two-pawn centre, and develop comfortably in all the space that affords them. Therefore a priority for Black is to prevent this."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "semi-slav-defense": {
+   "family": "Semi-Slav Defense",
+   "paragraphs": [
+    "In this position, by delaying Nf6, Black keeps many opportunities open. They can keep on playing in the normal Queen's Gambit Declined (QGD) fashion with 4...Nf6 (whether White plays e3 or Nf3), or can try other options.",
+    "On the other hand 4. e3 can lead to a stonewall defense position with 4...f5, where Black's usual plan is a quick attack on the king side and can often involve a rook lift to f6.",
+    "Another option for White, though less popular, is the Marshall Gambit of the Semi-Slav, with 4. e4. This move aims at exploiting Black's lack of control over the e4-square, not having played Nf6. The main line continues 4...dxe4 5. Nxe4 Bb4+ 6. Bd2 Qxd4 7. Bxb4 Qxe4+ with a sharp game. Usually White blocks with Be2 and leaves the g2 pawn hanging. Black can capture it, but not the rook (Bf3 wins the queen). In return, White can have lasting pressure and tactics involving the d6 weakness. An example game played in this line is Bacrot - Morozevich, Biel Rd2, 2012."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...d5/2. c4/2...e6/3. Nc3/3...c6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...d5/2._c4/2...e6/3._Nc3/3...c6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "dutch-defense": {
+   "family": "Dutch Defense",
+   "paragraphs": [
+    "This is the Dutch defence, the fourth most common way to meet 1. d4. Black controls the central e4 square with their flank f-pawn.",
+    "Because it does not develop or prepare to develop a piece (cf. 1...Nf6 and 1...d5 respectively), 1...f5 is less popular than Black's other options to control e4. In addition, moving the f-pawn so early, before Black has castled, is not for the faint of heart because it weakens Black's kingside. An illustration of this is the classic beginner's trap in the Hopton attack: 2. Bg5 h6 3. Bh4 g5 3. Bg3 f4 (thinking to trap the bishop) 4. e3 fxg3?? 5. Qh5#.",
+    "However, the Dutch is very combative, with an original character compared to other 1. d4 openings. Black intends to get maximum value out of a kingside attack."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...f5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...f5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "benoni-defense": {
+   "family": "Benoni Defense",
+   "paragraphs": [
+    "The Old Benoni Defense is quite rare and uncommon nowadays but can actually lead to a tactical and sharp game. Black takes a swipe with c5 and gambits a pawn for the exchange, develops, and gets pieces into the game. White normally responds with d5; taking the pawn is not recommended because of 2...e6, and if White tries defending, then a5 and White has no solutions to hold on to pawns while Black gains a tempo. This opening is quite rare nowadays.",
+    "One idea for Black is to transpose to a Modern Benoni while avoiding the Four Pawn Attack (that is, variations with an early f2-f4 for White). Black can fianchetto his King's Bishop, and only after White plays Nf3 blocking an f-pawn, continue with ... e6 and ... exd5.",
+    "Another idea for Black is to keep the h8-a1 diagonal of Black's bishop open by delaying ... Nf6. Black could then play ... Ne7 instead of ... Nf6, or possibly, if White plays an early Nc3, give up his bishop by ... Bc3 to double the pawns."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...c5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...c5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "queens-gambit-accepted": {
+   "family": "Queen's Gambit Accepted",
+   "paragraphs": [
+    "The Queen's Gambit Accepted has a rich heritage in chess, both sides played by many of the world champions through the years. It is not really much of a gambit since White can recover the pawn immediately with 3. Qa4+, though unless White wants the queen placed on c4, this is unnecessary.",
+    "Black does better not to hold on to the pawn. Attempts to immediately support it with either 3...b5 or 3...Be6 are not advisable. 3...b5 is countered by 4. a4, threatening Black's pawn chain at its base, and 3...Be6 allows 4. e4, with White grabbing a large share of the center and threatening a later d5 to kick away the bishop.",
+    "Black's biggest concern is to take advantage of the time it takes White to recover the pawn to get the pieces active and prepare for key pawn breaks in the center (usually ...c5 or ...e5). White usually has better control of the center and has an easier time developing an advantage, but must play well to achieve this. Major continuations:"
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...d5/2. c4/2...dxc4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...d5/2._c4/2...dxc4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "grunfeld-defense": {
+   "family": "Grünfeld Defense",
+   "paragraphs": [
+    "This is the classic, and most common, starting position of the Grünfeld Defence, although d5 can be delayed if White has delayed e4 which typically happens if Nf3 is played at some stage. Most notably, the famous Game of the Century by Bobby Fischer originated from the Grünfeld Defence.",
+    "The Grünfeld Defence often becomes incredibly sharp and tactical due to Black quickly striking at White's vulnerable center. Unlike the King's Indian Defence, where Black immediately fianchettoes the king bishop, here Black immediately plays 3...d5 to stop e4 (at least temporarily) and challenge White's occupation of the center. White has a range of choices, the main one is to exchange the pawns on d5 and follow up with e4 in order to displace Black's pieces.",
+    "During the 1920s, European chess was in revolution, with the entry of the Nimzo-Indian Defence into mainstream opening theory. The masters of the day termed this the \"Modern style\". Then, in 1922, a well-known master named Ernst Grünfeld came up with a new system that started bashing the great masters of the day, including Kostic, Sämisch, Colle, and Alekhine (who famously threw his king across the room in frustration after losing to it). This came to be known as the new \"hypermodern\" style, and Grünfeld, true to hypermodern tastes, showed in pure form how the previously accepted classical dogma could be wrong, and that a pawn center could be an object of attack as well as a boon."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. c4/2...g6/3. Nc3/3...d5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._c4/2...g6/3._Nc3/3...d5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "queens-indian-defense": {
+   "family": "Queen's Indian Defense",
+   "paragraphs": [
+    "The Queen's Indian Defence is a popular and fairly modern opening whereby black quickly develops his queenside bishop, either by fianchettoing it on b7 to contest the long diagonal, or on a6 to put pressure on white's c-pawn.",
+    "It has been employed regularly by a number of top players including former world champions like  Anatoly Karpov and Viswanathan Anand."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. c4/2...e6/3. Nf3/3...b6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._c4/2...e6/3._Nf3/3...b6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "indian-defense": {
+   "family": "Indian Defense",
+   "paragraphs": [
+    "Black controls e4 while developing a knight. This is the most flexible response to 1. d4. Black doesn't commit a pawn to the centre yet. They may yet do so, or they can fight for the centre in the hypermodern way: controlling it from afar with pieces, allowing White to construct their pawn centre but undermining it later with timely pawn advances.",
+    "This move gives White lots of leeway to either develop pieces or take more space in the centre. Openings tend to be flexible with lots of potential for transpositions."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "kings-gambit-declined": {
+   "family": "King's Gambit Declined",
+   "paragraphs": [
+    "Black declines the gambit in the \"classical\" way by developing the king's bishop to c5, which prevents White from castling or playing d4 for the time being. Nevertheless, White gets a small advantage with correct play. The main reply to the Classical Variation is:"
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. f4/2...Bc5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._f4/2...Bc5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "scotch-game": {
+   "family": "Scotch Game",
+   "paragraphs": [
+    "With this aggressive pawn advance, White looks to open up the centre.",
+    "A few tries have been made with 3...d6, transposing into a Philidor defence, but this affords White a range of good options: 4. d5, kicking the knight and expanding in the centre is the most straight-forward, or 4. Bb5 transposing into an Old Steinitz Spanish."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...Nc6/3. d4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...Nc6/3._d4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "slav-defense": {
+   "family": "Slav Defense",
+   "paragraphs": [
+    "Originally considered a less-orthodox defence in the Queen's Gambit, this opening has stood as an entire opening system in its own right for decades.",
+    "The idea behind this defence is straightforward: instead of locking in the light squared bishop on c8, why not support the center with the c-pawn instead? Black tends to be more active in this variation than the QGD."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...d5/2. c4/2...c6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...d5/2._c4/2...c6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "petrovs-defense": {
+   "family": "Petrov's Defense",
+   "paragraphs": [
+    "Rather than defend e5, Black counterattacks e4. This is the Russian game, aka Petrov's or Petroff's defence, a solid if drawish opening.",
+    "White's typical plan is to attack the centre, usually leading to a trade of pawns. Alternatively they may gambit their e4 pawn, or defend it and perhaps hope for a transposition."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...Nf6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...Nf6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "four-knights-game": {
+   "family": "Four Knights Game",
+   "paragraphs": [
+    "The position is now completely symmetrical, leading to a somewhat drawish position.",
+    "There are a range of moves played here, but by far the main tries are 4. Bb5, developing the bishop and pressuring the centre, and 4. d4, opening the centre and transposing into a variation of the Scotch game."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...Nc6/3. Nc3/3...Nf6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...Nc6/3._Nc3/3...Nf6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "zukertort-opening": {
+   "family": "Zukertort Opening",
+   "paragraphs": [
+    "This means it is a useful transpositional tool. White can feel out how Black wishes to play then transpose into their preferred line. For example, a player who hates facing the queen's gambit declined, but doesn't mind the Dutch defence might play 1. Nf3 and only follow with 2. d4 if Black plays 1...f5.",
+    "Because 1. Nf3 controls the e5 square, 1...e5? would be quite bad. Therefore White can use this move order to avoid certain continuations with ...e5: if they wish to play the classical Nimzo-Larsen attack (1. b3 d5) but avoid the modern line (1. b3 e5); or a symmetrical English (1. c4 c5) but not a reversed Sicilian (1. c4 e5); they may choose to start with 1. Nf3.",
+    "Black's main way to play is to deny White 2. e4 with either 1...Nf6 or 1...d5. This leads to a number of transpositions and some more independent lines."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. Nf3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._Nf3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "scandinavian-defense": {
+   "family": "Scandinavian Defense",
+   "paragraphs": [
+    "Black takes on White's centre head on. They are determined to disrupt White's centre and immediately open up the board, even if they have to give up their own hopes of big centre and some tempo to do it.",
+    "White could trade the pawn, defend it, or gambit it. 1...d5 is a very forcing response: almost invariably White captures, their plans derailed."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...d5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...d5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "philidor-defense": {
+   "family": "Philidor Defense",
+   "paragraphs": [
+    "Black defends their e5 pawn with 2...d6, sparing a piece from being saddled with the job.",
+    "Though solid, this is considered a more passive reply than 2...Nc6, as Black does not develop a piece and Black's pawn chain will get in the way of developing their dark square bishop.",
+    "After 3. d4, Black's best approaches are to give up their centre and open the game with 3...exd4, the Exchange variation, or to hold on to e5 and keep the tension with 3...Nd7, the Hanham variation. Black's most Romantic reply is 3...f5?!, the Philidor countergambit."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...d6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...d6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "reti-opening": {
+   "family": "Réti Opening",
+   "paragraphs": [
+    "White's position is a Swiss Army knife: without having committed a centre pawn, White can choose between different setups depending on the scenario. They can play in true hypermodern fashion, fianchettoing both bishops and maximising piece play. Additionally, setups with a queenside fianchetto, e3, Nc3, Qc2 are possible to fight for the dark squares, sometimes even with Rg1 and g4 thrown in for wild attacks. Finally, White still retains the option of d2-d4, transposing back into a 1. d4 opening.",
+    "White has struck in the centre with 2. c4, putting immediate pressure. Although the d5 pawn is defended, if Black leaves the pawn there, e.g. 2...Nf6?!, then White eliminates a centre pawn and scores tempo on the black queen for a nice game, 3. cxd5 Qxd5 4. Nc3 ⩲. Thus, Black usually responds to this threat."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. Nf3/1...d5/2. c4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._Nf3/1...d5/2._c4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "nimzowitsch-defense": {
+   "family": "Nimzowitsch Defense",
+   "paragraphs": [
+    "In the \"maverick\" Nimzowitsch defence, Black postpones contesting the centre with pawns, usually to strike back after White has expanded some more.",
+    "Although Black's knight \"sees\" d4, it doesn't prevent White from achieving the two pawn centre because after 2. d4, White's queen can see d4 too. Black then has three main approaches:",
+    "More popular is 2. Nf3, the declined Nimzowitsch, which offers to let Black transposed into to a mainline open game with 2...e5. This avoids the original positions resulting from lines like 2. d4 d5 3. e5 Bf5. To keep things in original territory, Black may play 2...d6, the Williams variation, or 2...f5?!, the Colorado gambit."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...Nc6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...Nc6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "bishops-opening": {
+   "family": "Bishop's Opening",
+   "paragraphs": [
+    "With 2. Bc4 White develops their bishop to increase control over d5 and pressure f7, the weakest pawn in Black's position. The Bishop's opening is very transpositional: by not having played Nf3 yet, White retains the option of f4 and may plan to transpose into Vienna or King's gambit lines, or the game can be taken into a Russian or Italian direction.",
+    "Compared to 2. Nf3, White has not threatened Black's e5 pawn, so Black is afforded flexibility in their reply. The main moves are 2...Nf6 or 2...Bc5.",
+    "In amateur games, 3. Qh5 or 3. Qf3 may follow, expecting that Black will allow Qxf7#."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Bc4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Bc4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "vienna-game": {
+   "family": "Vienna Game",
+   "paragraphs": [
+    "White's wish is to advance the f-pawn two squares to remove Black's powerful e5 pawn and strike at the heart of their position. Now it is possible to play f4 on the second move, for the King's Gambit, but when no Black piece has yet declared its intentions is there not a degree of hit-and-hope about such a move? If you have the patience to let Black build their bridge before you blow it up: welcome to the Vienna Game, a poison-tipped opening from the nineteenth century.",
+    "If you should find yourself up against the Vienna as Black, keep your nerve. The harder White tries to checkmate you, the less time they have to develop naturally and control territory; consequently, if you survive the opening your hand is a little freer than in the Ruy Lopez.",
+    "Black for the moment has no threat to respond to, save the threat of f4 which cannot be reasonably prevented. When in doubt, develop a knight:"
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nc3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nc3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "modern-defense": {
+   "family": "Modern Defense",
+   "paragraphs": [
+    "This is a similar idea to the Pirc, 1...d6. In the Pirc player wants to play Nf6 and pressure e4, but needs d6 first to prevent White from playing e5!. In the Modern, Black delays a decision on the g8 knight and so doesn't need to commit to d6 just yet. They prioritise the fianchetto with with 1...g6 and 2...Bg7 instead (but d6 and Nf6 may come later).",
+    "White usually takes the centre with 2. d4 and Black completes the fianchetto with 2...Bg7. After that White has options: usually 3. Nc3 d6 follows, but since Black hasn't played Nf6 to threaten e4, White can try 3. c4, obtaining structure normally seen against the King's Indian defence, or 3. Nf3."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...g6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...g6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "kings-pawn-game": {
+   "family": "King's Pawn Game",
+   "paragraphs": [
+    "Black has several ways to respond. The main idea is to find a way to prevent White from achieving or maintaining a two-pawn centre with both e4 and d4. They may try to:"
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "van-geet-opening": {
+   "family": "Van Geet Opening",
+   "paragraphs": [
+    "Though it is a sensible move, developing a knight to a good square to control the centre, it is much less common than 1. Nf3. One reason is that the knight prevents White from playing c4, which they may be sad of if this transposes into a d4 opening. The other reason is that while 1. Nf3 prevents 1...e5, 1. Nc3 doesn't prevent 1...d5 (because after Black plays 1...d5, the d5 pawn is already defended by their queen).",
+    "In fact 1...d5 is the main response. 1...d5 threatens 2...d4 to take space and force White's knight to move again. There are some ways to prevent 2...d4: 2. d4 (transposing into a closed game); 2. Nf3 (transposing into a reversed Mexican defence); or 2. e3. However, it is most common to allow it with 2. e4, intending 2...d4 3. Nce2 e5 4. Ng3.",
+    "Several other moves allow White to play 2. e4 and transpose to a more common king's pawn opening, although there are ways of keeping the game in original territory."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. Nc3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._Nc3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "catalan-opening": {
+   "family": "Catalan Opening",
+   "paragraphs": [
+    "This is the Catalan Opening, named after the Spanish region of Catalonia, when Grandmaster Savielly Tartakower was asked, at the Barcelona tournament of 1929, to invent an opening system in honor of the region's chess history. Usually, the game continues 3...d5 4. Nf3. The Catalan then has two main branches, the Open Variation and the Closed Variation. In the Open Variation, Black takes the pawn on c4. This gives White strong pressure on Black's queenside, thanks to the fianchettoed bishop on g2. In the Closed Variation, Black retains their strong-point on d5, attempting to block out the bishop on g2, but stays passive."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. c4/2...e6/3. g3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._c4/2...e6/3._g3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "bird-opening": {
+   "family": "Bird Opening",
+   "paragraphs": [
+    "Bird's opening is an aggressive and less common first move. 1. f4 controls e5 from the flank, and means White will be able to soon play Nf3 without it keeping their f-pawn back. A danger in moving their f-pawn so soon is that it weakens White's kingside, and White must be aware of potential attacks on the e1-h4 diagonal.",
+    "Certainly White wishes to play 2. Nf3, developing while controlling h4. Then, a common plan for White is to adopt a reversed Leningrad Dutch set-up: 3. g3, 4. Bg2, and 5. O-O, and Black usually adopts a similar kingside fianchetto position also. White would like to play d3 and c3, or d3 and Qe1 to try for e4. Playing more in the manner of a stonewall Dutch, with 3. e3, 4. Be2, and d3 or d4, is an alternative."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. f4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._f4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "pirc-defense": {
+   "family": "Pirc Defense",
+   "paragraphs": [
+    "The Pirc defence is a hypermodern response to 1. e4 where, rather than fill the centre with pawns, they look to exert pressure on the centre from afar with their pieces.",
+    "In the Pirc, Black would like to control e4 with their knight from f6. However, were they to play ...Nf6 immediately then White could kick it with e5!. 1...d6 controls e5 and so prepares for Black to play ...Nf6 safely. Black also intends ...g6 and ...Bg7 to project pressure over the centre from the long diagonal.",
+    "As Black hasn't contested the central squares yet, 2. d4 is nearly almost played, and White often builds a huge centre with f4 as well: the main line is 2. d4 Nf6 3. Nc3 g6 4. f4, the Austrian attack."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...d6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...d6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "tarrasch-defense": {
+   "family": "Tarrasch Defense",
+   "paragraphs": [
+    "Black aggressively attempts to gain space in the center, with the caveat of a potentially isolated pawn on d5 after a few pawn exchanges. The isolated queen's pawn is one of the reasons many players prefer to play the Semi-Tarrasch instead.",
+    "White has the options of taking on d5, taking on c5 and protecting the pawn."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...d5/2. c4/2...e6/3. Nc3/3...c5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...d5/2._c4/2...e6/3._Nc3/3...c5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "polish-opening": {
+   "family": "Polish Opening",
+   "paragraphs": [
+    "The Polish Opening (or Orangutan Opening) is a flank and rather uncommon opening starting with the move 1. b4. The purpose of this move is to fight for a spatial advantage on the queenside instead of immediately taking control of the centre. White will claim their share of the centre after getting the queen’s bishop fianchettoed and an eventual pawn advance in the centre. The move b4 can always be played later in the game which is the reason why this opening is seldom seen nowadays, however, Tartakower and Magnus Carlsen have tried it in tournaments and won successfully. The Polish opening is classified under the code (A00) as an irregular opening.",
+    "Fianchettoing is often a good idea. Why not grab a little space?",
+    "Trading the b-pawn for the c-pawn may give white central power."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. b4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._b4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "neo-grunfeld-defense": {
+   "family": "Neo-Grünfeld Defense",
+   "paragraphs": [
+    "Black continues playing in a Grünfeld style. The immediate 4. e4? prepared by f3 would simply blunder the pawn, so White should either remove one of Black's attackers or prepare it with another piece.",
+    "White's main move is 4. cxd5, exchanging in the centre. This is different from the usual Grünfeld since after 4...Nxd5 5. e4 Black's knight doesn't have the option of taking on c3, so it must move to b6 or f6 (b6 being the better option). Play usually continues with Black castling short and White developing the queenside pieces and castling long.",
+    "Alternatively, White can play 4. Nc3 transposing into the Lutikov variation of the Grünfeld."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. c4/2...g6/3. f3/3...d5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._c4/2...g6/3._f3/3...d5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "grob-opening": {
+   "family": "Grob Opening",
+   "paragraphs": [
+    "Grob's Attack is generally considered to be one of the worst starting moves, and is possibly the single worst starting move, for White. However, if White knows enough theory and Black is caught by surprise, this opening can be playable even at relatively high levels. An unprepared player with Black can be led into dangerous territory, especially if they fixate on attempting to win the g4-pawn early.",
+    "It is named after Swiss IM Henry Grob (1904-1971) who analysed it in great depth and played hundreds of correspondence games with it.",
+    "With decent play from Black and slight inaccuracies by White, Black can establish a relatively large or even decisive advantage. White’s move significantly compromises their kingside's pawn structure, and places the g-pawn on an unusual square that is difficult to defend without giving Black the initiative and compromising the kingside further, as well as making kingside castling severely disadvantageous. Some players argue that, as compensation, White influences more kingside space and can fianchetto the kingside bishop, contributing to influence across the board, as well as discouraging ... Nf6 due to g5 kick. The general plan and idea is similar to the Polish Opening mirrored horizontally. But, kingside space is usually completely ignored since f5, g5, and h5 are rarely played by Black, and Black may just develop the kingside knight to e7, avoiding the kick threat. Also, Black can occupy and take control of the centre, and continually threaten the pawn, gaining initiative."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. g4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._g4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "kings-indian-attack": {
+   "family": "King's Indian Attack",
+   "paragraphs": [
+    "White is most likely aiming to establish a King's Indian Attack. The idea is very similar to that of the King's Indian Defence as played by Black. The extra tempo enables White to take a more aggressive approach to the system."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. Nf3/1...d5/2. g3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._Nf3/1...d5/2._g3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "center-game": {
+   "family": "Center Game",
+   "paragraphs": [
+    "White plays 2. d4 to smash open the centre. White threatens to take on e5, but really they are provoking exd4, and planning to develop their pieces rapidly by opening up the d-file for their queen and bishop. White may yet gambit some pawns for even faster development. This is the explosive Centre game."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. d4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._d4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "blackmar-diemer-gambit": {
+   "family": "Blackmar-Diemer Gambit",
+   "paragraphs": [
+    "White offers their e4 pawn in exchange for quick development and open lines. At the professional level this move is considered somewhat suspect, but Black must be careful if they choose to take the pawn as there are many traps in this opening."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...d5/2. e4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...d5/2._e4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "latvian-gambit": {
+   "family": "Latvian Gambit",
+   "paragraphs": [
+    "The Latvian gambit is an aggressive counterattack. It is utterly unsound but sharp and has some practical chances against unprepared players. Rather than defend the attack on their e5 pawn, Black counterattacks and threatens ...fxe4. Black intends to prise open White's control of the centre, even at the cost of a pawn and the opening of the weakening e8-h5 diagonal. White can take either pawn and sharp play ensues.",
+    "Several other third moves are winning for White, though they are all much less common.",
+    "(3...Nf6 is safer, but if Black wanted safety they shouldn't have played 2...f5?.) 4. Nd4 is the sharpest move, threatening Qh5+. 4...Qf6 defends against that threat while counterattacking the pawn and  knight. 5. Nb5, threatening Nxc7+, is the best place to move it. 5...Qe5 defends c7 while attacking the knight. 5. Qe2 defends the knight and threatens d4!, forcing Black's queen away from control of c7. If 4. Ne5 Nf6 is necessary to prevent Qh5+ and overwhelming control of f7: 4...Qf6 fails because White's knight increases the f5-pawn's control of g6."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...f5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...f5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "ponziani-opening": {
+   "family": "Ponziani Opening",
+   "paragraphs": [
+    "By not having played Nc3, White's e4 pawn is loose. The strongest replies for Black therefore are those that target e4: either 3...Nf6 or 3...d5. After a move like 3...d6 or 3...Bc5? (a common amateur mistake), White plays 4. d4 and secures their two pawn centre with smug satisfaction.",
+    "After 3...Nf6, the Jaenisch Counterattack, White typically plays 4. d4 anyway and Black typically takes one or the other central pawn. The resulting games can have very different flavours, from quiet and drawish where White has a small space advantage, to the razor-sharp Vuković  Gambit line which quickly devolves into turmoil.",
+    "With 3...d5, Black threatens dxe4, taking advantage of the fact that, if 4. exd5 Qxd5, Nc3 is not an option to chase the queen away. White responds 4. Qa4, pinning Black's knight, and the game diverges depending on how Black chooses to defend their e5 pawn."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...Nc6/3. c3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...Nc6/3._c3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "vienna-gambit-with-max-lange-defense": {
+   "family": "Vienna Gambit, with Max Lange Defense",
+   "paragraphs": [
+    "A positional approach to the King's Gambit—White first brings the queenside knight out to Nc3, then intends to play f4 to divert Black's e-pawn.",
+    "Black's symmetrical ...Nc6 defends the center but doesn't help advance ...d5, while White has an easier time advancing the d-pawn to d4: If Black accepts the gambit with 3...exf4, the e5-pawn disappears and White's d-pawn gains a clear path forward. White can later push d5, kicking Black's knight on c6 to an awkward square."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nc3/2...Nc6/3. f4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nc3/2...Nc6/3._f4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "trompowsky-attack": {
+   "family": "Trompowsky Attack",
+   "paragraphs": [
+    "The Trompowsky Attack is a new offbeat opening with less theory which involves White immediately putting the bishop on g5 attacking the knight. Usually in most variations (2...Ne4 or 2...e6) Black avoids doubled pawns, but sometimes accepts them (2...c5 or 2...d5). The latter of each pair (2...e6 or 2...d5) just mentioned can transpose into the Torre Attack after 3. Nf3; however the Trompowsky Main Line (2...Ne4) typically doesn't transpose after it's played.In the Trompowsky Main Line, both sides move their developed minor piece twice: Black's knight from g8 to f6 to e4 and White's Bishop from c1 to g5 to f4. Afterward Black has many options to develop unlike many other openings. Some possible developing moves include c5, d5, d6, or e6.",
+    "A less common but also popular line involves 2...e6 (Classical Defense) when it is best not to trade pieces and instead develop naturally. This line can transpose into the Torre Attack with 3. Nf3 or continue with 3. e4 in the Trompowsky (Big Center Variation, which fits the position perfectly) and Black usually avoids the trade of minor pieces because of the pin (h6 and e5) and instead trades pieces directly with 4. Bxf6."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. Bg5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._Bg5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "kadas-opening": {
+   "family": "Kádas Opening",
+   "paragraphs": [
+    "The Desprez Opening (or Kádas Opening) is a rare kingside flank opening. It does little for development, does not fight for control of the center, and weakens White's kingside. It frees the rook, but the rook normally does not go to h3. It could be said that White has made their position worse, as castling kingside is now less attractive. Due to the near-uselessness of this opening, it is rarely seen among serious chess players. However, it could be used to throw off the opponent.",
+    "No top masters have ever used this opening in professional play, although some, most notably Magnus Carlsen and Hikaru Nakamura, play it during blitz.  Magnus Carlsen played it in the November 2023 \"Titled Tuesday\" online tournament, where he successfully defeated strong grandmasters, including Alireza Firouzja."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. h4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._h4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "englund-gambit": {
+   "family": "Englund Gambit",
+   "paragraphs": [
+    "Black offers their e-pawn. The Englund gambit is considered unsound: against best play, Black will not get enough compensation for the pawn. It is therefore rare in tournament chess, but it is not uncommon in amateur games where Black wants an open, tactical game with sharp traps and practical chances.",
+    "Declining the gambit gives an even game. White can allow Black to take on d4―2. e3!? exd4 (the reversed French), 2. c4?! exd4, etc.―and open the position, or push the pawn 2. d5!? to keep the position closed."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...e5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...e5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "benko-gambit": {
+   "family": "Benko Gambit",
+   "paragraphs": [
+    "Black offers White the b pawn. Declining comes with disadvantages so White usually accepts it, at least for now."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. c4/2...c5/3. d5/3...b5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._c4/2...c5/3._d5/3...b5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "owen-defense": {
+   "family": "Owen Defense",
+   "paragraphs": [
+    "A very rare and uncommon response to the King's pawn game It may transpose to an English opening or other lines.",
+    "It is offbeat in that Black allows White to play 2. d4 and easily control the centre. Black usually fianchettos the light-squared bishop to b7, and may plan to assault White's big centre with ...c5."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...b6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...b6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "richter-veresov-attack": {
+   "family": "Richter-Veresov Attack",
+   "paragraphs": [
+    "White threatens Bxf6 (e.g. 3...h6 4. Bxf6 dxf6). While this isn't a threat to win the d5-pawn, which is defended by the queen, White would be happy to reduce Black's control of the centre and play against Black's doubled f-pawns. Because White has prioritised developing their queen's side minor pieces, they also have plans to castle long and attack on the king's side. Another common theme is f3 to prepare e4."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. Nc3/2...d5/3. Bg5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._Nc3/2...d5/3._Bg5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "ware-opening": {
+   "family": "Ware Opening",
+   "paragraphs": [
+    "It is most common with beginners who think that their rooks are powerful pieces, and wouldn't it be good to develop them first? Unfortunately, rook lifting (a4, Ra3, Rd3 etc) is too slow and gives Black plenty of time to develop all their minor pieces. Rooks come alive later in the game, when files begin to open.",
+    "After 1. a4, Black gets to decide which pawn to put in the centre. 1...e5 is the main line (as much as there is a \"main line\"), taking space and opening the a3-f8 diagonal for Black's bishop. As long as White responds with something like 2. e4 then they do not fall too far behind and the game is even. A classic beginner blunder (called sometimes the meadow hay trap) marries the plan of an early rook lift with a lack of board vision: 2. Ra3?? Bxa3."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. a4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._a4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "english-defense": {
+   "family": "English Defense",
+   "paragraphs": [
+    "With the move 1.... b6 Black prepares to develop the Queenside Bishop. It's also a flexible option when played with the e6 development as Black has various ideas involving the e6, Nf6, Bb4, Bb7 moves."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...b6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...b6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "englund-gambit-declined": {
+   "family": "Englund Gambit Declined",
+   "paragraphs": [
+    "White avoids ...exd4 by pushing their pawn to d5. This is a mistake only in that it does not punish Black for their mistake. The Englund gambit is bad for Black, but if White does not know the refutation they may choose this line to avoid complications."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...e5/2. d5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...e5/2._d5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "barnes-opening": {
+   "family": "Barnes Opening",
+   "paragraphs": [
+    "The Barnes Opening is a rarely-played and passive first move that gives Black a slight advantage. In fact, it is arguably White's worst possible first move. It deprives the white king's knight of the f3 square. It opens the e1–h4 diagonal, exposing the white king. While it controls e4, White could have done that by playing 1. e4 right away.",
+    "This move is usually a way for White to taunt Black, especially if White's rating is much higher, by giving Black an immediate edge. Due to this, White often follows with 2.Kf2.",
+    "Black's best response to 1. f3? is 1... e5, controlling the center and preparing to take advantage of the weaknesses along the e1–h4 diagonal. Black has an advantage. This opening can also lead to the fool's mate after 2. g4?? Qh4#!."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. f3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._f3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "torre-attack": {
+   "family": "Torre Attack",
+   "paragraphs": [
+    "Named after Carlos Torre Repetto, Mexico's first grandmaster, the Torre Attack is relatively rare at top level, with minimal theoretical opportunities for White to gain an advantage. However, it is popular at club level, with its easy development and relative lack of danger for White.",
+    "White will quite often play similar moves, regardless of Black's response, with Nbd2, c3, e3, and after developing the bishop and castling, often plans to move the knight to e5, supported by f4 if possible, launching a kingside attack.",
+    "Black can respond in numerous ways, with 3...d5 inviting White to transpose to the Queen's Gambit Declined."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. Nf3/2...e6/3. Bg5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._Nf3/2...e6/3._Bg5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "danish-gambit-accepted": {
+   "family": "Danish Gambit Accepted",
+   "paragraphs": [
+    "The Danish Gambit Accepted is popular among club players, but not so popular at the highest level.  That is because, it is easy for black to fall into one of the many traps on this line, but if black knows what to do, white can get no more than equality out of the opening.",
+    "Although it may have been known earlier, Danish player Severin From essayed the gambit in an 1867 Paris tournament and he is usually given credit for the opening.  The Danish gambit was popular with masters of the attack including Alexander Alekhine, Frank Marshall, Joseph Henry Blackburne, and Jacques Mieses, but as Black's defenses improved it lost favor in the 1920s.  Today it is rarely played in top-level chess.",
+    "White will sacrifice one or two pawns for the sake of rapid development and attack.  With care, Black can accept one or both pawns safely, or simply decline the gambit altogether."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. d4/2...exd4/3. c3/3...dxc3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._d4/2...exd4/3._c3/3...dxc3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "three-knights-opening": {
+   "family": "Three Knights Opening",
+   "paragraphs": [
+    "White prioritises development of their knights, sticking to the maxim to develop \"knights before bishops,\" with the idea that they will always want to place Nc3 and Nf3, so why not play those moves first?",
+    "Black usually develops their knight next, too, and the best place for that is 3...Nf6, entering the quiet but respectable Four knights game. This is by far the main line: while White's move didn't make any threats, it is surprisingly forcing simply because none of the ways to break symmetry are very appealing.",
+    "If Black would like to develop their bishop instead, there isn't a great place for it right now:"
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...Nc6/3. Nc3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...Nc6/3._Nc3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "vant-kruijs-opening": {
+   "family": "Van't Kruijs Opening",
+   "paragraphs": [
+    "An irregular opening, considered somewhat passive, as although White opens lines for their bishop and queen to enter the game, Black is given the opportunity to take over the centre with ...e5 and ...d5.",
+    "Black may play any number of moves to stake a claim in the centre: 1...Nf6, 1...e5, 1...d5, 1...c5 are all reasonable. 1...g6, intending ...Bg7, or 1...Nf6 followed by 2...g6, is a typical approach to meet lots of transpositions equally.",
+    "Many openings for White feature e3 at some point, so play can transpose into lines of the English Opening if White plays c4, Queen's Pawn Opening with d4, Larsen's Opening with b3 and Bb2, and so on. A consideration is that the pawn on e3 prevents development of White's queenside bishop: White must concede a tempo with e4, passively develop it to d2, or fianchetto it to b2."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "borg-defense": {
+   "family": "Borg Defense",
+   "paragraphs": [
+    "Perhaps the worst possible reply to 1. d4 is 1...g5??. Against 1. e4, 1...g5? is bad because it fails to contest White's centre and weakens Black's kingside. Against 1. d4 it has the added disadvantage of sacrificing the pawn immediately."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...g5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...g5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "mieses-opening": {
+   "family": "Mieses Opening",
+   "paragraphs": [
+    "This move is playable but not played much as it does little to claim the center and potentially locks in the light squared bishop. It would normally transpose into the King's Indian Attack, or with colours reversed, a Modern, Pirc, or King's Indian defence. Not a very common opening as many player desire to claim the center with a more conventional approach with 1. d4 or 1. e4."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "sodium-attack": {
+   "family": "Sodium Attack",
+   "paragraphs": [
+    "White develops their knight to the edge of the board, where it has little influence on the board. This is a poor move that does little to develop White's position, at best passing the turn for Black to decide how to play. Black doesn't have to be as polite as White in eschewing the centre and can play 1...e5 or 1...d5.",
+    "After 1...e5, White may choose 2. Nc4 to put pressure on the e5-pawn."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. Na3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._Na3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "mikenas-defense": {
+   "family": "Mikenas Defense",
+   "paragraphs": [
+    "A rare move. 1...Nc6 develops a knight and prepares ...e5. Part of the idea is, like a reflection of the Alekhine defence, 1. e4 Nf6, to encourage White to overextend in the centre before counter-attacking.",
+    "Original positions can arise if White plays d5, kicking the knight, either immediately, 2. d5, or after a sequence like 2. c4 e5 3. d5. Otherwise the often game transposes into positions more commonly reached by other move orders."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nc6",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nc6",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "elephant-gambit": {
+   "family": "Elephant Gambit",
+   "paragraphs": [
+    "Black ignores the attack on their e-pawn and tries to gain time and space. Black wants to open the centre and attack, however the gambit is unsound. Black will be on the back foot in an open position because they are a tempo behind White. If White plays accurately, Black does not get sufficient compensation for the sacrificed pawn, but the resulting positions can be sharp and it is sometimes used as a surprise opening for Black.",
+    "Capturing either pawn, 3. Nxe5 or 3. exd5, is winning for White, but the main move is 3. exd5.",
+    "After 3. exd5, rather than recapturing the pawn immediately and allowing White to develop with tempo (3...Qxd5?! 4. Nc3), Black's plan is 3...e4. 4. Qe2, called the Paulsen countergambit, defends the knight by pinning the pawn. Then the usual refutation is 4...Nf6 5. d3! Qxd5 6. Nbd2 Nc6 7. dxe4±. (6. Nbd2 avoids complications following 6. Nc3 Bb4, where 7. Bd2? is a common mistake.)"
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3/2...d5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3/2...d5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "amar-opening": {
+   "family": "Amar Opening",
+   "paragraphs": [
+    "The Ammonia opening is based on the chemical formula of ammonia (NH3) and the fact that ammonia, like this opening, 'stinks'. Other titles for this opening include the Amar Opening, the Paris Opening, and Drunken Knight Opening. Chess author Tim Harding has jokingly suggested that \"Amar\" is an acronym for \"Absolutely mad and ridiculous\"; that sums up this move!",
+    "Jokes aside, this move isn’t actually bad, it just does not improve White's position. White has made an odd decision to develop the knight to a square where it has very little influence on the game (knights generally hate the edge of the board, and love the centre). As such, Black can fairly easily get an edge."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. Nh3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._Nh3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "kings-pawn-opening": {
+   "family": "King's Pawn Opening",
+   "paragraphs": [
+    "Charles' Opening is an unusual chess opening named after the British chess player and writer Charles Williams (1886–1945). Although this opening is rarely used, Vilmos Nogrady (as White) played it with mediocre success, tying with Meszaros Gyula in 1993."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. b3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._b3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "portuguese-opening": {
+   "family": "Portuguese Opening",
+   "paragraphs": [
+    "The Portuguese Opening is a rare opening starting with the moves 1.e4 e5 2.Bb5?!. The bishop is ineffective on the b5 square when there is no black knight on c6. It can be easily attacked by Black's c-pawn with 2...c6. Other moves can result in a Ruy Lopez/Spanish Opening (like 2...Nc6 3.Nf3) or other situations, where Black should be fine.",
+    "After 2...c6, the bishop can move to f1 (which makes White just waste 2 tempi), c4 (which allows 3...d5 to come with tempo and gives Black a classical center), d3, e2 (which allow a classical center for Black as well) and a4 (allowing 3...b5 4.Bb3 d5 and Black has a classical center, though engines may prefer 3...Nf6).",
+    "On move 2, Black can also play Nf6, develop normally, and exploit the bishop on b5 later. The Portuguese Opening is akin to a Ruy Lopez where White does not play Nf3 and is trying to gain pressure on Black's d-pawn. White may be hoping that Black attacks the bishop too much and weakens their dark squares or overextends."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Bb5",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Bb5",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "kings-knight-opening": {
+   "family": "King's Knight Opening",
+   "paragraphs": [
+    "White develops a piece to a more active square, asserts control in the centre and over the d4 square, and attacks Black's e5-pawn. This is the most common opening played in chess."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. e4/1...e5/2. Nf3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...e5/2._Nf3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "rapport-jobava-system": {
+   "family": "Rapport-Jobava System",
+   "paragraphs": [
+    "Sometimes referred to as the Rapport-Jobava System. This opening serves as a good surprise weapon against unprepared opponents, and in the worst case, equalizes. White often plans to threaten a knight fork on the c7 square after Nb5, usually played on the fourth or fifth move. Black typically challenges the center immediately with 3...c5 and trades their c-pawn for White's e-pawn. Alternatively, Black often plays the 3...a6 Anti-Jobava to control the b5 square or the natural 3...e6 development move. Black may also attempt 3...Bf5, developing the light-squared bishop before playing 4...e6, but it gives White an opportunity to launch a pawn storm with a tempo on the bishop through a well-timed g4 push (usually after White plays f3 or Ne5, protecting the g4 square)."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. d4/1...Nf6/2. Nc3/2...d5/3. Bf4",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._d4/1...Nf6/2._Nc3/2...d5/3._Bf4",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "anderssens-opening": {
+   "family": "Anderssen's Opening",
+   "paragraphs": [
+    "This opening move does little for development or control of the center. In some cases, White can transpose the game to an opening where 1. a3 might have been useful, but using a tempo on such a move already on move one seems premature. In fact, this opening is based on the idea that White is playing with the black pieces, but he has the move 1. a3 already played. If a game starts 1. a3 e5 2. e4 Nf6 3. Nc3, Black cannot proceed in Ruy Lopez-fashion, and if Black plays 3... Bc5, then 4. Nf3 puts Black into the Two Knights' Defence and White's a3 precludes many possibilities.",
+    "Named after the German chess player Adolf Anderssen, who played this opening a few times against Morphy, this is a prophylactic waiting move that allows Black to choose an opening down a tempo, should a3 be useful in such cases."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. a3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._a3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "clemenz-opening": {
+   "family": "Clemenz Opening",
+   "paragraphs": [
+    "This is an uncommon, passive opening move which achieves nothing in terms of development or control of the centre.",
+    "At best 1. h3 is a waiting move that forgoes White's first turn advantage, but otherwise is not a serious error. e.g. after 1...e5 2. e4 it is as if White is playing the Black side of the open game, where the addition of h3 controls g4 and prevents ...Bg4. Other \"reversed\" lines are possible: 2. c4 reaches a position from the English opening or \"reversed Sicilian\" (Michael Basman liked this approach, and to continue with an early g4); 1...d5 2. d4 reaches a reversed closed game, etc.",
+    "However, White often plays 1. h3 with a more unorthodox idea in mind. 1...e5 2. a3? d4 reaches Michael Basman's \"creepy-crawly\" opening."
+   ],
+   "source": "Wikibooks, Chess Opening Theory",
+   "title": "Chess Opening Theory/1. h3",
+   "url": "https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._h3",
+   "licence": "CC BY-SA 4.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+  }
+ }
+}

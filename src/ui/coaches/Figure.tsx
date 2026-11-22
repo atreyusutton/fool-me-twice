@@ -214,9 +214,9 @@ function Blundy({ mood }: { mood: Mood }) {
       <path d="M44 88 L50 70 M76 88 L70 70" stroke="#b23a48" strokeWidth="4" strokeLinecap="round" />
       <circle cx="44" cy="89" r="3" fill="#f7f3ea" stroke="#2b2b2f" strokeWidth="1" />
       <circle cx="76" cy="89" r="3" fill="#f7f3ea" stroke="#2b2b2f" strokeWidth="1" />
-      <path d="M46 84 Q60 92 74 84 L70 72 H50 Z" fill="#efe6d2" />
+      <path d="M46 84 Q60 92 74 84 L70 72 H50 Z" fill="#efe6d2" stroke="#c9b98f" strokeWidth="1.2" />
       <ellipse cx="60" cy="72" rx="16" ry="4.5" fill="#e0d5bc" />
-      <circle cx="60" cy="46" r="25" fill="#f4ecda" />
+      <circle cx="60" cy="46" r="25" fill="#fbf5e6" stroke="#c9b98f" strokeWidth="1.6" />
       <circle cx="49" cy="43" r="7" fill="#fff" stroke="#2b2b2f" strokeWidth="1.6" />
       <circle cx="71" cy="42" r="5" fill="#fff" stroke="#2b2b2f" strokeWidth="1.6" />
       <Face mood={mood} eyes={[51, 44, 70, 43]} mouth={[60, 58]} eyeSize={2.4} mouthWidth={15} brows={mood === "wince" || mood === "thinking"} />

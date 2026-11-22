@@ -1,8 +1,10 @@
 import { parseRoute, usePathname, type Route } from "../app/router.ts";
 import { getSession } from "../app/session.ts";
+import { Drill } from "./Drill.tsx";
 import { Games } from "./Games.tsx";
 import { Home } from "./Home.tsx";
 import { Link } from "./Link.tsx";
+import { OpeningGuide, Openings, WithOpenings } from "./Openings.tsx";
 import { Player } from "./Player.tsx";
 import { Practice } from "./Practice.tsx";
 import { Review } from "./Review.tsx";
@@ -32,7 +34,15 @@ function PlayerScreens({ route }: { route: Extract<Route, { name: "player" }> })
         if (view.name === "games") return <Games state={state} />;
         if (view.name === "game") return <Review key={view.gameId} session={session} state={state} gameId={view.gameId} />;
         if (view.name === "practice") return <Practice session={session} state={state} theme={view.theme} />;
-        return <Missing />;
+        return (
+          <WithOpenings session={session} state={state}>
+            {(data, reports, games) => {
+              if (view.name === "openings") return <Openings state={state} data={data} reports={reports} games={games} />;
+              if (view.name === "opening") return <OpeningGuide key={view.key} state={state} data={data} reports={reports} openingKey={view.key} />;
+              return <Drill key={view.key} session={session} state={state} data={data} reports={reports} games={games} openingKey={view.key} />;
+            }}
+          </WithOpenings>
+        );
       }}
     </Player>
   );

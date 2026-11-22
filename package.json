@@ -16,6 +16,7 @@
     "test": "vitest run",
     "eval": "tsx scripts/eval.ts",
     "record-demo": "tsx scripts/record-demo.ts",
+    "build-openings": "tsx scripts/build-openings.ts",
     "deploy": "npm run build && wrangler deploy",
     "postinstall": "node scripts/copy-engine.mjs",
     "predev": "node scripts/copy-engine.mjs",
