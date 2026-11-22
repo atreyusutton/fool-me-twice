@@ -26,7 +26,7 @@ Open the address it prints (usually `http://localhost:5173`).
 
 | Command | What it does |
 |---|---|
-| `npm test` | 135 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, spoken notation and the voice request check, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
+| `npm test` | 142 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, spoken notation, the fixed lines and the voice request check, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
 | `npm run eval` | Checks every recorded coach reply and attacks the validator with broken replies. No key needed. Output below |
 | `npm run record-demo` | Re-records the demo for all four coaches (needs a key) |
 | `npm run build-openings` | Fetches the opening book and the quoted opening notes again |
@@ -68,7 +68,7 @@ What version 2 adds, and how each part stays inside the rule:
 - **Puzzles involve no model.** They are built from clear-mistake fact rows. An answer is accepted when the engine, run in your browser, says it gives up fewer than 8 points of winning chance against the engine's own move. If no engine can start, only the engine's move counts, and the screen says so.
 - **Book moves come from an open dataset,** the Lichess chess-openings list (3,865 named lines, public domain), replayed with the rules library when the data is built. A move is "book" only if a named line contains it. The app never says a book move is best.
 - **Opening ideas are a second kind of truth: sourced text.** An engine cannot prove ideas, and the model is not allowed to write theory from memory. They are quoted as written from Wikibooks *Chess Opening Theory* (CC BY-SA 4.0), with the page and licence beside them. Where the source has no page, the app says it has nothing.
-- **Voices read only checked text.** Each coach has one designed voice (made from a written description of the book character; no real person is imitated). The voice route gets the coach request and the reply, runs the same validator again, fills in the values from the fact table, writes each move out in words by code ("Nxe5+" becomes "knight takes E5, check"), and only then asks for speech. It refuses free text.
+- **Voices read only checked text.** Each coach has one designed voice (made from a written description of the book character; no real person is imitated). The voice route gets the coach request and the reply, runs the same validator again, fills in the values from the fact table, writes each move out in words by code ("Nxe5+" becomes "knight takes E5, check"), and only then asks for speech. It refuses free text. The fixed practice, guide and drill lines are spoken the same way: the route is sent the name of a line and the values for its slots, builds the words itself from `src/core/lines.ts`, and refuses a slot value that is not a chess move, a small whole number or an opening name.
 - **What coaches and Blundy say in practice and the drill is fixed text** written for the app, with the moves and numbers put in by code. Where right or wrong must be instant and certain, the model is not called.
 
 ## System design
@@ -181,7 +181,7 @@ What this does and does not show: every reply the demo shows passes the validato
 - **Opening notes exist for 76 of the 90 largest opening families.** They are introductions, quoted and cut to at most three paragraphs.
 - **The session summaries on the Process tab were written by AI.** My messages in them are quotes, and a test checks each against the transcript; the agent's side is a summary, which is why the whole transcript is one click away.
 - **The coaches are from out-of-copyright books and drawn from the books.** Winnie-the-Pooh carries the most risk, because of trademarks on later versions. This is not legal advice.
-- **Voices cover the coach's read and the game review only.** Practice, the opening guide and the drill are silent, so Blundy has a voice designed but nothing to say yet. I chose the voices by ear; nothing measures whether a voice suits its character.
+- **I chose the voices by ear.** Nothing measures whether a voice suits its character. The waiting and "not enough games yet" lines on the You page are not voiced.
 - **A spoken line takes one to two seconds the first time anyone asks for it.** After that it comes from a cache.
 - **Not checked:** Safari and Firefox, a real phone (only a phone-sized window), a screen reader, the closed-account screen in a browser, and the deployed rate limit under load.
 
@@ -239,7 +239,8 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 10 | Deploy as a new Worker, live checks, repository rename, push |
 | 20 | After the deploy: key rotation checks, live coach on the deployment, one consistent navigation bar |
 | 75 | Coach voices: designing five voices, a checked voice route with caching, the player and controls |
-| **380** | **Total: 6 h 20 min** |
+| 35 | Voices for practice, the opening guide and Blundy: fixed lines moved into shared code with typed slots, tests, browser checks |
+| **415** | **Total: 6 h 55 min** |
 
 ## Licences and credits
 

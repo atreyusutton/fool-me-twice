@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useCoach } from "../app/coach-choice.ts";
 import { gamePath, playerPath, useSearch } from "../app/router.ts";
 import type { PlayerSession, SessionState } from "../app/session.ts";
-import type { CoachId } from "../core/coach/personas.ts";
+import { fixedLine, type FixedLine } from "../app/voice.ts";
 import { THEME_COPY } from "../core/profile.ts";
 import { buildPuzzles, judgeAttempt, playMove, practiceQueue, recordResult, type PracticeProgress, type Puzzle, type Verdict } from "../core/puzzles.ts";
 import type { FactTable, PatternTag } from "../core/types.ts";
@@ -10,48 +10,9 @@ import { Board } from "./Board.tsx";
 import type { Mood } from "./coaches/Figure.tsx";
 import { Say } from "./coaches/Say.tsx";
 import { OUTCOME_WORD, plural } from "./format.ts";
+import { LineText } from "./LineText.tsx";
 import { Link } from "./Link.tsx";
 import { Loading } from "./Status.tsx";
-
-/**
- * What the coaches say during practice. These are fixed lines written for the app: they hold no chess
- * facts of their own. Every move and number shown with them is put in by code from the fact table or
- * from the engine's check of the answer.
- */
-const LINES: Record<CoachId, { ask: string; best: string; good: string; same: string; wrong: string; shown: string }> = {
-  sherlock: {
-    ask: "Look again, and this time observe. What should it have been?",
-    best: "Precisely.",
-    good: "It will serve.",
-    same: "The same move as in the game. You see, but you do not observe.",
-    wrong: "No. That will not do.",
-    shown: "Mark it well. We shall meet this position again.",
-  },
-  pooh: {
-    ask: "Let us think about it slowly this time. What would you play?",
-    best: "That is the one. What a clever thing to find.",
-    good: "That will do very nicely.",
-    same: "Oh, bother. That is the same move as in the game.",
-    wrong: "Oh, bother. Not that one.",
-    shown: "Never mind. It will come round again, and then you will know.",
-  },
-  hook: {
-    ask: "Show me the move you should have played. And mind your form.",
-    best: "Good form. It pains me to say so.",
-    good: "It will pass, you dog.",
-    same: "Bad form! The very same move as in the game.",
-    wrong: "Bad form!",
-    shown: "Remember it. You will face this again before I am done with you.",
-  },
-  dracula: {
-    ask: "You have another chance. Few are given one. Choose.",
-    best: "Yes. You learn. I am pleased.",
-    good: "Acceptable.",
-    same: "The same move again. I have seen this before.",
-    wrong: "No. Not that.",
-    shown: "Remember it. It will return. Such things always do.",
-  },
-};
 
 const Move = ({ san, kind }: { san: string; kind?: "played" | "best" }) => <span className={`san fact${kind ? ` ${kind}` : ""}`}>{san}</span>;
 
@@ -158,13 +119,12 @@ function Run({
   const [missedThisGo, setMissedThisGo] = useState(false);
   const [tally, setTally] = useState({ right: 0, missed: 0 });
   const puzzle = queue[position];
-  const lines = LINES[coach];
   const to = (sub = "") => playerPath(state.username, state.demo, sub);
 
   if (!puzzle) {
     return (
       <div className="card lift stack">
-        <Say who={coach} mood={tally.missed === 0 ? "pleased" : "talking"}>
+        <Say who={coach} mood={tally.missed === 0 ? "pleased" : "talking"} voice={fixedLine("practice.set", coach, tally).voice}>
           <p className="bubble-title">That is the set.</p>
           <p>
             {plural(tally.right, "position")} right first time{tally.missed > 0 ? `, ${tally.missed} to see again.` : "."}
@@ -231,60 +191,40 @@ function Run({
   const lastMove = step.kind === "checking" || step.kind === "judged" ? step.uci : null;
   const tint = step.kind === "judged" ? (step.verdict.kind === "best" || step.verdict.kind === "good" ? "right" : step.verdict.kind === "wrong" ? "wrong" : null) : null;
 
+  // What the coach says is one of the app's fixed lines; the moves and numbers are put in by code.
   let mood: Mood = "talking";
-  let speech: ReactNode;
+  let said: FixedLine | null = null;
   if (step.kind === "ask") {
-    speech = (
-      <p>
-        Here you played <Move san={puzzle.playedSan} kind="played" />. {lines.ask}
-      </p>
-    );
+    said = fixedLine("practice.ask", coach, { played: puzzle.playedSan });
   } else if (step.kind === "checking") {
     mood = "thinking";
-    speech = (
+  } else if (step.kind === "shown") {
+    said = fixedLine("practice.shown", coach, { best: puzzle.answerSan });
+  } else if (step.verdict.kind === "best") {
+    mood = "pleased";
+    said = fixedLine("practice.best", coach, { move: step.san });
+  } else if (step.verdict.kind === "good") {
+    mood = "pleased";
+    said = fixedLine("practice.good", coach, { move: step.san, best: puzzle.answerSan, loss: step.verdict.loss });
+  } else if (step.verdict.kind === "wrong") {
+    mood = "wince";
+    said = fixedLine(step.verdict.sameAsGame ? "practice.same" : "practice.wrong", coach, { move: step.san, loss: step.verdict.loss });
+  } else {
+    mood = "thinking";
+    said = fixedLine("practice.unchecked", coach, { move: step.san });
+  }
+  const speech: ReactNode = said ? (
+    <p>
+      <LineText parts={said.parts} />
+    </p>
+  ) : (
+    step.kind === "checking" && (
       <p>
         <span className="spinner tiny" aria-hidden="true" />
         Checking <Move san={step.san} /> with the engine.
       </p>
-    );
-  } else if (step.kind === "shown") {
-    speech = (
-      <p>
-        The engine&apos;s move was <Move san={puzzle.answerSan} kind="best" />. {lines.shown}
-      </p>
-    );
-  } else if (step.verdict.kind === "best") {
-    mood = "pleased";
-    speech = (
-      <p>
-        {lines.best} <Move san={step.san} kind="best" /> is the engine&apos;s move.
-      </p>
-    );
-  } else if (step.verdict.kind === "good") {
-    mood = "pleased";
-    speech = (
-      <p>
-        {lines.good} <Move san={step.san} /> is not the engine&apos;s first choice, which was <Move san={puzzle.answerSan} kind="best" />, but
-        it gives up only <span className="num fact">{step.verdict.loss} points</span> of winning chance.
-      </p>
-    );
-  } else if (step.verdict.kind === "wrong") {
-    mood = "wince";
-    speech = (
-      <p>
-        {step.verdict.sameAsGame ? lines.same : lines.wrong} <Move san={step.san} kind="played" /> gives up{" "}
-        <span className="num fact">{step.verdict.loss} points</span> of winning chance.
-      </p>
-    );
-  } else {
-    mood = "thinking";
-    speech = (
-      <p>
-        The engine could not be started to check <Move san={step.san} />, so here only the engine&apos;s own move counts. Try again, or see
-        the answer.
-      </p>
-    );
-  }
+    )
+  );
 
   return (
     <div className="review">
@@ -323,7 +263,7 @@ function Run({
         </div>
 
         <div aria-live="polite">
-          <Say who={coach} mood={mood} size={88}>
+          <Say who={coach} mood={mood} size={88} voice={said?.voice}>
             {speech}
           </Say>
         </div>

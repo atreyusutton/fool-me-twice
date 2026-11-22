@@ -40,7 +40,7 @@ describe("voiceText: what the voice route agrees to read", () => {
     const result = voiceText({ request: game, reply: good, parts: [1] });
     expect(result).toEqual({
       ok: true,
-      coach: "sherlock",
+      speaker: "sherlock",
       text: "rook takes H7 gave up 49 points of winning chance. The engine preferred rook on the A file to B1.",
     });
   });

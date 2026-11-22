@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { gameReviewToWire, profileSummaryToWire, type CoachWire } from "../core/coach/schema.ts";
 import type { CoachRequest, GameReview, ProfileSummary } from "../core/coach/types.ts";
+import { lineParts, type LineId, type LinePart, type LineValues, type Speaker } from "../core/lines.ts";
 import type { VoicePart, VoiceRequest } from "../core/voice.ts";
 
 /** One piece of checked coach text that can be read aloud. */
@@ -17,6 +18,29 @@ export function voiceLine(request: CoachRequest, reply: GameReview | ProfileSumm
   return { id: `${request.coach}|${words.join("|")}`, payload: { request, reply: wire, parts } };
 }
 
+/** One of the app's fixed lines, ready for the screen (`parts`) and for the voice (`voice`). */
+export interface FixedLine {
+  parts: LinePart[];
+  voice: VoiceLine;
+}
+
+/**
+ * Builds a fixed line with its values filled in. The same file of lines is used by the voice route,
+ * which builds the words again from the line's name and values and never takes text from here.
+ */
+export function fixedLine(line: LineId, speaker: Speaker, values: LineValues = {}): FixedLine {
+  const built = lineParts(line, speaker, values);
+  // A value the line does not accept is a bug in the caller; say so on screen and stay silent.
+  const parts: LinePart[] = built.ok ? built.parts : [{ type: "text", text: `(This line could not be built: ${built.error}.)` }];
+  if (!built.ok) console.error(`Fool Me Twice: the line "${line}" could not be built.`, built.error);
+  return { parts, voice: { id: `${speaker}|${line}|${JSON.stringify(values)}`, payload: { line, speaker, values } } };
+}
+
+/** True while a line is being fetched or played, so a screen can wait for it to finish. */
+export function voiceBusy(): boolean {
+  return state.status !== "idle";
+}
+
 export interface VoiceState {
   /** Null until the Worker has said whether a voice key is configured. */
   available: boolean | null;
@@ -31,7 +55,8 @@ export interface VoiceState {
 
 const SOUND_KEY = "fmt-sound";
 const listeners = new Set<() => void>();
-const clips = new Map<string, string>();
+// One fetch per line per visit, shared by anyone who asks while it is still on its way.
+const clips = new Map<string, Promise<string>>();
 let audio: HTMLAudioElement | null = null;
 let requestNumber = 0;
 
@@ -93,9 +118,17 @@ export function stop(): void {
   if (state.status !== "idle") update({ lineId: null, status: "idle" });
 }
 
-async function fetchClip(line: VoiceLine): Promise<string> {
+function fetchClip(line: VoiceLine): Promise<string> {
   const known = clips.get(line.id);
   if (known) return known;
+  const clip = requestClip(line);
+  clips.set(line.id, clip);
+  // A failed fetch is not remembered, so pressing play again tries again.
+  clip.catch(() => clips.delete(line.id));
+  return clip;
+}
+
+async function requestClip(line: VoiceLine): Promise<string> {
   const response = await fetch("/api/voice", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(line.payload) });
   if (!response.ok) {
     let message = `The voice service answered ${response.status}.`;
@@ -107,9 +140,7 @@ async function fetchClip(line: VoiceLine): Promise<string> {
     }
     throw new Error(message);
   }
-  const url = URL.createObjectURL(await response.blob());
-  clips.set(line.id, url);
-  return url;
+  return URL.createObjectURL(await response.blob());
 }
 
 /**

@@ -39,5 +39,4 @@ Start with a player near Atreyu's level so the chess is easy to check by eye, th
 1. About 800: `Antwacky` (public account found by search, session 01). Development only unless they agree to more.
 2. A friend, with his permission.
 3. Atreyu's dad (about 1500), with his permission.
-- **Voices for Blundy and the practice lines.** They are fixed text with moves put in on the device, so they need their own kind of voice request (a line ID plus the moves), checked by code like the rest. Blundy's voice is already designed.
 - **Stream the audio** so a longer line starts sooner, and try the more expressive voice model.
