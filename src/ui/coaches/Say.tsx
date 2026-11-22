@@ -11,6 +11,8 @@ const NAMES: Record<FigureId, string> = {
   blundy: "Blundy McBlunderpants",
 };
 
+const AUTO_READ_DELAY_MS = 300;
+
 /** A figure with a speech bubble: how every coach (and Blundy) talks. */
 export function Say({
   who,
@@ -34,8 +36,12 @@ export function Say({
   const lineId = canSpeak ? voice!.id : null;
   // With sound on, a new line is read as it appears. The line is looked up by id, so a re-render
   // with the same words does not start it again.
+  // It waits a moment first: a screen that is still settling can show several lines in a row, and
+  // only the one that stays should be asked for and paid for.
   useEffect(() => {
-    if (lineId && voice && sound.sound) void speak(voice, false);
+    if (!lineId || !voice || !sound.sound) return;
+    const timer = window.setTimeout(() => void speak(voice, false), AUTO_READ_DELAY_MS);
+    return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the line's id and the sound switch only
   }, [lineId, sound.sound]);
   // Leaving the screen stops the voice.
