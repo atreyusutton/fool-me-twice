@@ -297,3 +297,11 @@ Agreed, and said why: the bar swapped between two sets of tabs, so Home vanished
 ### Agent: what was done
 
 Built it: a small store remembers the last player whose games loaded, the bar is the same on every page, and a label on Home and Process says whose pages the tabs open. Checked in a headless browser at four widths (no overflow), that a live player is remembered and a mistyped one is not, and that the tests and lint pass. A formatter run by mistake had rewritten the whole shell file; that was undone and the change reapplied by hand so the diff shows only the change.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the two waiting commits into `main` through a pull request, redeployed the live site and checked it.
