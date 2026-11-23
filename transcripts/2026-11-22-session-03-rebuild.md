@@ -529,3 +529,11 @@ Set the repository description to the new name with a link to the live site, and
 ### Agent: what was done
 
 Agreed. The explanation existed but only appeared after the puzzle was answered, so the question itself gave no reason. What went wrong with the game move does not give the answer away, so it is now shown with the question whenever the engine's line after that move loses material or ends in checkmate, with a button to see it on the board. The engine's own move stays hidden until the puzzle is answered.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the "what went wrong" card into `main` through a pull request, redeployed and checked the live site.
