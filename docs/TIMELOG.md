@@ -1,6 +1,8 @@
 # Time log
 
-One line per block of work: date, minutes, what it went to. The README's time breakdown is built from this file.
+One line per block of work: date, minutes, what it went to.
+
+**Measured agent working time (22 November 2026, from the session log with `scripts/agent-time.ts`):** 1 h 8 min on 19 November, 2 h 36 min on 22 November, 3 h 44 min in all. The README uses these figures. The minutes in the table below are the agent's own per-step estimates, written as it went; they add up to more than the measured time and are kept as they were written.
 
 | Date | Minutes | What |
 |---|---|---|
@@ -35,3 +37,4 @@ One line per block of work: date, minutes, what it went to. The README's time br
 | 2026-11-22 | 15 | Check before sending: clean clone, live sweep, a live username, README and session summary brought up to date with voices |
 | 2026-11-22 | 110 | After user testing: clocks in review, puzzle lead-up, look-back and navigation, first read after five games, "why" from engine lines, playing a line out, tests and browser checks |
 | 2026-11-22 | 15 | What went wrong with the game move, shown with the puzzle question; repository description; email draft |
+| 2026-11-22 | measured | Time counted from the session log instead of estimated; buttons moved above the explanation card; a shorter email |

@@ -219,8 +219,10 @@ export function Story() {
           transcripts, the decision log and the time log are in the repository, and the transcripts are on the next page.
         </p>
         <p>
-          Time: version 1 took 4 hours 50 minutes by the time log, against a guideline of four. The version 2 rebuild is logged separately in{" "}
-          <code>docs/TIMELOG.md</code>.
+          Time, counted as how long the coding agent worked and measured from its session log: 1 hour 8 minutes for version 1 and{" "}
+          2 hours 36 minutes for the rebuild, the voices and the changes after user testing. That leaves out about an hour of planning before the
+          repository existed and my own time between requests. The guideline was four hours; version 1 is the part built to it. The method is
+          in the README.
         </p>
       </section>
 

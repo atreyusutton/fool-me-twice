@@ -209,47 +209,22 @@ I planned this with Claude Code, an AI coding agent, and it wrote the code from 
 
 ### Time
 
-From `docs/TIMELOG.md`. The planning time is my estimate; the build times were logged by the agent as it worked.
+Time here means **how long the coding agent worked**, measured from its session log, not how much time passed. A request runs from a message I typed to the agent's last action before my next message, with the model calls and the tools it ran included. A silent stretch of more than ten minutes inside a request is left out, because that is the agent waiting for me. The script is `scripts/agent-time.ts`; the log itself stays on my computer because it holds keys I pasted.
 
-**Version 1 (the take-home as first handed in)**
-
-| Minutes | What |
+| Agent working time | What |
 |---|---|
-| 60 | Planning with Claude Code before the repo existed: reading the assignment, brainstorm, checking the API, choosing the demo player, writing the spec and kickoff prompt (transcript: session 01) |
-| 15 | Session 02: reading the repo, pre-build questions, key and branch setup |
-| 10 | Step 1: scaffold (Vite, React, Worker, tests, lint), checked in a browser |
-| 15 | Step 2: Chess.com fetch layer, archive cache, no-engine profile, tests |
-| 25 | Steps 3 and 4: engine wrapper, fact table, detectors, profile, tests; measuring depth 12, 14 and 16 on the demo player and tuning |
-| 25 | Step 5: game review screen (board, move list, winning-chance chart, key moments with code-built text), browser checks on desktop and phone widths, parallel engines |
-| 40 | Step 6: coach prompt, validator and tests, Worker route, reply cache, cost disclosure, live checks in the browser |
-| 35 | Step 7: demo recorder, recorded demo playback, eval command, three measured prompt versions, browser check of all 25 demo games |
-| 30 | Step 8: "How this was built" page, README, licence |
-| 25 | Step 9: browser checks of error states, dark theme and phone layout; fix so saved games open when Chess.com is unreachable |
-| 10 | Clean-clone check, deploy to Cloudflare, push to GitHub |
-| **290** | **Total: 4 h 50 min** |
+| 1 h 8 min | Version 1: the take-home as first built (19 November) |
+| 2 h 36 min | Version 2: the rebuild, the voices, and the changes after user testing (22 November) |
+| **3 h 44 min** | **Total** |
 
-The guideline was four hours. I treated it as a guide to scope, and this is the real time.
+What this number leaves out:
 
-**Version 2 (the rebuild, logged separately)**
+- **The planning session** before the repository existed: about an hour, my estimate, in a different folder (transcript: session 01).
+- **My own time** between requests: reading, deciding, testing in the browser, and the user testing.
 
-| Minutes | What |
-|---|---|
-| 40 | Rescoping: name, cast, flow, sources, checking the opening data, plan |
-| 35 | Design system, shell and navigation, five character figures, home page |
-| 45 | Coach characters in the prompt and cache key, two new checker rules, demo re-recorded for four coaches; You page, games list, review screen |
-| 30 | Puzzles: core and tests, interactive board, engine-checked answers |
-| 45 | Openings: book core and tests, data builder, guide, drill against Blundy |
-| 45 | Process tab: story, transcripts as conversations, truth page with a live checker |
-| 35 | README, records, browser checks, clean-clone check |
-| 10 | Deploy as a new Worker, live checks, repository rename, push |
-| 20 | After the deploy: key rotation checks, live coach on the deployment, one consistent navigation bar |
-| 75 | Coach voices: designing five voices, a checked voice route with caching, the player and controls |
-| 35 | Voices for practice, the opening guide and Blundy: fixed lines moved into shared code with typed slots, tests, browser checks |
-| 20 | The picked coach says their line |
-| 15 | Check before sending: clean clone, live sweep, stale wording |
-| 110 | After user testing: clocks in review, puzzle lead-up, look-back and navigation, a first read after five games, "why" from the engine's lines, playing a line out |
-| 15 | What went wrong with the game move, shown with the puzzle question |
-| **575** | **Total: 9 h 35 min** |
+The guideline for the take-home was four hours. Version 1 is the part built to that guideline; everything on 22 November was a choice to keep going.
+
+An earlier version of this README gave 4 h 50 min and 9 h 35 min. Those were per-step estimates the agent wrote into `docs/TIMELOG.md` as it went. The session log shows they overstated the working time, so the measured figures replace them here. The estimates are still in the time log.
 
 ## Licences and credits
 

@@ -45,7 +45,7 @@ So the rule for this project is **engine truth**: the engine and the game record
 - **TypeScript, not Chess.com's backend languages.** I considered building in their stack to show range and decided a clean build in a language I know, which is also on their list, says more than a rushed one in a language I don't.
 - **A recorded demo.** Anyone can run the app with one command and no API key.
 - **Start at my own level.** I am rated about 750 on a new account with too few games to study. So development started with a public account rated about 800 with more than 2,000 rapid games, where I can check the chess by eye, before moving to stronger players.
-- **Four hours was the guideline.** I treated it as a guide to scope, and the real time is in the time log. `[CONFIRM: final hours and split]`
+- **Four hours was the guideline.** I treated it as a guide to scope. Time is counted as how long the coding agent worked, measured from its session log: 1 h 8 min for version 1 and 2 h 36 min for everything on 22 November, plus about an hour of planning before the repository existed. My own time between requests is not in that number.
 
 ## 6. How AI was used, in plain terms
 
