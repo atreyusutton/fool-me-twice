@@ -493,3 +493,19 @@ Saved the email draft in a folder that is kept out of the repository. Said the f
 ### Agent: what was done
 
 Built it in three commits. First: Review shows the time control, both clocks and the clock left at each key moment, with buttons to the newer and older game; a puzzle opens with the opponent's move arriving and the game move in red, can be stepped back through, skipped, retried, and shows its game, date, opponent, time and the winning-chance graph. Second: the coach gives a first read once the newest five games are checked and a full one when all are in, with a time estimate measured from the engine's own speed; on a browser slowed threefold the first stage came at 12 seconds and the full read at 47. Third: the engine's expected line is kept with each result (same search, same depth), code follows the line after the move played and after the engine's move, counts captures and checkmate, and writes the "why"; either line can be played out on the board, and the engine answers the player's own moves. No model writes any of it, so the demo did not need recording again. 151 tests pass; each feature was opened in a headless browser at desktop and phone width.
+
+### User
+
+> great is in pushed and deployed?
+
+### Agent: reply
+
+No: the user-testing work was committed locally only. Asked for the word before pushing.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the user-testing round into `main` through a pull request, redeployed and checked the live site.
