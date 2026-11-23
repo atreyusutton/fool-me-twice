@@ -565,3 +565,11 @@ Merged the button move into `main` through a pull request, redeployed and checke
 ### Agent: what was done
 
 The hours in the README had been the agent's own per-step estimates. Wrote a script that reads the session log and adds up each request from the typed message to the agent's last action, leaving out silences of more than ten minutes (the agent waiting for an approval or an answer). Measured: 1 h 8 min for version 1 and 2 h 36 min for everything on 22 November, 3 h 44 min in all, well under the 4 h 50 min and 9 h 35 min the estimates had added up to. Replaced the README's time section with the measured figures and said plainly what they leave out: the planning session before the repository existed and the user's own time between requests. The estimates stay in the time log, and the change is in the decision log. Rewrote the email draft, kept out of the repository, as a short version.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the measured time into `main` through a pull request, redeployed and checked the live site.
