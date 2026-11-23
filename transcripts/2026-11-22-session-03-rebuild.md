@@ -601,3 +601,11 @@ Checked again what a reviewer will see: every screen on the live site, the demo,
 ### Agent: what was done
 
 Cut the README's time section down to the table of agent working time and one line naming the script that measures it. The longer explanation was removed from the README and is still in the decision log.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the shorter time section into `main` through a pull request, redeployed and checked the live site.
