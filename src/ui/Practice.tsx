@@ -143,12 +143,14 @@ function Run({
   const record = useMemo(() => (puzzle ? session.getGame(puzzle.gameId) : null), [session, puzzle]);
   const hasLeadUp = record !== null && puzzle !== undefined && puzzle.ply >= 2;
 
-  // Once the position is finished, the engine's lines explain it and can be played out.
+  // Before an answer, only what went wrong with the game move is shown. Once the position is finished,
+  // both of the engine's lines explain it and can be played out.
   const finished = step.kind === "shown" || (step.kind === "judged" && (step.verdict.kind === "best" || step.verdict.kind === "good"));
   const explore = useExplore(
     session,
-    puzzle && finished ? { id: puzzle.id, fen: puzzle.fen, playedUci: puzzle.playedUci, playedSan: puzzle.playedSan, color: puzzle.color } : null,
+    puzzle ? { id: puzzle.id, fen: puzzle.fen, playedUci: puzzle.playedUci, playedSan: puzzle.playedSan, color: puzzle.color } : null,
     "Back to the position",
+    finished,
   );
   const showing = `${puzzleId}|${replays}`;
   const intro: Intro = !hasLeadUp ? "done" : introAt?.showing === showing ? introAt.stage : "before";
