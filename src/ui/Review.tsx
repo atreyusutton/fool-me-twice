@@ -16,6 +16,7 @@ import { CoachSource } from "./CoachSource.tsx";
 import { CoachText } from "./CoachText.tsx";
 import { ENDING_WORD, OUTCOME_WORD, formatClock, formatDate, gameLength, plural } from "./format.ts";
 import { Link } from "./Link.tsx";
+import { useExplore } from "./Explore.tsx";
 import { ErrorScreen } from "./Status.tsx";
 import { WinChart } from "./WinChart.tsx";
 
@@ -123,6 +124,17 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
       list.scrollTop = button.offsetTop + button.offsetHeight - list.clientHeight;
     }
   }, [index]);
+
+  // The key moment on the board, if the engine had a different move there: the move that can be explained.
+  const explained =
+    review.moments
+      .map((moment) => table.rows.find((row) => row.id === factIds[moment.fact]))
+      .find((row) => row !== undefined && row.ply - 1 === index && row.bestUci !== null && !row.playedBest) ?? null;
+  const explore = useExplore(
+    session,
+    explained ? { id: explained.id, fen: explained.fenBefore, playedUci: explained.playedUci, playedSan: explained.played, color: explained.color } : null,
+    "Back to the game",
+  );
 
   if (!game || moves.length === 0) {
     return (
@@ -243,14 +255,16 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
       <div className="review">
         <div className="review-board stack">
           <Board
-            fen={fen}
+            fen={explore.active ? explore.fen : fen}
             orientation={summary.playerColor}
-            lastMove={lastMove}
-            slide={place.slide}
-            arrows={arrows}
-            label={`Board after ${describe(index)}, seen from ${summary.playerColor}'s side`}
+            lastMove={explore.active ? explore.lastMove : lastMove}
+            slide={explore.active ? explore.slide : place.slide}
+            arrows={explore.active ? [] : arrows}
+            label={explore.active ? `A line from move ${explained?.moveNumber}, seen from ${summary.playerColor}'s side` : `Board after ${describe(index)}, seen from ${summary.playerColor}'s side`}
+            onMove={explore.active ? explore.onMove : undefined}
           />
-          <div className="board-controls" role="group" aria-label="Step through the game">
+          {explore.controls}
+          <div className="board-controls" role="group" aria-label="Step through the game" hidden={explore.active}>
             <button className="iconbtn" onClick={() => setIndex(0)} disabled={index === 0} aria-label="Go to the start">
               ⏮
             </button>
@@ -267,7 +281,7 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
               ⏭
             </button>
           </div>
-          {myClock !== null && theirClock !== null && (
+          {!explore.active && myClock !== null && theirClock !== null && (
             <p className="clocks small num" aria-label="Clocks in this position">
               <span>
                 You <strong>{formatClock(myClock)}</strong>
@@ -277,7 +291,7 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
               </span>
             </p>
           )}
-          {upcomingKey && (
+          {!explore.active && upcomingKey && (
             <p className="small" style={{ textAlign: "center" }}>
               <span className="arrow-key">
                 <i className="played" aria-hidden="true" /> You played <span className="san">{upcomingKey.played}</span>
@@ -335,6 +349,8 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
               )}
             </div>
           )}
+
+          {explore.why}
 
           <div className="row">
             {previousMoment && (

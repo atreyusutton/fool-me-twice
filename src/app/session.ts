@@ -541,15 +541,44 @@ export class PlayerSession {
    * waits behind the game analysis, and the same position cache. Null when no engine can be started.
    */
   async evaluate(fen: string): Promise<EngineResult | null> {
+    return this.onPracticeEngine(fen, false, "the engine could not check a practice answer.");
+  }
+
+  private practiceQueue: Promise<unknown> = Promise.resolve();
+
+  /** One search at a time on the practice engine: an engine answers one question, then the next. */
+  private onPracticeEngine(fen: string, needLine: boolean, failure: string): Promise<EngineResult | null> {
     const kv = this.kv;
-    if (!kv) return null;
-    try {
-      const results = await analysePositions([fen], () => getBrowserEngine(this.engineSetting, PRACTICE_ENGINE_SLOT), kv, engineSettingKey(this.engineSetting));
-      return results?.[0] ?? null;
-    } catch (error) {
-      console.warn("Fool Me Twice: the engine could not check a practice answer.", error);
-      return null;
-    }
+    if (!kv) return Promise.resolve(null);
+    const work = async (): Promise<EngineResult | null> => {
+      try {
+        const results = await analysePositions(
+          [fen],
+          () => getBrowserEngine(this.engineSetting, PRACTICE_ENGINE_SLOT),
+          kv,
+          engineSettingKey(this.engineSetting),
+          undefined,
+          undefined,
+          needLine,
+        );
+        return results?.[0] ?? null;
+      } catch (error) {
+        console.warn(`Fool Me Twice: ${failure}`, error);
+        return null;
+      }
+    };
+    const result = this.practiceQueue.then(work);
+    this.practiceQueue = result;
+    return result;
+  }
+
+  /**
+   * The engine's result for one position with the line it expects, for showing why a move was better.
+   * Same engine, same depth and same cache as everything else; a result saved without its line is
+   * searched once more. Null when no engine can be started.
+   */
+  async line(fen: string): Promise<EngineResult | null> {
+    return this.onPracticeEngine(fen, true, "the engine could not work out a line.");
   }
 
   /** Practice progress is kept on the device, per player. In the recorded demo it lasts for the visit. */

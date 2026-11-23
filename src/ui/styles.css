@@ -463,3 +463,5 @@ code { font-family: var(--mono); font-size: 0.9em; background: var(--surface-2);
 .facts-list dt { color: var(--ink-3); }
 .facts-list dd { margin: 0; }
 .game-nav { flex-wrap: nowrap; }
+.why-card p { margin: 0; }
+.why-verdict { font-weight: 600; }

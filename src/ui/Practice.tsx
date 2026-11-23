@@ -10,6 +10,7 @@ import { Board } from "./Board.tsx";
 import type { Mood } from "./coaches/Figure.tsx";
 import { Say } from "./coaches/Say.tsx";
 import { OUTCOME_WORD, formatClock, formatDate, gameLength, plural } from "./format.ts";
+import { useExplore } from "./Explore.tsx";
 import { LineText } from "./LineText.tsx";
 import { Link } from "./Link.tsx";
 import { Loading } from "./Status.tsx";
@@ -142,6 +143,13 @@ function Run({
   const record = useMemo(() => (puzzle ? session.getGame(puzzle.gameId) : null), [session, puzzle]);
   const hasLeadUp = record !== null && puzzle !== undefined && puzzle.ply >= 2;
 
+  // Once the position is finished, the engine's lines explain it and can be played out.
+  const finished = step.kind === "shown" || (step.kind === "judged" && (step.verdict.kind === "best" || step.verdict.kind === "good"));
+  const explore = useExplore(
+    session,
+    puzzle && finished ? { id: puzzle.id, fen: puzzle.fen, playedUci: puzzle.playedUci, playedSan: puzzle.playedSan, color: puzzle.color } : null,
+    "Back to the position",
+  );
   const showing = `${puzzleId}|${replays}`;
   const intro: Intro = !hasLeadUp ? "done" : introAt?.showing === showing ? introAt.stage : "before";
 
@@ -260,6 +268,12 @@ function Run({
     lastMove = step.uci;
     tint = step.kind === "judged" ? (step.verdict.kind === "best" || step.verdict.kind === "good" ? "right" : step.verdict.kind === "wrong" ? "wrong" : null) : null;
   }
+  if (explore.active) {
+    boardFen = explore.fen;
+    lastMove = explore.lastMove;
+    tint = null;
+    slide = explore.slide;
+  }
   const describe = (at: number): string => {
     if (at === 0) return "Start";
     const move = moves[at - 1]!;
@@ -320,11 +334,12 @@ function Run({
           lastMove={lastMove}
           tint={tint}
           slide={slide}
-          arrows={step.kind === "shown" && !looking ? [{ uci: puzzle.answerUci, kind: "best" }] : []}
+          arrows={step.kind === "shown" && !looking && !explore.active ? [{ uci: puzzle.answerUci, kind: "best" }] : []}
           label={`Practice position, ${side} to move, seen from ${side}'s side`}
-          onMove={step.kind === "ask" && !introducing && !looking ? attempt : undefined}
+          onMove={explore.active ? explore.onMove : step.kind === "ask" && !introducing && !looking ? attempt : undefined}
         />
-        {hasLeadUp && (
+        {explore.controls}
+        {!explore.active && hasLeadUp && (
           <div className="board-controls" role="group" aria-label="Look back through the game">
             <button className="iconbtn" onClick={() => setView(Math.max(0, (view ?? puzzleAt) - 1))} disabled={(view ?? puzzleAt) === 0} aria-label="One move back">
               ◀
@@ -337,12 +352,12 @@ function Run({
             </button>
           </div>
         )}
-        {!hasLeadUp && (
+        {!explore.active && !hasLeadUp && (
           <p className="muted small" style={{ textAlign: "center" }}>
             {under}
           </p>
         )}
-        {hasLeadUp && (
+        {!explore.active && hasLeadUp && (
           <div className="row" style={{ justifyContent: "center" }}>
             {looking ? (
               <button className="btn small" onClick={() => setView(null)}>
@@ -429,6 +444,8 @@ function Run({
             </button>
           )}
         </div>
+
+        {explore.why}
 
         <nav className="row between" aria-label="Other positions">
           <button className="btn ghost small" onClick={() => goTo(position - 1)} disabled={position === 0}>
