@@ -455,3 +455,57 @@ The lines on the picker cards described each coach in the third person, which wo
 ### Agent: what was done
 
 Merged the picker voices into `main` through a pull request, redeployed and checked the live site.
+
+## Turn: check before sending
+
+### User
+
+> I will send the email with the live link and the github repo to Olga. Can you check everything write and email and make sure it it good to go for an interview?
+
+### Agent: what was done
+
+Checked the hand-in the way a reviewer would meet it. Cloned the public repository fresh with no keys: install, 143 tests, the eval, lint and the build passed, and every screen opened at desktop and phone width with no errors. Swept the same screens on the live site, and typed a real username into it: the coach's read, written by the model and checked, appeared after 46 seconds. The eval block in the README matches what the command prints. Found three stale things: the README's system design and the session summary on the Process tab did not mention the voice route (fixed here), and the repository's description on GitHub still said Motif. Two `[CONFIRM]` notes in `docs/STORY.md` still need the user's answer. Drafted the email.
+
+## Turn: user testing
+
+### User
+
+> When user testing I ran into a couple of challenges.
+>
+> 1. My Dad’s laptop is slow it’s a 12 year old Mac laptop so the lead-time for the games took several minutes.
+> 2. For the review it would be great to see what time frame the game is and what time is left in the game and gauge mistake with time. Like if you blunder with 5 seconds left it’s not as bad as with 2:55 left in a 3 minute game
+> 3. On the puzzles front there are several things to add maybe small or in a small info section, what game it was, date, against who, time frame of the game. The next thing is seeing the move the opponent just made animated then the bad move you made in red. On the puzzles I also what a way to go back on the puzzles in moves to see the moves leading up or retry it. Then I want the ability to go through the puzzles with a forward and backward buttons like here is the previous puzzle.
+>
+> On review and the puzzles I need like one or two more sentences on why the move I made was bad. Explain why the engine made a different move. Add the percentage graph to the puzzles I like that. When doing the puzzles and the review I would like to develop the continuation and be able to play through the newer position at least a couple more moves to enforce why the engine move was right. Then like the review I would like to be able to scroll through the reviews of games and see each game with a forwards and backwards button.
+>
+> What do you think?
+
+> save the email the app is not ready yet
+
+### Agent: reply
+
+Saved the email draft in a folder that is kept out of the repository. Said the feedback was good and that almost all of it could be built without bending engine truth. The clock, the puzzle details, the lead-up and the buttons need only the game record. The hard one is "why": a model's reason would be a guess, but code can show the engine's line after each move and count what it wins or loses, and say so honestly when the difference is only positional. For the slow laptop, advised against lowering the engine's depth, because that changes the facts. Asked about scope and the deadline.
+
+### User
+
+> Make it all dont cahnge the egine but maybe have it load after 5 games and get the rest in the background?
+
+### Agent: what was done
+
+Built it in three commits. First: Review shows the time control, both clocks and the clock left at each key moment, with buttons to the newer and older game; a puzzle opens with the opponent's move arriving and the game move in red, can be stepped back through, skipped, retried, and shows its game, date, opponent, time and the winning-chance graph. Second: the coach gives a first read once the newest five games are checked and a full one when all are in, with a time estimate measured from the engine's own speed; on a browser slowed threefold the first stage came at 12 seconds and the full read at 47. Third: the engine's expected line is kept with each result (same search, same depth), code follows the line after the move played and after the engine's move, counts captures and checkmate, and writes the "why"; either line can be played out on the board, and the engine answers the player's own moves. No model writes any of it, so the demo did not need recording again. 151 tests pass; each feature was opened in a headless browser at desktop and phone width.
+
+### User
+
+> great is in pushed and deployed?
+
+### Agent: reply
+
+No: the user-testing work was committed locally only. Asked for the word before pushing.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the user-testing round into `main` through a pull request, redeployed and checked the live site.

@@ -68,6 +68,7 @@ export function Board({
   label,
   onMove,
   tint,
+  slide = false,
 }: {
   fen: string;
   orientation: Color;
@@ -77,6 +78,8 @@ export function Board({
   onMove?: (uci: string) => void;
   /** Colours the last move's squares: set by code from the engine's verdict. */
   tint?: "right" | "wrong" | null;
+  /** Shows the last move arriving: the piece slides from the square it left. Off for moves the player dragged. */
+  slide?: boolean;
 }) {
   const pieces = piecesFromFen(fen);
   const ranks = orientation === "white" ? [8, 7, 6, 5, 4, 3, 2, 1] : [1, 2, 3, 4, 5, 6, 7, 8];
@@ -157,6 +160,8 @@ export function Board({
   }, [interactive, fen, legal, orientation]);
 
   const whiteToMove = fen.split(" ")[1] !== "b";
+  // How far, in squares as drawn, the last move's piece travelled to reach its square.
+  const arrival = slide && lastMove ? { square: lastMove.slice(2, 4), from: squareCentre(lastMove.slice(0, 2), orientation), to: squareCentre(lastMove.slice(2, 4), orientation) } : null;
   return (
     <div className="board-wrap">
       <div
@@ -179,15 +184,26 @@ export function Board({
               <>
                 {columnIndex === 0 && <span className="coord rank">{rank}</span>}
                 {rowIndex === 7 && <span className="coord file">{file}</span>}
-                {piece && (
-                  <img
-                    src={`/pieces/${piece === piece.toUpperCase() ? "w" : "b"}${piece.toUpperCase()}.svg`}
-                    alt={interactive ? "" : (pieceName ?? "")}
-                    draggable={false}
-                    className={drag?.square === square ? "dragging" : undefined}
-                    style={drag?.square === square ? { transform: `translate(${drag.dx}px, ${drag.dy}px) scale(1.12)` } : undefined}
-                  />
-                )}
+                {piece &&
+                  (arrival?.square === square ? (
+                    <img
+                      // A new key for each position, so the slide plays again for each move.
+                      key={fen}
+                      src={`/pieces/${piece === piece.toUpperCase() ? "w" : "b"}${piece.toUpperCase()}.svg`}
+                      alt={interactive ? "" : (pieceName ?? "")}
+                      draggable={false}
+                      className="arriving"
+                      style={{ "--dx": arrival.from.x - arrival.to.x, "--dy": arrival.from.y - arrival.to.y } as React.CSSProperties}
+                    />
+                  ) : (
+                    <img
+                      src={`/pieces/${piece === piece.toUpperCase() ? "w" : "b"}${piece.toUpperCase()}.svg`}
+                      alt={interactive ? "" : (pieceName ?? "")}
+                      draggable={false}
+                      className={drag?.square === square ? "dragging" : undefined}
+                      style={drag?.square === square ? { transform: `translate(${drag.dx}px, ${drag.dy}px) scale(1.12)` } : undefined}
+                    />
+                  ))}
               </>
             );
             if (!interactive) {

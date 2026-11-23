@@ -25,6 +25,11 @@ export const TIER1_GAME_LIMIT = 100;
 
 /** Engine analysis starts with this many games and can be extended. */
 export const ENGINE_GAME_STEPS = [25, 50, 100];
+/**
+ * The coach gives a first read once this many of the newest games are checked, and a full one when
+ * the rest are in. On a slow computer that is the difference between waiting for 5 games and for 25.
+ */
+export const FIRST_READ_GAMES = 5;
 /** Practice answers are checked on an engine of their own, apart from the ones analysing games. */
 const PRACTICE_ENGINE_SLOT = 9;
 
@@ -48,6 +53,8 @@ export interface EngineProgress {
   engines: number;
   startedAt: number | null;
   finishedAt: number | null;
+  /** Seconds the rest of this run should take, measured from the positions searched so far. Null until there is enough to go on. */
+  secondsLeft: number | null;
 }
 
 const IDLE_ENGINE: EngineProgress = {
@@ -64,6 +71,7 @@ const IDLE_ENGINE: EngineProgress = {
   engines: 1,
   startedAt: null,
   finishedAt: null,
+  secondsLeft: null,
 };
 
 /** The coach's words for the profile ("profile") or for one game (its uuid). */
@@ -108,6 +116,11 @@ export interface SessionState {
   facts: Record<string, FactTable>;
   /** Themes across the games analysed so far. Rebuilt each time a game finishes. */
   profile: Profile | null;
+  /**
+   * What the coach is asked about. It stands still between two points (the first few games, then all
+   * of them), so the coach's words and the numbers in them belong to one fixed set of games.
+   */
+  coachProfile: Profile | null;
   coachStatus: CoachStatus;
   coach: Record<string, CoachEntry>;
   /** Set in the recorded demo: when it was recorded and with which model. */
@@ -144,6 +157,7 @@ export class PlayerSession {
       engine: IDLE_ENGINE,
       facts: {},
       profile: null,
+      coachProfile: null,
       coachStatus: { available: null, model: null },
       coach: {},
       recording: null,
@@ -170,7 +184,7 @@ export class PlayerSession {
     const token = ++this.loadToken;
     const stale = () => token !== this.loadToken;
     this.analysisToken++;
-    this.update({ phase: "loading", error: null, loadingStep: "Opening the cache", notices: [], engine: IDLE_ENGINE, facts: {}, profile: null, coach: {} });
+    this.update({ phase: "loading", error: null, loadingStep: "Opening the cache", notices: [], engine: IDLE_ENGINE, facts: {}, profile: null, coachProfile: null, coach: {} });
     this.coachWanted.clear();
     this.coachInFlight.clear();
     if (this.state.demo) {
@@ -327,11 +341,16 @@ export class PlayerSession {
     const counters = { positionsDone: 0, searched: 0, fromCache: 0, gamesDone: games.length - queue.length, gamesFromCache: 0 };
     const active = new Set<string>();
     let lastPaint = 0;
+    const startedAt = performance.now();
+    let positionsTotal = 0;
     const paint = (force = false) => {
       const now = performance.now();
       if (!force && now - lastPaint < 200) return;
       lastPaint = now;
-      this.patchEngine({ ...counters, activeGameIds: [...active] });
+      // The estimate uses only positions the engine really searched; cached ones cost nothing.
+      const elapsed = (now - startedAt) / 1000;
+      const secondsLeft = counters.searched >= 40 && elapsed > 0 ? Math.round((positionsTotal - counters.positionsDone) / (counters.searched / elapsed)) : null;
+      this.patchEngine({ ...counters, activeGameIds: [...active], secondsLeft });
     };
 
     this.patchEngine({
@@ -340,7 +359,7 @@ export class PlayerSession {
       target,
       engines: workers,
       gamesDone: counters.gamesDone,
-      positionsTotal: queue.reduce((sum, game) => sum + game.plies + 1, 0),
+      positionsTotal: (positionsTotal = queue.reduce((sum, game) => sum + game.plies + 1, 0)),
       startedAt: Date.now(),
     });
 
@@ -397,7 +416,7 @@ export class PlayerSession {
         }),
       );
       if (stale()) return;
-      this.patchEngine({ ...counters, status: "done", activeGameIds: [], finishedAt: Date.now() });
+      this.patchEngine({ ...counters, status: "done", activeGameIds: [], finishedAt: Date.now(), secondsLeft: null });
       this.afterGameAnalysed();
     } catch (error) {
       if (stale()) return;
@@ -433,26 +452,28 @@ export class PlayerSession {
 
   private buildCoachRequest(key: string, coach: CoachId): { request: CoachRequest; factIds: Record<string, string> } | null {
     const state = this.getState();
-    if (!state.profile) return null;
+    const profile = state.coachProfile;
+    if (!profile) return null;
     if (key === "profile") {
       const rating = state.games[0]?.playerRating;
-      const request = profileSummaryRequest(state.profile, rating, coach);
+      const request = profileSummaryRequest(profile, rating, coach);
       return request.profile.themes.length > 0 ? { request, factIds: {} } : null;
     }
     const table = state.facts[key];
     const summary = state.games.find((game) => game.uuid === key);
     if (!table || !summary) return null;
-    return gameReviewRequest(summary, table, state.profile, coach);
+    return gameReviewRequest(summary, table, profile, coach);
   }
 
   /**
-   * Asks for the coach's words for the profile or one game. Nothing is requested until the engine has
-   * finished, because the profile (part of every request) keeps changing until then.
+   * Asks for the coach's words for the profile or one game. Nothing is requested until the first few
+   * games are checked, and the words are asked for again when every game is in, because the profile
+   * (part of every request) is different then.
    */
   ensureCoach(key: string, coach: CoachId = getCoach()): void {
     const slot = coachSlot(coach, key);
     this.coachWanted.add(slot);
-    if (this.getState().engine.status === "done") void this.loadCoach(slot);
+    if (this.getState().coachProfile) void this.loadCoach(slot);
   }
 
   /** `slot` is the coach and the subject together, so each character's words are kept apart. */
@@ -473,6 +494,8 @@ export class PlayerSession {
     const current = () => this.coachInFlight.get(slot) === hash;
     const publish = (result: CoachResult, fromCache: boolean, note: string | null, loading = false) => {
       if (!current()) return;
+      // Checked words from the first read stay on screen until the fuller read is ready to replace them.
+      if (loading && this.getState().coach[slot]?.status === "ready") return;
       this.update({ coach: { ...this.getState().coach, [slot]: { status: loading ? "loading" : "ready", request, factIds, result, fromCache, note } } });
     };
     // Whatever is cached or returned is checked again here: nothing unchecked reaches the screen.
@@ -518,15 +541,44 @@ export class PlayerSession {
    * waits behind the game analysis, and the same position cache. Null when no engine can be started.
    */
   async evaluate(fen: string): Promise<EngineResult | null> {
+    return this.onPracticeEngine(fen, false, "the engine could not check a practice answer.");
+  }
+
+  private practiceQueue: Promise<unknown> = Promise.resolve();
+
+  /** One search at a time on the practice engine: an engine answers one question, then the next. */
+  private onPracticeEngine(fen: string, needLine: boolean, failure: string): Promise<EngineResult | null> {
     const kv = this.kv;
-    if (!kv) return null;
-    try {
-      const results = await analysePositions([fen], () => getBrowserEngine(this.engineSetting, PRACTICE_ENGINE_SLOT), kv, engineSettingKey(this.engineSetting));
-      return results?.[0] ?? null;
-    } catch (error) {
-      console.warn("Fool Me Twice: the engine could not check a practice answer.", error);
-      return null;
-    }
+    if (!kv) return Promise.resolve(null);
+    const work = async (): Promise<EngineResult | null> => {
+      try {
+        const results = await analysePositions(
+          [fen],
+          () => getBrowserEngine(this.engineSetting, PRACTICE_ENGINE_SLOT),
+          kv,
+          engineSettingKey(this.engineSetting),
+          undefined,
+          undefined,
+          needLine,
+        );
+        return results?.[0] ?? null;
+      } catch (error) {
+        console.warn(`Fool Me Twice: ${failure}`, error);
+        return null;
+      }
+    };
+    const result = this.practiceQueue.then(work);
+    this.practiceQueue = result;
+    return result;
+  }
+
+  /**
+   * The engine's result for one position with the line it expects, for showing why a move was better.
+   * Same engine, same depth and same cache as everything else; a result saved without its line is
+   * searched once more. Null when no engine can be started.
+   */
+  async line(fen: string): Promise<EngineResult | null> {
+    return this.onPracticeEngine(fen, true, "the engine could not work out a line.");
   }
 
   /** Practice progress is kept on the device, per player. In the recorded demo it lasts for the visit. */
@@ -558,10 +610,22 @@ export class PlayerSession {
 
   /** The profile is rebuilt from scratch each time a game's facts arrive: it is only counting, so it is cheap. */
   protected afterGameAnalysed(): void {
-    this.update({ profile: buildProfile(this.analysedTables(), this.getState().tier1) });
-    // Once the last game is in, the profile is settled and the coach can be asked for what is on screen.
-    if (this.getState().engine.status === "done") {
+    const tables = this.analysedTables();
+    const state = this.getState();
+    this.update({ profile: buildProfile(tables, state.tier1) });
+    const askCoach = (profile: Profile) => {
+      this.update({ coachProfile: profile });
       for (const key of this.coachWanted) void this.loadCoach(key);
+    };
+    if (state.engine.status === "done") {
+      // Every game is in: the profile is settled, and the coach is asked about all of it.
+      askCoach(buildProfile(tables, state.tier1));
+    } else if (!state.coachProfile && !state.recording) {
+      // The newest few games are in: enough for a first read while the engine carries on.
+      // The recorded demo skips this; its games are all there at once.
+      const first = state.games.slice(0, Math.min(FIRST_READ_GAMES, state.engine.target));
+      const firstTables = first.map((game) => state.facts[game.uuid]).filter((table): table is FactTable => table !== undefined);
+      if (first.length > 0 && firstTables.length === first.length) askCoach(buildProfile(firstTables, state.tier1));
     }
   }
 }

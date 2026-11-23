@@ -17,11 +17,11 @@ describe("engine output", () => {
       "info depth 12 seldepth 16 score cp 38 nodes 2000 pv d2d4 d7d5",
       "bestmove d2d4 ponder d7d5",
     ]);
-    expect(result).toEqual({ cp: 38, mate: null, best: "d2d4", depth: 12 });
+    expect(result).toEqual({ cp: 38, mate: null, best: "d2d4", depth: 12, pv: ["d2d4", "d7d5"] });
   });
   it("reads mate scores", () => {
     const result = parseSearchOutput(["info depth 12 score mate -2 nodes 10 pv e1f2 d8h4", "bestmove e1f2"]);
-    expect(result).toEqual({ cp: null, mate: -2, best: "e1f2", depth: 12 });
+    expect(result).toEqual({ cp: null, mate: -2, best: "e1f2", depth: 12, pv: ["e1f2", "d8h4"] });
   });
   it("refuses output with no score or no move", () => {
     expect(() => parseSearchOutput(["bestmove (none)"])).toThrow(/could not read/);

@@ -118,11 +118,15 @@ export class Engine {
   }
 }
 
+/** How many moves of the engine's expected line are kept with a result. */
+export const MAX_LINE_MOVES = 12;
+
 /** Reads the last full "info" line and the "bestmove" line of one search. */
 export function parseSearchOutput(lines: string[]): EngineResult {
   let cp: number | null = null;
   let mate: number | null = null;
   let depth = 0;
+  let pv: string[] = [];
   for (const line of lines) {
     if (!line.startsWith("info") || !line.includes(" pv ")) continue;
     // Bounds are partial answers from inside a search; only exact scores count.
@@ -131,6 +135,7 @@ export function parseSearchOutput(lines: string[]): EngineResult {
     const depthMatch = / depth (\d+)/.exec(line);
     if (!score || !depthMatch) continue;
     depth = Number(depthMatch[1]);
+    pv = (/ pv (.+)$/.exec(line)?.[1] ?? "").trim().split(/\s+/).filter((move) => /^[a-h][1-8][a-h][1-8][qrbn]?$/.test(move)).slice(0, MAX_LINE_MOVES);
     if (score[1] === "cp") {
       cp = Number(score[2]);
       mate = null;
@@ -144,7 +149,8 @@ export function parseSearchOutput(lines: string[]): EngineResult {
   if ((cp === null && mate === null) || !best || best === "(none)") {
     throw new MotifError("engine", "The chess engine gave an answer Motif could not read.");
   }
-  return { cp, mate, best, depth };
+  // The line is only trusted when it begins with the move the engine chose.
+  return pv[0] === best ? { cp, mate, best, depth, pv } : { cp, mate, best, depth };
 }
 
 export interface AnalysisProgress {
@@ -165,6 +171,8 @@ export async function analysePositions(
   settingKey: string,
   onProgress?: (progress: AnalysisProgress) => void,
   shouldStop?: () => boolean,
+  /** Search again when a saved result has no line. The search is the same, so the score does not change. */
+  needLine = false,
 ): Promise<EngineResult[] | null> {
   const keys = fens.map((fen) => `${positionKey(fen)}|${settingKey}`);
   const cached = await kv.getMany<EngineResult>("engine", keys);
@@ -173,6 +181,7 @@ export async function analysePositions(
   for (let index = 0; index < fens.length; index++) {
     if (shouldStop?.()) return null;
     let result = cached[index];
+    if (result && needLine && !result.pv && result.best) result = undefined;
     if (result) {
       fromCache++;
     } else {

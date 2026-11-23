@@ -88,6 +88,11 @@ export interface EngineResult {
   /** The engine's preferred move in long form, or null when the game is over in this position. */
   best: string | null;
   depth: number;
+  /**
+   * The line the engine expects from here, in long form, starting with `best`. Kept from the same
+   * search that gave the score. Missing on results saved before lines were kept.
+   */
+  pv?: string[];
 }
 
 export type PatternTag = "hung_piece" | "missed_capture" | "missed_mate" | "allowed_mate" | "time_trouble" | "rushed";

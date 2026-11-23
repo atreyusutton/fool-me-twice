@@ -26,7 +26,7 @@ Open the address it prints (usually `http://localhost:5173`).
 
 | Command | What it does |
 |---|---|
-| `npm test` | 143 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, spoken notation, the fixed lines and the voice request check, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
+| `npm test` | 151 tests: pattern detectors on known positions, the validator against hand-written bad replies, puzzles, the opening book and drill, spoken notation, the fixed lines and the voice request check, following an engine line and the "why" wording, the fetch layer, the transcript reader, and the recorded demo for all four coaches |
 | `npm run eval` | Checks every recorded coach reply and attacks the validator with broken replies. No key needed. Output below |
 | `npm run record-demo` | Re-records the demo for all four coaches (needs a key) |
 | `npm run build-openings` | Fetches the opening book and the quoted opening notes again |
@@ -38,8 +38,8 @@ Home and Process are on every page. Inside a player the four coaching tabs sit b
 
 1. **Home.** A username or the demo, and a coach: Sherlock Holmes, Winnie-the-Pooh, Captain Hook or Count Dracula. You can change coach on any screen.
 2. **You.** Your coach's read, as a short story: what to work on first, at most three things that keep coming back (each with **Show me** and **Practice this**), and what is going well. The tables are behind **See the numbers**.
-3. **Review.** One game, the board beside your coach, one key moment at a time. Each moment has **Try it again**.
-4. **Practice.** Your own positions at the moment it went wrong. Find the better move; the engine checks it. Missed ones come back.
+3. **Review.** One game, the board beside your coach, one key moment at a time, with both clocks and the time control in view. Each moment shows **why** from the engine's own lines, lets you **play the line out** against the engine, and has **Try it again**. Buttons step to the newer or older game.
+4. **Practice.** Your own positions at the moment it went wrong. Each opens with your opponent's last move arriving and your game move in red; you can step back through the game, see which game it was and how much time you had, and move between positions. Find the better move; the engine checks it, then the same **why** and **play it out** appear. Missed ones come back.
 5. **Openings.** For each opening you really play: where you leave the book, your first clear mistake, the ideas (quoted from a named source), and a drill against Blundy McBlunderpants, who plays likely book moves while you try to stay in the book.
 6. **Process.** The story, the three working sessions as conversations (an AI-written summary first, the whole transcript on request), and how the coach is kept honest, with a real reply you can try to break.
 
@@ -71,6 +71,8 @@ What version 2 adds, and how each part stays inside the rule:
 - **Voices read only checked text.** Each coach has one designed voice (made from a written description of the book character; no real person is imitated). The voice route gets the coach request and the reply, runs the same validator again, fills in the values from the fact table, writes each move out in words by code ("Nxe5+" becomes "knight takes E5, check"), and only then asks for speech. It refuses free text. The fixed practice, guide and drill lines are spoken the same way: the route is sent the name of a line and the values for its slots, builds the words itself from `src/core/lines.ts`, and refuses a slot value that is not a chess move, a small whole number or an opening name.
 - **What coaches and Blundy say in practice and the drill is fixed text** written for the app, with the moves and numbers put in by code. Where right or wrong must be instant and certain, the model is not called.
 
+**Why a move was worse** is not written by the model. The engine gives the line it expects after your move and after its own; code plays both out with the rules library and counts what is taken and whether it ends in checkmate (`src/core/why.ts`). When the two lines differ only in position, the app says it cannot prove the reason and does not guess.
+
 ## System design
 
 ```
@@ -84,15 +86,16 @@ Browser
 
 Cloudflare Worker
   static files
-  POST /api/coach -> Claude API (the only reason a server exists: the key never reaches a browser)
+  POST /api/coach -> Claude API      (a server exists so that the keys never reach a browser)
+  POST /api/voice -> ElevenLabs API  (reads checked text aloud; cached by voice, model and words)
 ```
 
-- **Your games stay in your browser.** The Worker receives only the compact fact payload for the coach, and stores nothing.
+- **Your games stay in your browser.** The Worker receives only the compact fact payload for the coach (and, for a voice, that payload with the reply to be read), and stores nothing but cached audio.
 - **The Worker is not a general door to the model.** It accepts only a size-limited payload in which every field is a number, a fixed choice (including which of the four coaches), a chess move, a plain name or the app's own wording. It builds the prompt itself and limits each address to 20 requests a minute.
-- **Four caches, so a second visit costs nothing:** monthly game archives, engine results by position, fact tables by game, coach replies by a hash of prompt version, model and request. The coach is part of the request, so each coach's words are kept apart.
+- **Four caches, so a second visit costs nothing:** monthly game archives, engine results by position, fact tables by game, coach replies by a hash of prompt version, model and request. The coach is part of the request, so each coach's words are kept apart. Spoken lines are a fifth: the same voice, model and words are generated once and then served from Cloudflare's cache.
 - **Analysis never blocks the page.** Games are analysed newest first in the background; each opens as soon as it is done. Measured in version 1 on the demo player's 25 games: 47 seconds with three engines, under a second on a reload.
 
-Code map: `src/core/` (facts, detectors, themes, puzzles, openings, transcript reader, coach prompt and validator; shared by the app, the Worker, the scripts and the tests), `src/app/` (session, cache, engine workers), `src/ui/` (screens, `coaches/` figures, `process/` pages), `worker/` (the one route), `scripts/`, `tests/`, `_archive/v1/` (the version 1 screens, kept, not used).
+Code map: `src/core/` (facts, detectors, themes, puzzles, openings, transcript reader, coach prompt and validator; shared by the app, the Worker, the scripts and the tests), `src/app/` (session, cache, engine workers), `src/ui/` (screens, `coaches/` figures, `process/` pages), `worker/` (the coach and voice routes), `scripts/`, `tests/`, `_archive/v1/` (the version 1 screens, kept, not used).
 
 ## Context and prompting strategy
 
@@ -183,6 +186,8 @@ What this does and does not show: every reply the demo shows passes the validato
 - **The coaches are from out-of-copyright books and drawn from the books.** Winnie-the-Pooh carries the most risk, because of trademarks on later versions. This is not legal advice.
 - **I chose the voices by ear.** Nothing measures whether a voice suits its character. The waiting and "not enough games yet" lines on the You page are not voiced.
 - **A spoken line takes one to two seconds the first time anyone asks for it.** After that it comes from a cache.
+- **"Why" covers material and checkmate only.** It counts what is taken along two engine lines of about six moves at depth 14. A line can stop in the middle of an exchange, so the sentence says it counts only what is shown. A positional reason is never given.
+- **The first read uses five games.** A pattern needs three occurrences in three games, so the first read is often "still collecting"; the full read replaces it when all games are in. On a very old computer the full set still takes minutes; the engine's depth was not lowered to hide that.
 - **Not checked:** Safari and Firefox, a real phone (only a phone-sized window), a screen reader, the closed-account screen in a browser, and the deployed rate limit under load.
 
 ## What comes next
@@ -241,7 +246,9 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 75 | Coach voices: designing five voices, a checked voice route with caching, the player and controls |
 | 35 | Voices for practice, the opening guide and Blundy: fixed lines moved into shared code with typed slots, tests, browser checks |
 | 20 | The picked coach says their line |
-| **435** | **Total: 7 h 15 min** |
+| 15 | Check before sending: clean clone, live sweep, stale wording |
+| 110 | After user testing: clocks in review, puzzle lead-up, look-back and navigation, a first read after five games, "why" from the engine's lines, playing a line out |
+| **560** | **Total: 9 h 20 min** |
 
 ## Licences and credits
 

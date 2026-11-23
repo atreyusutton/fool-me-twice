@@ -9,10 +9,12 @@ import type { FactTable, PatternTag } from "../core/types.ts";
 import { Board } from "./Board.tsx";
 import type { Mood } from "./coaches/Figure.tsx";
 import { Say } from "./coaches/Say.tsx";
-import { OUTCOME_WORD, plural } from "./format.ts";
+import { OUTCOME_WORD, formatClock, formatDate, gameLength, plural } from "./format.ts";
+import { useExplore } from "./Explore.tsx";
 import { LineText } from "./LineText.tsx";
 import { Link } from "./Link.tsx";
 import { Loading } from "./Status.tsx";
+import { WinChart } from "./WinChart.tsx";
 
 const Move = ({ san, kind }: { san: string; kind?: "played" | "best" }) => <span className={`san fact${kind ? ` ${kind}` : ""}`}>{san}</span>;
 
@@ -92,6 +94,17 @@ export function Practice({ session, state, theme }: { session: PlayerSession; st
   );
 }
 
+/**
+ * How a position is introduced: the board before the opponent's last move, that move arriving, then
+ * the move played in the game shown in red, then the position again for the player to try.
+ */
+type Intro = "before" | "opponent" | "mistake" | "done";
+const INTRO_STEPS: { stage: Intro; afterMs: number }[] = [
+  { stage: "opponent", afterMs: 600 },
+  { stage: "mistake", afterMs: 1500 },
+  { stage: "done", afterMs: 3000 },
+];
+
 type Step =
   | { kind: "ask" }
   | { kind: "checking"; uci: string; san: string; fen: string }
@@ -118,7 +131,34 @@ function Run({
   const [step, setStep] = useState<Step>({ kind: "ask" });
   const [missedThisGo, setMissedThisGo] = useState(false);
   const [tally, setTally] = useState({ right: 0, missed: 0 });
+  // Each position is counted once per visit, however often it is retried.
+  const [counted, setCounted] = useState(false);
+  // The stage reached, tagged with the showing it belongs to; a new position or a replay starts from "before".
+  const [introAt, setIntroAt] = useState<{ showing: string; stage: Intro } | null>(null);
+  const [replays, setReplays] = useState(0);
+  // Looking back through the game: the number of moves played, or null when the puzzle itself is on the board.
+  const [view, setView] = useState<number | null>(null);
   const puzzle = queue[position];
+  const puzzleId = puzzle?.id;
+  const record = useMemo(() => (puzzle ? session.getGame(puzzle.gameId) : null), [session, puzzle]);
+  const hasLeadUp = record !== null && puzzle !== undefined && puzzle.ply >= 2;
+
+  // Once the position is finished, the engine's lines explain it and can be played out.
+  const finished = step.kind === "shown" || (step.kind === "judged" && (step.verdict.kind === "best" || step.verdict.kind === "good"));
+  const explore = useExplore(
+    session,
+    puzzle && finished ? { id: puzzle.id, fen: puzzle.fen, playedUci: puzzle.playedUci, playedSan: puzzle.playedSan, color: puzzle.color } : null,
+    "Back to the position",
+  );
+  const showing = `${puzzleId}|${replays}`;
+  const intro: Intro = !hasLeadUp ? "done" : introAt?.showing === showing ? introAt.stage : "before";
+
+  useEffect(() => {
+    if (!hasLeadUp) return;
+    const timers = INTRO_STEPS.map((step) => window.setTimeout(() => setIntroAt({ showing, stage: step.stage }), step.afterMs));
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [showing, hasLeadUp]);
+
   const to = (sub = "") => playerPath(state.username, state.demo, sub);
 
   if (!puzzle) {
@@ -156,6 +196,8 @@ function Run({
   const side = puzzle.color === "white" ? "White" : "Black";
 
   const finish = (right: boolean) => {
+    if (counted) return;
+    setCounted(true);
     const firstTime = right && !missedThisGo;
     onProgress(recordResult(progress, puzzle.id, firstTime, Date.now()));
     setTally((before) => ({ right: before.right + (firstTime ? 1 : 0), missed: before.missed + (firstTime ? 0 : 1) }));
@@ -180,16 +222,73 @@ function Run({
     void session.evaluate(played.fen).then((result) => settle(judgeAttempt(puzzle, uci, result)));
   };
 
-  const next = () => {
-    setPosition(position + 1);
+  const goTo = (target: number) => {
+    setPosition(target);
     setStep({ kind: "ask" });
     setMissedThisGo(false);
+    setCounted(false);
+    setView(null);
+  };
+  const next = () => goTo(position + 1);
+  const retry = () => {
+    setStep({ kind: "ask" });
+    setView(null);
   };
 
   const done = step.kind === "shown" || (step.kind === "judged" && (step.verdict.kind === "best" || step.verdict.kind === "good"));
-  const boardFen = step.kind === "checking" || step.kind === "judged" ? step.fen : puzzle.fen;
-  const lastMove = step.kind === "checking" || step.kind === "judged" ? step.uci : null;
-  const tint = step.kind === "judged" ? (step.verdict.kind === "best" || step.verdict.kind === "good" ? "right" : step.verdict.kind === "wrong" ? "wrong" : null) : null;
+  const moves = record?.moves ?? [];
+  // The position the puzzle starts from is the one after `puzzle.ply - 1` moves of the game.
+  const puzzleAt = puzzle.ply - 1;
+  const opponentMove = hasLeadUp ? moves[puzzleAt - 1] : undefined;
+  const introducing = step.kind === "ask" && intro !== "done";
+  const looking = view !== null && view !== puzzleAt;
+
+  let boardFen = puzzle.fen;
+  let lastMove: string | null = opponentMove?.uci ?? null;
+  let tint: "right" | "wrong" | null = null;
+  let slide = false;
+  if (looking) {
+    boardFen = view === 0 ? moves[0]!.fenBefore : moves[view - 1]!.fenAfter;
+    lastMove = view > 0 ? moves[view - 1]!.uci : null;
+  } else if (introducing && intro === "before" && opponentMove) {
+    boardFen = opponentMove.fenBefore;
+    lastMove = null;
+  } else if (introducing && intro === "opponent") {
+    slide = true;
+  } else if (introducing && intro === "mistake") {
+    const played = playMove(puzzle.fen, puzzle.playedUci);
+    if (played) {
+      boardFen = played.fen;
+      lastMove = puzzle.playedUci;
+      tint = "wrong";
+      slide = true;
+    }
+  } else if (step.kind === "checking" || step.kind === "judged") {
+    boardFen = step.fen;
+    lastMove = step.uci;
+    tint = step.kind === "judged" ? (step.verdict.kind === "best" || step.verdict.kind === "good" ? "right" : step.verdict.kind === "wrong" ? "wrong" : null) : null;
+  }
+  if (explore.active) {
+    boardFen = explore.fen;
+    lastMove = explore.lastMove;
+    tint = null;
+    slide = explore.slide;
+  }
+  const describe = (at: number): string => {
+    if (at === 0) return "Start";
+    const move = moves[at - 1]!;
+    return `${move.moveNumber}${move.color === "white" ? "." : "…"} ${move.san}`;
+  };
+  const table = state.facts[puzzle.gameId];
+  const under = looking
+    ? `Looking back: ${describe(view)}.`
+    : introducing
+      ? intro === "mistake"
+        ? "In the game you played this."
+        : "Your opponent has just moved."
+      : step.kind === "ask"
+        ? `${side} to move. Click or drag a piece.`
+        : " ";
 
   // What the coach says is one of the app's fixed lines; the moves and numbers are put in by code.
   let mood: Mood = "talking";
@@ -234,13 +333,50 @@ function Run({
           orientation={puzzle.color}
           lastMove={lastMove}
           tint={tint}
-          arrows={step.kind === "shown" ? [{ uci: puzzle.answerUci, kind: "best" }] : []}
+          slide={slide}
+          arrows={step.kind === "shown" && !looking && !explore.active ? [{ uci: puzzle.answerUci, kind: "best" }] : []}
           label={`Practice position, ${side} to move, seen from ${side}'s side`}
-          onMove={step.kind === "ask" ? attempt : undefined}
+          onMove={explore.active ? explore.onMove : step.kind === "ask" && !introducing && !looking ? attempt : undefined}
         />
-        <p className="muted small" style={{ textAlign: "center" }}>
-          {step.kind === "ask" ? `${side} to move. Click or drag a piece.` : " "}
-        </p>
+        {explore.controls}
+        {!explore.active && hasLeadUp && (
+          <div className="board-controls" role="group" aria-label="Look back through the game">
+            <button className="iconbtn" onClick={() => setView(Math.max(0, (view ?? puzzleAt) - 1))} disabled={(view ?? puzzleAt) === 0} aria-label="One move back">
+              ◀
+            </button>
+            <span className="muted small board-where" aria-live="polite">
+              {under}
+            </span>
+            <button className="iconbtn" onClick={() => setView((view ?? puzzleAt) + 1)} disabled={!looking} aria-label="One move forward">
+              ▶
+            </button>
+          </div>
+        )}
+        {!explore.active && !hasLeadUp && (
+          <p className="muted small" style={{ textAlign: "center" }}>
+            {under}
+          </p>
+        )}
+        {!explore.active && hasLeadUp && (
+          <div className="row" style={{ justifyContent: "center" }}>
+            {looking ? (
+              <button className="btn small" onClick={() => setView(null)}>
+                Back to the position
+              </button>
+            ) : (
+              <button
+                className="btn ghost small"
+                disabled={introducing}
+                onClick={() => {
+                  retry();
+                  setReplays(replays + 1);
+                }}
+              >
+                Replay the lead-up
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="review-coach stack">
@@ -270,9 +406,14 @@ function Run({
 
         <div className="row">
           {done ? (
-            <button className="btn" onClick={next} autoFocus>
-              {position + 1 < queue.length ? "Next position →" : "Finish"}
-            </button>
+            <>
+              <button className="btn" onClick={next} autoFocus>
+                {position + 1 < queue.length ? "Next position →" : "Finish"}
+              </button>
+              <button className="btn ghost" onClick={retry}>
+                Try it once more
+              </button>
+            </>
           ) : (
             step.kind === "judged" && (
               <>
@@ -304,12 +445,59 @@ function Run({
           )}
         </div>
 
-        <p className="source-note">
-          Move {puzzle.moveNumber}, {puzzle.phase}
-          {game && `, from the game you ${OUTCOME_WORD[game.outcome].toLowerCase()} against ${game.opponentName}`}. In the game this move
-          gave up {Math.round(puzzle.loss)} points of winning chance.{" "}
-          <Link href={gamePath(state.username, state.demo, puzzle.gameId, puzzle.ply)}>See it in the game</Link>
-        </p>
+        {explore.why}
+
+        <nav className="row between" aria-label="Other positions">
+          <button className="btn ghost small" onClick={() => goTo(position - 1)} disabled={position === 0}>
+            ← Previous position
+          </button>
+          <button className="btn ghost small" onClick={next} disabled={done || position + 1 >= queue.length}>
+            Skip this one →
+          </button>
+        </nav>
+
+        <div className="card stack tight">
+          <h3>Where this comes from</h3>
+          <dl className="facts-list">
+            {game && (
+              <>
+                <dt>Game</dt>
+                <dd>
+                  {OUTCOME_WORD[game.outcome]} against {game.opponentName} ({game.opponentRating}), {formatDate(game.endTime)}
+                </dd>
+                {game.timeControl && (
+                  <>
+                    <dt>Time</dt>
+                    <dd>
+                      {gameLength(game.timeControl)}
+                      {puzzle.clockLeft !== null && `, ${formatClock(puzzle.clockLeft)} left on your clock`}
+                      {puzzle.timeSpent !== null && `, ${puzzle.timeSpent}s spent on the move`}
+                    </dd>
+                  </>
+                )}
+              </>
+            )}
+            <dt>Move</dt>
+            <dd>
+              Move {puzzle.moveNumber}, {puzzle.phase}. In the game it gave up {Math.round(puzzle.loss)} points of winning chance.{" "}
+              <Link href={gamePath(state.username, state.demo, puzzle.gameId, puzzle.ply)}>See it in the game</Link>
+            </dd>
+          </dl>
+        </div>
+
+        {table && record && (
+          <div className="card stack tight">
+            <h3>Your winning chance in that game</h3>
+            <WinChart
+              line={table.winLine}
+              current={view ?? puzzleAt}
+              markers={[{ index: puzzleAt, label: "this position" }]}
+              describe={describe}
+              // Only the game up to this position can be opened here; what came after would give the game away.
+              onSelect={(at) => setView(Math.min(at, puzzleAt))}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

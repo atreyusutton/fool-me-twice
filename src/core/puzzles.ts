@@ -26,6 +26,9 @@ export interface Puzzle {
   winBefore: number;
   loss: number;
   patterns: PatternTag[];
+  /** The player's clock after the game move and the seconds spent on it, from the game record. */
+  clockLeft: number | null;
+  timeSpent: number | null;
 }
 
 /**
@@ -59,6 +62,8 @@ export function buildPuzzles(tables: FactTable[]): Puzzle[] {
       winBefore: row.winBefore,
       loss: row.loss,
       patterns: row.patterns,
+      clockLeft: row.clockLeft,
+      timeSpent: row.timeSpent,
     }));
 }
 

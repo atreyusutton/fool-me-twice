@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useCoach } from "../app/coach-choice.ts";
 import { gamePath, playerPath } from "../app/router.ts";
-import { coachSlot, ENGINE_GAME_STEPS, type CoachEntry, type PlayerSession, type SessionState } from "../app/session.ts";
+import { coachSlot, ENGINE_GAME_STEPS, FIRST_READ_GAMES, type CoachEntry, type PlayerSession, type SessionState } from "../app/session.ts";
 import { voiceLine } from "../app/voice.ts";
 import type { CoachId } from "../core/coach/personas.ts";
 import type { ProfileSummary } from "../core/coach/types.ts";
@@ -31,12 +31,15 @@ const THIN: Record<CoachId, string> = {
 
 export function You({ session, state }: { session: PlayerSession; state: SessionState }) {
   const coach = useCoach();
-  const done = state.engine.status === "done";
-  const profile = state.profile;
-  const hasThemes = (profile?.themes.length ?? 0) > 0;
+  // The coach is asked about a profile that stands still: the first few games, then all of them.
+  // The findings below come from the same one, so the words and the numbers always agree.
+  const basis = state.coachProfile;
+  const profile = basis;
+  const done = basis !== null;
+  const hasThemes = (basis?.themes.length ?? 0) > 0;
   useEffect(() => {
-    if (done && hasThemes) session.ensureCoach("profile", coach);
-  }, [session, done, hasThemes, coach, profile]);
+    if (hasThemes) session.ensureCoach("profile", coach);
+  }, [session, hasThemes, coach, basis]);
 
   const entry = state.coach[coachSlot(coach, "profile")];
   const rating = state.ratings.find((item) => item.timeClass === state.timeClass);
@@ -145,8 +148,23 @@ function Read({ session, state, coach, entry }: { session: PlayerSession; state:
       </div>
     );
   }
-  if (engine.status !== "done") {
-    const fraction = engine.positionsTotal > 0 ? Math.min(1, engine.positionsDone / engine.positionsTotal) : 0;
+  const fraction = engine.positionsTotal > 0 ? Math.min(1, engine.positionsDone / engine.positionsTotal) : 0;
+  const running = engine.status !== "done";
+  const basis = state.coachProfile;
+  // Shown under a first read while the engine is still on the remaining games.
+  const stillChecking = running && basis && (
+    <div className="stack tight" role="status">
+      <div className="bar" aria-hidden="true">
+        <i style={{ width: `${fraction * 100}%` }} />
+      </div>
+      <p className="source-note">
+        A first read, from your latest {plural(basis.gamesAnalysed, "game")}. The engine is still checking the rest ({engine.gamesDone} of {total} done
+        {engine.secondsLeft !== null && `, ${timeLeft(engine.secondsLeft)} left`}), and this read is written again when they are in.
+      </p>
+    </div>
+  );
+  if (!basis) {
+    const first = Math.min(FIRST_READ_GAMES, total);
     return (
       <div role="status" aria-live="polite">
         <Say who={coach} mood="thinking" big>
@@ -156,7 +174,9 @@ function Read({ session, state, coach, entry }: { session: PlayerSession; state:
               <i style={{ width: `${fraction * 100}%` }} />
             </div>
             <p className="source-note">
-              {engine.gamesDone} of {total} games checked by the engine. Slowest on the first visit; results are saved on this device.
+              {engine.gamesDone} of {total} games checked by the engine
+              {engine.secondsLeft !== null && `, ${timeLeft(engine.secondsLeft)} left for all of them`}. Your coach speaks as soon as the
+              latest {first} are done and reads the rest in the background. Slowest on the first visit; results are saved on this device.
               Finished games can already be opened under Review.
             </p>
           </div>
@@ -165,16 +185,18 @@ function Read({ session, state, coach, entry }: { session: PlayerSession; state:
     );
   }
 
-  const profile = state.profile;
-  if (!profile || profile.themes.length === 0 || !entry || entry.request.kind !== "profile") {
-    const waiting = profile && profile.themes.length > 0;
+  const profile = basis;
+  if (profile.themes.length === 0 || !entry || entry.request.kind !== "profile") {
+    // With games still to come, "nothing repeats" is not a verdict yet: the coach keeps waiting.
+    const waiting = profile.themes.length > 0 || running;
     return (
       <Say who={coach} mood={waiting ? "thinking" : "idle"} big>
         <p>{waiting ? WAITING[coach] : THIN[coach]}</p>
+        {stillChecking}
         {!waiting && (
           <p className="source-note" style={{ marginTop: 10 }}>
-            A pattern is only named after it shows up at least three times in three different games. {plural(profile?.gamesAnalysed ?? 0, "game")}{" "}
-            checked, {plural(profile?.clearMistakes ?? 0, "clear mistake")} found.
+            A pattern is only named after it shows up at least three times in three different games. {plural(profile.gamesAnalysed, "game")}{" "}
+            checked, {plural(profile.clearMistakes, "clear mistake")} found.
           </p>
         )}
         <MoreGames session={session} state={state} />
@@ -202,10 +224,16 @@ function Read({ session, state, coach, entry }: { session: PlayerSession; state:
           {focus && <span className="chip hot">Work on first: {focus.label}</span>}
           <MoreGames session={session} state={state} />
         </div>
+        {stillChecking}
         <CoachSource entry={entry} recorded={state.recording !== null} />
       </div>
     </section>
   );
+}
+
+/** "under a minute", "about 3 minutes": an estimate, so it is never given to the second. */
+function timeLeft(seconds: number): string {
+  return seconds < 60 ? "under a minute" : `about ${plural(Math.round(seconds / 60), "minute")}`;
 }
 
 function MoreGames({ session, state }: { session: PlayerSession; state: SessionState }) {

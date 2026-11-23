@@ -18,3 +18,10 @@ Plan approved 22 November 2026. Details: `docs/SPEC.md` section 13.
 
 - [x] API key rotated; new key set as the Worker secret, live coach on
 - [ ] Confirm the `[CONFIRM]` items in `docs/STORY.md`
+
+## After user testing (done)
+
+- [x] Review: time control, both clocks, clock left at each key moment, newer and older game buttons
+- [x] Practice: lead-up replay, look back through the game, previous and skip, game info, winning-chance graph, try once more
+- [x] A first coach read after the newest five games, with a time estimate
+- [x] "Why" from the engine's lines, and playing a line out against the engine

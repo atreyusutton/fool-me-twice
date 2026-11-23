@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useCoach } from "../app/coach-choice.ts";
-import { playerPath } from "../app/router.ts";
+import { gamePath, playerPath } from "../app/router.ts";
 import { coachSlot, type PlayerSession, type SessionState } from "../app/session.ts";
 import { voiceLine } from "../app/voice.ts";
 import { fallbackGameReview } from "../core/coach/fallback.ts";
@@ -14,8 +14,9 @@ import { moodFor } from "./coaches/Figure.tsx";
 import { Say } from "./coaches/Say.tsx";
 import { CoachSource } from "./CoachSource.tsx";
 import { CoachText } from "./CoachText.tsx";
-import { ENDING_WORD, OUTCOME_WORD, formatDate, plural } from "./format.ts";
+import { ENDING_WORD, OUTCOME_WORD, formatClock, formatDate, gameLength, plural } from "./format.ts";
 import { Link } from "./Link.tsx";
+import { useExplore } from "./Explore.tsx";
 import { ErrorScreen } from "./Status.tsx";
 import { WinChart } from "./WinChart.tsx";
 
@@ -73,7 +74,8 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
   const table = state.facts[gameId]!;
   const summary = state.games.find((game) => game.uuid === gameId)!;
   const game = useMemo(() => session.getGame(gameId), [session, gameId]);
-  const profile = useMemo(() => state.profile ?? buildProfile([], state.tier1), [state.profile, state.tier1]);
+  const basis = state.coachProfile ?? state.profile;
+  const profile = useMemo(() => basis ?? buildProfile([], state.tier1), [basis, state.tier1]);
   const local = useMemo(() => gameReviewRequest(summary, table, profile, coach), [summary, table, profile, coach]);
   const localReview = useMemo(() => fallbackGameReview(local.request), [local]);
   // The coach's words are always rendered against the exact request they were written and checked for.
@@ -85,7 +87,14 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
 
   const moves = game?.moves ?? [];
   const lastIndex = moves.length;
-  const [index, setIndex] = useState(() => initialIndex(lastIndex));
+  // `slide` is true only for a single step forward, so that move is shown arriving on the board.
+  const [place, setPlace] = useState(() => ({ index: initialIndex(lastIndex), slide: false }));
+  const index = place.index;
+  const setIndex = (next: number | ((value: number) => number)) =>
+    setPlace((before) => {
+      const index = typeof next === "function" ? next(before.index) : next;
+      return { index, slide: index === before.index + 1 };
+    });
   const rowByPly = useMemo(() => new Map(table.rows.map((row) => [row.ply, row])), [table]);
   const currentMoveRef = useRef<HTMLButtonElement>(null);
 
@@ -115,6 +124,17 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
       list.scrollTop = button.offsetTop + button.offsetHeight - list.clientHeight;
     }
   }, [index]);
+
+  // The key moment on the board, if the engine had a different move there: the move that can be explained.
+  const explained =
+    review.moments
+      .map((moment) => table.rows.find((row) => row.id === factIds[moment.fact]))
+      .find((row) => row !== undefined && row.ply - 1 === index && row.bestUci !== null && !row.playedBest) ?? null;
+  const explore = useExplore(
+    session,
+    explained ? { id: explained.id, fen: explained.fenBefore, playedUci: explained.playedUci, playedSan: explained.played, color: explained.color } : null,
+    "Back to the game",
+  );
 
   if (!game || moves.length === 0) {
     return (
@@ -152,6 +172,22 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
     return `${move.moveNumber}${move.color === "white" ? "." : "…"} ${move.san}`;
   };
   const win = Math.round(table.winLine[index] ?? 50);
+  // Each side's clock as it stood in this position, from the game record.
+  const clockOf = (color: "white" | "black"): number | null => {
+    for (let at = index - 1; at >= 0; at--) {
+      const move = moves[at]!;
+      if (move.color === color) return move.clockLeft;
+    }
+    return summary.timeControl && moves.some((move) => move.clockLeft !== null) ? summary.timeControl.base : null;
+  };
+  const myClock = clockOf(summary.playerColor);
+  const theirClock = clockOf(summary.playerColor === "white" ? "black" : "white");
+  // The games on either side of this one that the engine has finished, newest first.
+  const checked = state.games.filter((candidate) => state.facts[candidate.uuid]);
+  const here = checked.findIndex((candidate) => candidate.uuid === gameId);
+  const newer = here > 0 ? checked[here - 1] : undefined;
+  const older = here >= 0 ? checked[here + 1] : undefined;
+  const length = gameLength(summary.timeControl);
   const keyRows = table.rows.filter(isKeyMoment);
   const pairs: { no: number; white?: (typeof moves)[number]; black?: (typeof moves)[number] }[] = [];
   for (const move of moves) {
@@ -184,24 +220,51 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
         </h1>
         <p className="muted small">
           {summary.playerColor === "white" ? "White" : "Black"} · {summary.playerRating} vs {summary.opponentRating}
-          {summary.outcome !== "draw" && ` · by ${ENDING_WORD[summary.ending]}`} · {summary.openingFull ?? "Opening not named"} ·{" "}
+          {summary.outcome !== "draw" && ` · by ${ENDING_WORD[summary.ending]}`}
+          {length && ` · ${length}`} · {summary.openingFull ?? "Opening not named"} ·{" "}
           {formatDate(summary.endTime)} ·{" "}
           <a href={summary.url} target="_blank" rel="noreferrer">
             Open on Chess.com
           </a>
         </p>
+        <nav className="row game-nav" aria-label="Other games">
+          {newer ? (
+            <Link className="btn ghost small" href={gamePath(state.username, state.demo, newer.uuid)}>
+              ← Newer
+            </Link>
+          ) : (
+            <span className="btn ghost small" aria-disabled="true">
+              ← Newer
+            </span>
+          )}
+          <span className="muted small num">
+            Game {here + 1} of {checked.length}
+          </span>
+          {older ? (
+            <Link className="btn ghost small" href={gamePath(state.username, state.demo, older.uuid)}>
+              Older →
+            </Link>
+          ) : (
+            <span className="btn ghost small" aria-disabled="true">
+              Older →
+            </span>
+          )}
+        </nav>
       </header>
 
       <div className="review">
         <div className="review-board stack">
           <Board
-            fen={fen}
+            fen={explore.active ? explore.fen : fen}
             orientation={summary.playerColor}
-            lastMove={lastMove}
-            arrows={arrows}
-            label={`Board after ${describe(index)}, seen from ${summary.playerColor}'s side`}
+            lastMove={explore.active ? explore.lastMove : lastMove}
+            slide={explore.active ? explore.slide : place.slide}
+            arrows={explore.active ? [] : arrows}
+            label={explore.active ? `A line from move ${explained?.moveNumber}, seen from ${summary.playerColor}'s side` : `Board after ${describe(index)}, seen from ${summary.playerColor}'s side`}
+            onMove={explore.active ? explore.onMove : undefined}
           />
-          <div className="board-controls" role="group" aria-label="Step through the game">
+          {explore.controls}
+          <div className="board-controls" role="group" aria-label="Step through the game" hidden={explore.active}>
             <button className="iconbtn" onClick={() => setIndex(0)} disabled={index === 0} aria-label="Go to the start">
               ⏮
             </button>
@@ -218,7 +281,17 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
               ⏭
             </button>
           </div>
-          {upcomingKey && (
+          {!explore.active && myClock !== null && theirClock !== null && (
+            <p className="clocks small num" aria-label="Clocks in this position">
+              <span>
+                You <strong>{formatClock(myClock)}</strong>
+              </span>
+              <span>
+                {summary.opponentName} <strong>{formatClock(theirClock)}</strong>
+              </span>
+            </p>
+          )}
+          {!explore.active && upcomingKey && (
             <p className="small" style={{ textAlign: "center" }}>
               <span className="arrow-key">
                 <i className="played" aria-hidden="true" /> You played <span className="san">{upcomingKey.played}</span>
@@ -263,6 +336,11 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
                 </span>
               ))}
               {current.row.loss >= 1 && <span className="chip num">−{Math.round(current.row.loss)} points of winning chance</span>}
+              {current.row.clockLeft !== null && (
+                <span className="chip num">
+                  {formatClock(current.row.clockLeft)} left{summary.timeControl ? ` of ${formatClock(summary.timeControl.base)}` : ""}
+                </span>
+              )}
               {current.row.timeSpent !== null && <span className="chip num">{current.row.timeSpent}s on the move</span>}
               {theme && (
                 <span className="chip hot">
@@ -271,6 +349,8 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
               )}
             </div>
           )}
+
+          {explore.why}
 
           <div className="row">
             {previousMoment && (
