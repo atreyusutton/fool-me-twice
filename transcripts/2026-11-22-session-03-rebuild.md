@@ -547,3 +547,11 @@ Merged the "what went wrong" card into `main` through a pull request, redeployed
 ### Agent: what was done
 
 Moved the three buttons in Review to sit directly under the coach's bubble and the fact chips, above the "why" card, so they are on screen without scrolling.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the button move into `main` through a pull request, redeployed and checked the live site.
