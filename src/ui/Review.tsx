@@ -350,8 +350,6 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
             </div>
           )}
 
-          {explore.why}
-
           <div className="row">
             {previousMoment && (
               <button className="btn ghost small" onClick={() => setIndex(previousMoment.row.ply - 1)}>
@@ -375,6 +373,8 @@ function ReviewBody({ session, state, gameId }: { session: PlayerSession; state:
               )
             )}
           </div>
+
+          {explore.why}
 
           <CoachSource entry={entry} recorded={state.recording !== null} extra={`${plural(keyRows.length, "key moment")} out of ${plural(table.rows.length, "move")} you played.`} />
 

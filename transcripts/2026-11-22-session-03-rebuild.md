@@ -537,3 +537,13 @@ Agreed. The explanation existed but only appeared after the puzzle was answered,
 ### Agent: what was done
 
 Merged the "what went wrong" card into `main` through a pull request, redeployed and checked the live site.
+
+### User
+
+> I want to move these above the engine box I want to be able to see all the options in one screen right now i need to scroll down to see ← Previous moment
+> Try it again
+> Next key moment →
+
+### Agent: what was done
+
+Moved the three buttons in Review to sit directly under the coach's bubble and the fact chips, above the "why" card, so they are on screen without scrolling.
