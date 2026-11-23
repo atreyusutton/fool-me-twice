@@ -33,3 +33,4 @@ One line per block of work: date, minutes, what it went to. The README's time br
 | 2026-11-22 | 35 | Voices for practice, the opening guide and Blundy: fixed lines in shared code with typed slots, tests, browser checks |
 | 2026-11-22 | 20 | The picked coach says their line; a fix so a bubble leaving the screen stops only its own line |
 | 2026-11-22 | 15 | Check before sending: clean clone, live sweep, a live username, README and session summary brought up to date with voices |
+| 2026-11-22 | 110 | After user testing: clocks in review, puzzle lead-up, look-back and navigation, first read after five games, "why" from engine lines, playing a line out, tests and browser checks |

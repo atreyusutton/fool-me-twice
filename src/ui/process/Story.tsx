@@ -178,6 +178,11 @@ export function Story() {
             and never cloned from a real person. A voice reads only text that has already passed the checker.
           </li>
           <li>
+            <strong>Then user testing.</strong> A family member tried it on a twelve-year-old laptop, and I wrote down what was hard: the wait,
+            no clock in the review, puzzles with no lead-up, and no reason why a move was bad. The reason was the hard one. It now comes
+            from the engine&apos;s own lines, counted by code, and it says so when it cannot prove one.
+          </li>
+          <li>
             <strong>A second source of truth.</strong> Opening ideas cannot be proven by an engine, and I did not want the model writing theory
             from memory. So they are quoted, as written, from a named open source with its licence beside them.
           </li>

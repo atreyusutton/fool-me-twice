@@ -14,6 +14,7 @@ The chess engine and the game record are the only sources of chess facts. The la
 - Every reply from the model passes the validator in `docs/SPEC.md` before a player sees it. A reply that fails is retried once, then replaced with text built by code. An unchecked reply is never shown.
 - Patterns ("left a piece hanging") come only from detectors written in code and covered by tests on known positions. Do not ask the model to name tactics.
 - The coach speaks only about clear mistakes and about themes that meet the minimum count. When the data is thin, it says so.
+- Why a move was worse is shown only from the engine's own lines: code plays them out and counts what is taken and whether it is checkmate (`src/core/why.ts`). When the lines differ only in position, the app says it cannot prove the reason. Do not ask the model to explain it.
 - If a shortcut would let unverified chess text reach the screen, stop and choose the slower path.
 
 Why: a coach that is wrong once about a move loses the player. Trust and a good experience come before anything clever.
