@@ -39,7 +39,7 @@ Home and Process are on every page. Inside a player the four coaching tabs sit b
 1. **Home.** A username or the demo, and a coach: Sherlock Holmes, Winnie-the-Pooh, Captain Hook or Count Dracula. You can change coach on any screen.
 2. **You.** Your coach's read, as a short story: what to work on first, at most three things that keep coming back (each with **Show me** and **Practice this**), and what is going well. The tables are behind **See the numbers**.
 3. **Review.** One game, the board beside your coach, one key moment at a time, with both clocks and the time control in view. Each moment shows **why** from the engine's own lines, lets you **play the line out** against the engine, and has **Try it again**. Buttons step to the newer or older game.
-4. **Practice.** Your own positions at the moment it went wrong. Each opens with your opponent's last move arriving and your game move in red; you can step back through the game, see which game it was and how much time you had, and move between positions. Find the better move; the engine checks it, then the same **why** and **play it out** appear. Missed ones come back.
+4. **Practice.** Your own positions at the moment it went wrong. Each opens with your opponent's last move arriving and your game move in red; you are told what that move lost (from the engine's line, without giving the answer away), can step back through the game, see which game it was and how much time you had, and move between positions. Find the better move; the engine checks it, then the same **why** and **play it out** appear. Missed ones come back.
 5. **Openings.** For each opening you really play: where you leave the book, your first clear mistake, the ideas (quoted from a named source), and a drill against Blundy McBlunderpants, who plays likely book moves while you try to stay in the book.
 6. **Process.** The story, the three working sessions as conversations (an AI-written summary first, the whole transcript on request), and how the coach is kept honest, with a real reply you can try to break.
 
@@ -248,7 +248,8 @@ The guideline was four hours. I treated it as a guide to scope, and this is the 
 | 20 | The picked coach says their line |
 | 15 | Check before sending: clean clone, live sweep, stale wording |
 | 110 | After user testing: clocks in review, puzzle lead-up, look-back and navigation, a first read after five games, "why" from the engine's lines, playing a line out |
-| **560** | **Total: 9 h 20 min** |
+| 15 | What went wrong with the game move, shown with the puzzle question |
+| **575** | **Total: 9 h 35 min** |
 
 ## Licences and credits
 

@@ -509,3 +509,31 @@ No: the user-testing work was committed locally only. Asked for the word before 
 ### Agent: what was done
 
 Merged the user-testing round into `main` through a pull request, redeployed and checked the live site.
+
+### User
+
+> fix the github description and update the email
+
+### Agent: what was done
+
+Set the repository description to the new name with a link to the live site, and updated the saved email draft (kept out of the repository) with the current hours and the new features.
+
+## Turn: say what went wrong before the answer
+
+### User
+
+> this is from an allofasutton game should the description be better as to why thats not a great move?
+
+(With a screenshot of a puzzle: the game move had opened the long diagonal, the coach only said "Here you played" the move and asked for a better one.)
+
+### Agent: what was done
+
+Agreed. The explanation existed but only appeared after the puzzle was answered, so the question itself gave no reason. What went wrong with the game move does not give the answer away, so it is now shown with the question whenever the engine's line after that move loses material or ends in checkmate, with a button to see it on the board. The engine's own move stays hidden until the puzzle is answered.
+
+### User
+
+> push and deploy
+
+### Agent: what was done
+
+Merged the "what went wrong" card into `main` through a pull request, redeployed and checked the live site.

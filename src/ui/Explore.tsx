@@ -3,7 +3,7 @@ import type { PlayerSession } from "../app/session.ts";
 import { winChance } from "../core/facts.ts";
 import { playMove } from "../core/puzzles.ts";
 import type { Color } from "../core/types.ts";
-import { explain, followLine, type LineOutcome, type Why } from "../core/why.ts";
+import { explain, followLine, materialSwing, type LineOutcome, type Why } from "../core/why.ts";
 import { LineText } from "./LineText.tsx";
 
 /** One move to explain: the position it was played in, and the move itself. */
@@ -55,8 +55,11 @@ export interface Explore {
  * Explains one move with the engine's own lines and lets the player play them out. The lines come
  * from the engine at its usual depth; the words about them are built by code (`src/core/why.ts`).
  * When the player plays a move of their own, the engine answers it. No language model is involved.
+ *
+ * With `full` false (a puzzle not yet answered) only what went wrong with the move played is shown,
+ * and only when it lost material or was checkmated. The engine's own move stays hidden.
  */
-export function useExplore(session: PlayerSession, subject: Subject | null, backLabel: string): Explore {
+export function useExplore(session: PlayerSession, subject: Subject | null, backLabel: string, full = true): Explore {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [walk, setWalk] = useState<Walk | null>(null);
   const id = subject?.id ?? null;
@@ -128,7 +131,25 @@ export function useExplore(session: PlayerSession, subject: Subject | null, back
   };
 
   let why: ReactNode = null;
-  if (subject) {
+  if (subject && !full) {
+    const costly = lines?.ok && (lines.afterPlayed.mated === "player" || materialSwing(lines.afterPlayed) < 0);
+    if (lines?.ok && costly) {
+      why = (
+        <div className="card stack tight why-card">
+          <h3>What went wrong in the game</h3>
+          <p>
+            <LineText parts={lines.why.played} />
+          </p>
+          <div className="row">
+            <button className="btn ghost small" onClick={() => start("played")} aria-pressed={current?.which === "played"}>
+              Show me on the board
+            </button>
+          </div>
+          <p className="source-note">Built by code from the engine&apos;s own line. The better move is yours to find.</p>
+        </div>
+      );
+    }
+  } else if (subject) {
     why = (
       <div className="card stack tight why-card">
         <h3>Why, as far as the engine can show</h3>
