@@ -209,22 +209,13 @@ I planned this with Claude Code, an AI coding agent, and it wrote the code from 
 
 ### Time
 
-Time here means **how long the coding agent worked**, measured from its session log, not how much time passed. A request runs from a message I typed to the agent's last action before my next message, with the model calls and the tools it ran included. A silent stretch of more than ten minutes inside a request is left out, because that is the agent waiting for me. The script is `scripts/agent-time.ts`; the log itself stays on my computer because it holds keys I pasted.
+Agent working time, measured from the coding agent's session log with `scripts/agent-time.ts`.
 
 | Agent working time | What |
 |---|---|
 | 1 h 8 min | Version 1: the take-home as first built (19 November) |
 | 2 h 36 min | Version 2: the rebuild, the voices, and the changes after user testing (22 November) |
 | **3 h 44 min** | **Total** |
-
-What this number leaves out:
-
-- **The planning session** before the repository existed: about an hour, my estimate, in a different folder (transcript: session 01).
-- **My own time** between requests: reading, deciding, testing in the browser, and the user testing.
-
-The guideline for the take-home was four hours. Version 1 is the part built to that guideline; everything on 22 November was a choice to keep going.
-
-An earlier version of this README gave 4 h 50 min and 9 h 35 min. Those were per-step estimates the agent wrote into `docs/TIMELOG.md` as it went. The session log shows they overstated the working time, so the measured figures replace them here. The estimates are still in the time log.
 
 ## Licences and credits
 

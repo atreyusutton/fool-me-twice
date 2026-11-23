@@ -573,3 +573,31 @@ The hours in the README had been the agent's own per-step estimates. Wrote a scr
 ### Agent: what was done
 
 Merged the measured time into `main` through a pull request, redeployed and checked the live site.
+
+## Turn: the email goes out
+
+### User
+
+> I like this better what do you think give me a doc to paste the cleaned up one
+
+(With the user's own draft of the email pasted in.)
+
+### Agent: what was done
+
+Said the user's draft was better: warmer, and it gave the reason for building the project. Put a cleaned-up copy in a document, keeping the user's voice. Three changes of substance: "No hallucination!" became "so it cannot make up a move or a number", which is what the checker guarantees; "last 20 games" became 25, which is what the app reads; and the time paragraph says the hours are the agent's, with the user's own time on top.
+
+### User
+
+> I sent it are we good to go anything to change I want this job!
+
+### Agent: what was done
+
+Checked again what a reviewer will see: every screen on the live site, the demo, the coach and voices, the repository's description and link, and that nothing was waiting unpushed. Nothing needed changing. Advised leaving the keys on while the project is being reviewed and not changing the README's time, since it matches the email as sent.
+
+### User
+
+> you can scratch the timing on the read me I just want the agent time on there
+
+### Agent: what was done
+
+Cut the README's time section down to the table of agent working time and one line naming the script that measures it. The longer explanation was removed from the README and is still in the decision log.
